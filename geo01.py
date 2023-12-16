@@ -24,11 +24,11 @@ mycircle= None #objet utilisé pour le cercle rouge
 pseudo="Gaston" #provisory pseudo for user
 exercise="GEO01"
 nbtrials=0 #number of total trials
-nbsuccess=0 #number of successfull trials
+nbok=0 #number of successfull trials
 
 # on canvas click, check if succeded or failed
 def canvas_click(event):
-    global mycircle, nbtrials, nbsuccess, entry_pseudo
+    global mycircle, nbtrials, nbok, entry_pseudo
 
     pseudo = entry_pseudo.get()
     # x et y clicked
@@ -49,8 +49,8 @@ def canvas_click(event):
         window_geo01.configure(bg="red")
     else:
         window_geo01.configure(bg="green")
-        nbsuccess += 1
-    lbl_result.configure(text=f"{pseudo} Essais réussis : {nbsuccess} / {nbtrials}")
+        nbok += 1
+    lbl_result.configure(text=f"{pseudo} Essais réussis : {nbok} / {nbtrials}")
     window_geo01.update()
     time.sleep(1) # delai 1s
     next_point(event=None)
@@ -89,28 +89,28 @@ def next_point(event):
 
 
 def save_game(event):
-    global start_date, pseudo, exercise, nbtrials, nbsuccess
+    global start_date, pseudo, exercise, duration, nbtrials, nbok # Changer ici
 
     # pour obtenir le temp dernier
     end_time = datetime.datetime.now()
 
     # pour calculer le temps de partie
-    duration_seconds = (end_time - start_date).total_seconds()
+    duration = (end_time - start_date).total_seconds() # Changer ici
 
     pseudo = entry_pseudo.get()
 
     # insert bd
-    database.save_game_result(pseudo, exercise, duration_seconds, nbtrials, nbsuccess)
+    database.insert_game_result(pseudo, exercise, duration, nbtrials, nbok) # Changer ici
 
     window_geo01.destroy()
 
 
 
 def display_timer():
-    duration=datetime.datetime.now()-start_date #elapsed time since beginning, in time with decimals
-    duration_s=int(duration.total_seconds()) #idem but in seconds (integer)
+    duration = datetime.datetime.now()-start_date #elapsed time since beginning, in time with decimals
+    duration_s = int(duration.total_seconds()) #idem but in seconds (integer)
     #display min:sec (00:13)
-    lbl_duration.configure(text="{:02d}".format(int(duration_s /60)) + ":" + "{:02d}".format(duration_s %60))
+    lbl_duration.configure(text = "{:02d}".format(int(duration_s / 60)) + ":" + "{:02d}".format(duration_s % 60))
     window_geo01.after(1000, display_timer) #recommencer après 15 ms
 
 
