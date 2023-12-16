@@ -4,6 +4,7 @@ import database
 from tkinter import messagebox  # Pour la fenêtre pop-up
 from database import delete_game_result
 from database import load_results
+from database import fetch_game_statistics
 from database import get_all_exercise_names
 
 
@@ -227,7 +228,7 @@ def refresh_treeview():
     tree.delete(*tree.get_children())
 
     # mise a jour tous les donnees depuis bd
-    resultats = database.get_game_results()
+    resultats = database.fetch_game_statistics()
     for resultat in resultats:
         nb_ok = resultat[4]
         nb_essai = resultat[5]
@@ -329,7 +330,7 @@ def voir_resultat():
     derniers_filtres.update({"pseudo": pseudo, "exercise": exercise, "date_debut": date_debut, "date_fin": date_fin})
 
     # Obtenir les résultats de la bd
-    resultats = database.get_game_results(pseudo=pseudo, exercise=exercise, start_date=date_debut, end_date=date_fin)
+    resultats = database.fetch_game_statistics(pseudo=pseudo, exercise=exercise, start_date=date_debut, end_date=date_fin)
 
     # Vérifier s'il y a des résultats
     if not resultats:
@@ -459,7 +460,7 @@ def exercice_existe(exercice):
     Vérifie si un exercice donné existe dans la base de données.
     """
     # Utiliser la fonction get_game_results pour vérifier l'existence de l'exercice
-    resultats = get_game_results(exercise=exercice)
+    resultats = fetch_game_statistics(exercise=exercice)
 
     # Si aucun résultat n'est retourné, l'exercice n'existe pas
     return len(resultats) > 0
