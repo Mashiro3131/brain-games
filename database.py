@@ -154,6 +154,7 @@ ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 
 import mysql.connector
 import colorama
+import datetime
 from colorama import Fore, Style
 
 colorama.init(autoreset=True)
@@ -177,22 +178,39 @@ db_conn = open_db()
 
 
 
-def insert_game_result(pseudo, exercise, duration, nb_trials, nb_success):
+def insert_game_result(pseudo, exercise, duration, nbtrials, nbok):
     try:
         cursor = db_conn.cursor()
 
-        # for inserting the data
-        insert_game_query = """
-            INSERT INTO `brain_games_db`.`results` (`id`, `user_id`, `exercise`, `date_hour`, `duration`, `nbtrials`, `nbok`)
-            VALUES (NULL, (SELECT id FROM users WHERE pseudo = %s), %s, %s, %s, %s, %s)
-        """
-        game_data = (pseudo, exercise, duration, nb_trials, nb_success)
+        # Check if user exists
+        user_check_query = "SELECT id FROM users WHERE pseudo = %s"
+        cursor.execute(user_check_query, (pseudo,))
+        user = cursor.fetchone()
 
-        cursor.execute(insert_game_query, game_data)
+        if user is None:
+            # User doesn't exist, so create a new user
+            insert_user_query = "INSERT INTO users (pseudo, role_id) VALUES (%s, %s)"
+            cursor.execute(insert_user_query, (pseudo, 1))  # role_id = 1 for student and 2 for teacher
+            db_conn.commit()
+
+            # Get the ID of the newly created user
+            user_id = cursor.lastrowid
+        else:
+            # User exists, get the user_id
+            user_id = user[0]
+
+        # Insert the game result into the results table
+        insert_result_query = '''
+        INSERT INTO results (user_id, exercise, date_hour, duration, nbtrials, nbok)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        '''
+        values = (user_id, exercise, datetime.datetime.now(), nbtrials, nbtrials, nbok)
+
+        cursor.execute(insert_result_query, values)
         db_conn.commit()
 
     except mysql.connector.Error as error:
-        print(Fore.RED + f"Failed to save game data: {error}")
+        print(Fore.RED + f"Failed to save game data: {error}" + Style.RESET_ALL)
         
     finally:
         cursor.close()
@@ -232,13 +250,13 @@ def load_results(pseudo=None, exercise=None, start_date=None, end_date=None):
         return results
 
 
-def delete_game_result(pseudo, exercise, date_hour, duration, nb_ok, nb_trials):
+def delete_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials):
     cursor = db_conn.cursor()
 
     # script for delete
     query = "DELETE FROM results WHERE pseudo = %s AND exercise = %s AND date_hour = %s AND duration = %s AND nbok = %s AND nbtrials = %s"
     try:
-        cursor.execute(query, (pseudo, exercise, date_hour, duration, nb_ok, nb_trials))
+        cursor.execute(query, (pseudo, exercise, date_hour, duration, nbok, nbtrials))
         db_conn.commit()
         print(f"{cursor.rowcount} row is deleted")
     except mysql.connector.Error as err:
@@ -247,12 +265,12 @@ def delete_game_result(pseudo, exercise, date_hour, duration, nb_ok, nb_trials):
         cursor.close()
 
 
-def update_game_result(pseudo, exercise, date_hour, duration, nb_ok, nb_trials, new_duration, new_nb_ok, new_nb_trials):
+def update_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nb_ok, new_nb_trials):
     cursor = db_conn.cursor()
 
     # first we will check if this row exists in the database
     check_query = "SELECT COUNT(*) FROM results WHERE pseudo = %s AND exercise = %s AND date_hour = %s AND duration = %s AND nbok = %s AND nbtrials = %s"
-    cursor.execute(check_query, (pseudo, exercise, date_hour, duration, nb_ok, nb_trials))
+    cursor.execute(check_query, (pseudo, exercise, date_hour, duration, nbok, nbtrials))
     (match_count,) = cursor.fetchone()
 
     # if there is a row, we will update it
