@@ -100,7 +100,7 @@ def save_game(event):
     pseudo = entry_pseudo.get()
 
     # insert bd
-    database.insert_game_result(pseudo, exercise, duration, nbtrials, nbok) # Changer ici
+    database.record_match_outcome(pseudo, exercise, duration, nbtrials, nbok) # Changer ici
 
     window_geo01.destroy()
 
