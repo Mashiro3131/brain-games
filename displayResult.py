@@ -3,7 +3,7 @@ from tkinter import ttk
 import database
 from tkinter import messagebox  # Pour la fenêtre pop-up
 from database import delete_game_result
-from database import get_game_results
+from database import load_results
 from database import get_all_exercise_names
 
 
