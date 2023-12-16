@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  localhost
--- Généré le :  Sam 16 Décembre 2023 à 13:05
+-- Généré le :  Sam 16 Décembre 2023 à 16:53
 -- Version du serveur :  5.7.11
 -- Version de PHP :  5.4.31
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `results` (
   `duration` time NOT NULL,
   `nbtrials` int(11) NOT NULL,
   `nbok` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
 -- Contenu de la table `results`
@@ -43,7 +43,9 @@ CREATE TABLE IF NOT EXISTS `results` (
 INSERT INTO `results` (`id`, `user_id`, `exercise`, `date_hour`, `duration`, `nbtrials`, `nbok`) VALUES
 (1, 1, 'GEO01', '2023-12-04 00:00:00', '00:02:00', 2, 1),
 (3, 1, 'INFO05', '2023-12-04 00:00:00', '00:02:00', 2, 1),
-(4, 1, 'GEO01', '2023-12-04 00:00:00', '00:02:00', 2, 1);
+(4, 1, 'GEO01', '2023-12-04 00:00:00', '00:02:00', 2, 1),
+(5, 1, 'GEO01', '2023-12-04 00:00:00', '00:02:00', 3, 1),
+(6, 2, 'GEO01', '2023-12-16 17:45:42', '00:00:02', 2, 0);
 
 -- --------------------------------------------------------
 
@@ -75,14 +77,15 @@ CREATE TABLE IF NOT EXISTS `users` (
   `pseudo` varchar(50) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `role_id` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Contenu de la table `users`
 --
 
 INSERT INTO `users` (`id`, `pseudo`, `password`, `role_id`) VALUES
-(1, 'NME', '1234', 1);
+(1, 'NME', '1234', 1),
+(2, 'nicotest', NULL, 1);
 
 --
 -- Index pour les tables exportées
@@ -114,7 +117,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT pour la table `results`
 --
 ALTER TABLE `results`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT pour la table `roles`
 --
@@ -124,7 +127,7 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
 -- Contraintes pour les tables exportées
 --
