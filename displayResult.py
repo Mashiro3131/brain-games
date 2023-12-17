@@ -260,44 +260,6 @@ def colorize_percentage(percentage):
         return 'green'
 
 
-# def voir_resultat():
-#     global donnees_chargees, derniers_filtres
-#     pseudo = entry_pseudo.get().strip()
-#     exercise = entry_exercise.get().strip()
-#
-#     # Vérifier si les filtres sont identiques aux derniers utilisés et si les données ont déjà été chargées
-#     if pseudo == derniers_filtres["pseudo"] and exercise == derniers_filtres["exercise"] and donnees_chargees:
-#         messagebox.showinfo("Information", "Les données sont déjà à jour.")
-#         return
-#
-#     # Réinitialiser les données si les filtres ont changé
-#     if pseudo != derniers_filtres["pseudo"] or exercise != derniers_filtres["exercise"]:
-#         donnees_chargees = False
-#
-#     # Mémoriser les filtres actuels
-#     derniers_filtres["pseudo"] = pseudo
-#     derniers_filtres["exercise"] = exercise
-#
-#     # Récupérer les résultats de la base de données
-#     resultats = database.get_game_results(pseudo=pseudo, exercise=exercise)
-#
-#     # Afficher un message si aucun résultat n'est trouvé
-#     if not resultats:
-#         messagebox.showinfo("Information", "Aucun enregistrement trouvé pour les critères donnés.")
-#         donnees_chargees = False
-#         return
-#
-#     # Nettoyer les données existantes dans le Treeview et afficher les nouveaux résultats
-#     tree.delete(*tree.get_children())
-#     for resultat in resultats:
-#         # Traiter chaque résultat et l'ajouter au Treeview
-#         nbok = resultat[4]
-#         nbtrials = resultat[5]
-#         percentage = calculate_percentage(nbok, nbtrials)
-#         insert_data_into_treeview(tree, resultat, percentage)
-#
-#     # Marquer que les données sont chargées
-#     donnees_chargees = True
 
 def voir_resultat():
     global donnees_chargees, derniers_filtres
