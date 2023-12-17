@@ -305,11 +305,9 @@ def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=
     return results, total
 
 
-    # Update results
-
 
 # (UPDATE) Update results
-def revise_game_outcome(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nbok, new_nbtrials):
+def update_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nbok, new_nbtrials):
     try:
         with db_connection.connect() as cursor:
             # Retrieve the user_id for the given pseudo
