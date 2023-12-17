@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import database
 from tkinter import messagebox  # Pour la fenêtre pop-up
-from database import delete_game_result
+from database import remove_match_record
 from database import fetch_game_statistics
 from database import fetch_game_statistics
 from database import retrieve_exercise_catalog
@@ -148,7 +148,7 @@ def supprimer_resultat():
     nbok = tree.item(selected_item, 'values')[4]
     nbtrials = tree.item(selected_item, 'values')[5]
 
-    delete_game_result(pseudo, exercise, dateHour, duration, nbok, nbtrials)
+    remove_match_record(pseudo, exercise, dateHour, duration, nbok, nbtrials)
     tree.delete(selected_item)
 
 
@@ -211,7 +211,7 @@ def update_result(selected_item, new_duration, new_nbok, new_nbtrials):
 
 
     # mise a jour de bd
-    database.update_game_result(pseudo, exercise, dateHour, duration, nbok,nbtrials, new_duration, new_nbok, new_nbtrials)
+    database.revise_game_outcome(pseudo, exercise, dateHour, duration, nbok,nbtrials, new_duration, new_nbok, new_nbtrials)
 
     # mise a jour de tkinter
     updated_values = (pseudo, exercise, dateHour, new_duration, new_nbok, new_nbtrials, calculate_percentage(int(new_nbok), int(new_nbtrials)))
