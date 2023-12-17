@@ -3,9 +3,9 @@ from tkinter import ttk
 import database
 from tkinter import messagebox  # Pour la fenêtre pop-up
 from database import delete_game_result
-from database import load_results
 from database import fetch_game_statistics
-from database import get_all_exercise_names
+from database import fetch_game_statistics
+from database import retrieve_exercise_catalog
 
 
 tree = None  # Global
@@ -61,14 +61,14 @@ def create_result_window():
     # button "voir result"
 
     btn_voir_resultat = tk.Button(window, text="Voir Resultat", command=lambda:voir_resultat())
-    btn_voir_resultat.grid(row=2, padx=(0,5))
+    btn_voir_resultat.grid(row=2, padx=(0,5), )
 
     btn_total = tk.Button(window, text="Total", command=lambda: voir_total())
-    btn_total.grid(row=21, padx=(0,0))
+    btn_total.grid(row=21, padx=(0,0), )
 
     # bouton "nouvelle resultat"
     btn_ajouter = tk.Button(window, text="Ajouter", command=ajouter_resultat)
-    btn_ajouter.grid(row=2, column=3, padx=(0, 5))
+    btn_ajouter.grid(row=2, column=3, padx=(0, 5), )
 
     #les titre de tableau
 
@@ -112,7 +112,7 @@ def create_result_window():
 
     lbl_pourcentageTotal = tk.Label(window, text="")
     lbl_pourcentageTotal.grid(row=5, column=4,sticky="w")
-
+    
     # Bouton Supprimer
     btn_supprimer = tk.Button(window, text="Supprimer", command=supprimer_resultat)
     btn_supprimer.grid(row=2, column=1, padx=(0, 5))
@@ -120,8 +120,6 @@ def create_result_window():
     # Bouton Modifier
     btn_modifier = tk.Button(window, text="Modifier", command=modifier_resultat)
     btn_modifier.grid(row=2, column=2, padx=(0, 5))
-
-
 
     window.mainloop()
 
@@ -147,10 +145,10 @@ def supprimer_resultat():
     dateHour = tree.item(selected_item, 'values')[1]
     duration = tree.item(selected_item, 'values')[2]
     exercise = tree.item(selected_item, 'values')[3]
-    nbOk = tree.item(selected_item, 'values')[4]
-    nbTrials = tree.item(selected_item, 'values')[5]
+    nbok = tree.item(selected_item, 'values')[4]
+    nbtrials = tree.item(selected_item, 'values')[5]
 
-    delete_game_result(pseudo, exercise, dateHour, duration, nbOk, nbTrials)
+    delete_game_result(pseudo, exercise, dateHour, duration, nbok, nbtrials)
     tree.delete(selected_item)
 
 
@@ -181,26 +179,26 @@ def modifier_resultat():
     entry_duration.pack()
     entry_duration.insert(0, current_values[2])  # par default value original
 
-    # Ninput pour nbOk
-    lbl_nb_ok = tk.Label(update_window, text="Nb d’essais réussi:")
-    lbl_nb_ok.pack()
-    entry_nb_ok = tk.Entry(update_window)
-    entry_nb_ok.pack()
-    entry_nb_ok.insert(0, current_values[4])  # par default value original
+    # Ninput pour nbok
+    lbl_nbok = tk.Label(update_window, text="Nb d’essais réussi:")
+    lbl_nbok.pack()
+    entry_nbok = tk.Entry(update_window)
+    entry_nbok.pack()
+    entry_nbok.insert(0, current_values[4])  # par default value original
 
     # input pour NbTrials
-    lbl_nb_trials = tk.Label(update_window, text="Nb total:")
-    lbl_nb_trials.pack()
-    entry_nb_trials = tk.Entry(update_window)
-    entry_nb_trials.pack()
-    entry_nb_trials.insert(0, current_values[5])  # par default value original
+    lbl_nbtrials = tk.Label(update_window, text="Nb total:")
+    lbl_nbtrials.pack()
+    entry_nbtrials = tk.Entry(update_window)
+    entry_nbtrials.pack()
+    entry_nbtrials.insert(0, current_values[5])  # par default value original
 
     # boutton mise a jour
-    btn_update = tk.Button(update_window, text="Update", command=lambda: update_result(selected_item, entry_duration.get(), entry_nb_ok.get(), entry_nb_trials.get()))
+    btn_update = tk.Button(update_window, text="Update", command=lambda: update_result(selected_item, entry_duration.get(), entry_nbok.get(), entry_nbtrials.get()))
     btn_update.pack()
 
 
-def update_result(selected_item, new_duration, new_nb_ok, new_nb_trials):
+def update_result(selected_item, new_duration, new_nbok, new_nbtrials):
 
     global update_window
     current_values = tree.item(selected_item, 'values')
@@ -208,15 +206,15 @@ def update_result(selected_item, new_duration, new_nb_ok, new_nb_trials):
     dateHour = tree.item(selected_item, 'values')[1]  # pour date
     duration = tree.item(selected_item, 'values')[2]  # pour temps
     exercise = tree.item(selected_item, 'values')[3]  # pour exercise
-    nbOk = tree.item(selected_item, 'values')[4]  # pour nbOk
-    nbTrials = tree.item(selected_item, 'values')[5]  # pour nbTrials
+    nbok = tree.item(selected_item, 'values')[4]  # pour nbok
+    nbtrials = tree.item(selected_item, 'values')[5]  # pour nbtrials
 
 
     # mise a jour de bd
-    database.update_game_result(pseudo, exercise, dateHour, duration, nbOk,nbTrials, new_duration, new_nb_ok, new_nb_trials)
+    database.update_game_result(pseudo, exercise, dateHour, duration, nbok,nbtrials, new_duration, new_nbok, new_nbtrials)
 
     # mise a jour de tkinter
-    updated_values = (pseudo, exercise, dateHour, new_duration, new_nb_ok, new_nb_trials, calculate_percentage(int(new_nb_ok), int(new_nb_trials)))
+    updated_values = (pseudo, exercise, dateHour, new_duration, new_nbok, new_nbtrials, calculate_percentage(int(new_nbok), int(new_nbtrials)))
     tree.item(selected_item, values=updated_values)
 
     refresh_treeview()
@@ -224,21 +222,22 @@ def update_result(selected_item, new_duration, new_nb_ok, new_nb_trials):
     update_window.destroy()
 
 def refresh_treeview():
-    # supprimer tous les donnees
+    # Clear all existing data in the treeview
     tree.delete(*tree.get_children())
 
-    # mise a jour tous les donnees depuis bd
-    resultats = database.fetch_game_statistics()
+    # Fetch updated data from the database
+    resultats, _ = database.fetch_game_statistics()  # Assuming the second value (total) is not used here
     for resultat in resultats:
-        nb_ok = resultat[4]
-        nb_essai = resultat[5]
-        pourcentage = calculate_percentage(nb_ok, nb_essai)
-        insert_data_into_treeview(tree, resultat, pourcentage)
+        if isinstance(resultat, (list, tuple)):
+            nbok = resultat[4]
+            nbtrials = resultat[5]
+            percentage = calculate_percentage(nbok, nbtrials)
+            insert_data_into_treeview(tree, resultat, percentage)
 
 
-def calculate_percentage(nb_ok, nb_trial):
-    if nb_trial > 0:
-        return round((nb_ok / nb_trial) * 100, 2)
+def calculate_percentage(nbok, nbtrials):
+    if isinstance(nbtrials, int) and nbtrials > 0:
+        return round((nbok / nbtrials) * 100, 2)
     else:
         return 0
 
@@ -292,10 +291,10 @@ def colorize_percentage(percentage):
 #     tree.delete(*tree.get_children())
 #     for resultat in resultats:
 #         # Traiter chaque résultat et l'ajouter au Treeview
-#         nb_ok = resultat[4]
-#         nb_essai = resultat[5]
-#         pourcentage = calculate_percentage(nb_ok, nb_essai)
-#         insert_data_into_treeview(tree, resultat, pourcentage)
+#         nbok = resultat[4]
+#         nbtrials = resultat[5]
+#         percentage = calculate_percentage(nbok, nbtrials)
+#         insert_data_into_treeview(tree, resultat, percentage)
 #
 #     # Marquer que les données sont chargées
 #     donnees_chargees = True
@@ -303,14 +302,13 @@ def colorize_percentage(percentage):
 def voir_resultat():
     global donnees_chargees, derniers_filtres
 
-    # Récupérer les valeur d'inputs de champ de saisie
+    # Retrieve values from input fields
     pseudo = entry_pseudo.get().strip()
     exercise = entry_exercise.get().strip()
     date_debut = entry_date_debut.get().strip()
     date_fin = entry_date_fin.get().strip()
 
-
-    # Vérifier si les filtres ont changé, y compris les dates
+    # Check if filters have changed
     if (pseudo == derniers_filtres["pseudo"] and
         exercise == derniers_filtres["exercise"] and
         date_debut == derniers_filtres.get("date_debut", "") and
@@ -319,62 +317,63 @@ def voir_resultat():
         messagebox.showinfo("Information", "Les données sont déjà à jour.")
         return
 
-    # Recharger les données si un des filtres a changé
+    # Reload data if any filter has changed
     if (pseudo != derniers_filtres["pseudo"] or
         exercise != derniers_filtres["exercise"] or
         date_debut != derniers_filtres.get("date_debut", "") or
         date_fin != derniers_filtres.get("date_fin", "")):
         donnees_chargees = False
 
-    # Enregistrer les nouveaux filtres
+    # Save the current filters
     derniers_filtres.update({"pseudo": pseudo, "exercise": exercise, "date_debut": date_debut, "date_fin": date_fin})
 
-    # Obtenir les résultats de la bd
-    resultats = database.fetch_game_statistics(pseudo=pseudo, exercise=exercise, start_date=date_debut, end_date=date_fin)
+    # Fetch results from the database
+    resultats, _ = database.fetch_game_statistics(pseudo=pseudo, exercise=exercise, start_date=date_debut, end_date=date_fin)
 
-    # Vérifier s'il y a des résultats
+    # Check if results are available
     if not resultats:
         messagebox.showwarning("Erreur", "Aucun enregistrement trouvé pour les critères donnés.")
         donnees_chargees = False
         return
 
-    # Nettoyer les données existantes dans Treeview et afficher les nouveaux résultats
+    # Clear existing data and display new results in Treeview
     tree.delete(*tree.get_children())
     for resultat in resultats:
-        nb_ok = resultat[4]
-        nb_essai = resultat[5]
-        pourcentage = calculate_percentage(nb_ok, nb_essai)
-        insert_data_into_treeview(tree, resultat, pourcentage)
+        nbok = resultat[4]
+        nbtrials = resultat[5]
+        percentage = calculate_percentage(nbok, nbtrials)
+        insert_data_into_treeview(tree, resultat, percentage)
 
-    # Marquer que les données sont deja été chargees
+    # Mark that data has been loaded
     donnees_chargees = True
+
 
 
 
 def voir_total():
     total_lignes = 0
     total_duration = 0
-    total_nb_ok = 0
-    total_nb_trials = 0
+    total_nbok = 0
+    total_nbtrials = 0
     total_pourcentage = 0
 
     for child in tree.get_children():
         values = tree.item(child, 'values')
         total_lignes += 1
         total_duration += convert_time_to_seconds(values[2])  # converdir la valauer de duration minute en second
-        total_nb_ok += int(values[4])  # ajouter NbOk
-        total_nb_trials += int(values[5])  # ajouter NbTrials
+        total_nbok += int(values[4])  # ajouter NbOk
+        total_nbtrials += int(values[5])  # ajouter NbTrials
 
     # calculer la moyenne de reussit
-    if total_nb_trials > 0:
-        total_pourcentage = (total_nb_ok / total_nb_trials) * 100
+    if total_nbtrials > 0:
+        total_pourcentage = (total_nbok / total_nbtrials) * 100
     else:
         total_pourcentage = 0
 
     lbl_nblignes.config(text=f"{total_lignes}")
     lbl_tempTotal.config(text=f"{total_duration}")
-    lbl_nbOK.config(text=f"{total_nb_ok}")
-    lbl_nbTotal.config(text=f" {total_nb_trials}")
+    lbl_nbOK.config(text=f"{total_nbok}")
+    lbl_nbTotal.config(text=f" {total_nbtrials}")
     lbl_pourcentageTotal.config(text=f"{total_pourcentage:.2f}")
 
 
@@ -408,36 +407,36 @@ def ajouter_resultat():
     entry_temps.pack()
 
     # input pour 'NB OK'
-    lbl_nb_ok = tk.Label(ajout_window, text="NB OK:")
-    lbl_nb_ok.pack()
-    entry_nb_ok = tk.Entry(ajout_window)
-    entry_nb_ok.pack()
+    lbl_nbok = tk.Label(ajout_window, text="NB OK:")
+    lbl_nbok.pack()
+    entry_nbok = tk.Entry(ajout_window)
+    entry_nbok.pack()
 
     # input pour 'Nb Trial'
-    lbl_nb_trial = tk.Label(ajout_window, text="Nb Trial:")
-    lbl_nb_trial.pack()
-    entry_nb_trial = tk.Entry(ajout_window)
-    entry_nb_trial.pack()
+    lbl_nbtrial = tk.Label(ajout_window, text="Nb Trial:")
+    lbl_nbtrial.pack()
+    entry_nbtrial = tk.Entry(ajout_window)
+    entry_nbtrial.pack()
 
     # pour engregistrer nouvelle resultat
     btn_ajouter = tk.Button(ajout_window, text="Ajouter résultat", command=lambda: enregistrer_resultat(
         entry_pseudo.get(),
         entry_exercice.get(),
         entry_temps.get(),
-        entry_nb_ok.get(),
-        entry_nb_trial.get()
+        entry_nbok.get(),
+        entry_nbtrial.get()
     ))
     btn_ajouter.pack()
 
 
 
 
-def enregistrer_resultat(pseudo, exercice, temps, nb_ok, nb_trial):
+def enregistrer_resultat(pseudo, exercice, temps, nbok, nbtrials):
     global ajout_window
 
     # Vérifier si l'exercice existe
     if not exercice_existe(exercice):
-        existing_exercises = get_all_exercise_names()
+        existing_exercises = retrieve_exercise_catalog()
         messagebox.showwarning("Erreur", f"Cet exercice n'existe pas. Les exercices qui sont disponibles dans le bd: {', '.join(existing_exercises)}")
         return
 
@@ -447,7 +446,7 @@ def enregistrer_resultat(pseudo, exercice, temps, nb_ok, nb_trial):
         return
 
     # envoyer à le bd
-    database.save_game_result(pseudo, exercice, temps, nb_ok, nb_trial)
+    database.save_game_result(pseudo, exercice, temps, nbok, nbtrials)
     refresh_treeview()
 
     messagebox.showinfo("Succès", "Données ajoutées avec succès !")
