@@ -263,17 +263,18 @@ def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=
 
             # Filtres
             if pseudo:
-                load_data_query += " AND u.pseudo = %s"
-                params.append(pseudo)
+                # on ajoute des LIKE SQL avec f"%{laValeur}%" pour pouvoir faire des recherches partielles
+                load_data_query += " AND u.pseudo LIKE %s" 
+                params.append(f"%{pseudo}%")
             if exercise:
-                load_data_query += " AND r.exercise = %s"
-                params.append(exercise)
+                load_data_query += " AND r.exercise LIKE %s"
+                params.append(f"%{exercise}%")
             if start_date:
-                load_data_query += " AND r.date_hour >= %s"
-                params.append(start_date)
+                load_data_query += " AND r.date_hour LIKE %s"
+                params.append(f"%{start_date}%")
             if end_date:
-                load_data_query += " AND r.date_hour <= %s"
-                params.append(end_date)
+                load_data_query += " AND r.date_hour LIKE %s"
+                params.append(f"%{end_date}%")
 
             # Pagination
             offset = (page - 1) * page_size
@@ -304,20 +305,8 @@ def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=
     return results, total
 
 
-def delete_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials):
-    try:
-        with db_connection.connect() as cursor:
-            # script for delete
-            delete_query = "DELETE FROM results WHERE pseudo = %s AND exercise = %s AND date_hour = %s AND duration = %s AND nbok = %s AND nbtrials = %s"
-            delete_values = (pseudo, exercise, date_hour, duration, nbok, nbtrials)
-            cursor.execute(delete_query, delete_values)
-            db_connection.commit()
-            print(Fore.GREEN + f"{cursor.rowcount} ligne supprimée")
-    except mysql.connector.Error as error:
-        print(Fore.RED + f"Échec de la suppression du résultat du jeu : : {error}")
-
-
-def update_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nbok, new_nbtrials):
+    # Update results
+def revise_game_outcome(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nbok, new_nbtrials):
     try:
         with db_connection.connect() as cursor:
             # first we will check if this row exists in the database
@@ -339,6 +328,38 @@ def update_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials, ne
     except mysql.connector.Error as error:
         print(Fore.RED + f"Failed to update game result: {error}")
 
+
+    # Delete results
+def remove_match_record(pseudo, exercise, date_hour, duration, nbok, nbtrials):
+    try:
+        with db_connection.connect() as cursor:
+            # First, retrieve the user_id for the given pseudo
+            user_id_query = "SELECT id FROM users WHERE pseudo = %s"
+            cursor.execute(user_id_query, (pseudo,))
+            user_id_result = cursor.fetchone()
+
+            if not user_id_result:
+                print(Fore.YELLOW + "Aucun utilisateur trouvé avec ce pseudo.")
+                return
+            user_id = user_id_result[0]
+
+            # Now, delete the record from the results table
+            delete_query = """
+            DELETE FROM results 
+            WHERE user_id = %s AND exercise = %s AND date_hour = %s AND duration = %s AND nbok = %s AND nbtrials = %s
+            """
+            delete_values = (user_id, exercise, date_hour, duration, nbok, nbtrials)
+            cursor.execute(delete_query, delete_values)
+
+            if cursor.rowcount == 0:
+                print(Fore.YELLOW + "Aucun enregistrement correspondant trouvé pour suppression.")
+            else:
+                print(Fore.GREEN + f"{cursor.rowcount} ligne(s) supprimée(s)")
+
+    except mysql.connector.Error as error:
+        print(Fore.RED + f"Échec de la suppression du résultat du jeu : {error}")
+        
+        
 
 
 def retrieve_exercise_catalog():
