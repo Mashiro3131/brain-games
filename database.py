@@ -193,7 +193,7 @@ db_connection = DatabaseConnection('127.0.0.1', '3306', 'root', 'root', 'brain_g
 
 
 
-# Insert results
+# (CREATE) Insert results
 def record_match_outcome(pseudo, exercise, duration, nbtrials, nbok):
     try:
         with db_connection.connect() as cursor:
@@ -243,7 +243,7 @@ def record_match_outcome(pseudo, exercise, duration, nbtrials, nbok):
         print(Fore.RED + f"Failed to save game data: {error}")
 
 
-# Fetch results
+# (READ) Fetch results
 def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=None, page=1, page_size=20):
     results = []
     total = None
@@ -306,30 +306,54 @@ def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=
 
 
     # Update results
+
+
+# (UPDATE) Update results
 def revise_game_outcome(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nbok, new_nbtrials):
     try:
         with db_connection.connect() as cursor:
-            # first we will check if this row exists in the database
-            check_query = "SELECT COUNT(*) FROM results WHERE pseudo = %s AND exercise = %s AND date_hour = %s AND duration = %s AND nbok = %s AND nbtrials = %s"
-            cursor.execute(check_query, (pseudo, exercise, date_hour, duration, nbok, nbtrials))
+            # Retrieve the user_id for the given pseudo
+            user_id_query = "SELECT id FROM users WHERE pseudo = %s"
+            cursor.execute(user_id_query, (pseudo,))
+            user_id_result = cursor.fetchone()
+
+            if not user_id_result:
+                print(Fore.YELLOW + "Aucun utilisateur trouvé avec ce pseudo.")
+                return
+            user_id = user_id_result[0]
+
+            # Check if the specific game result exists
+            check_query = """
+            SELECT COUNT(*) 
+            FROM results 
+            WHERE user_id = %s AND exercise = %s AND date_hour = %s AND duration = %s AND nbok = %s AND nbtrials = %s
+            """
+            cursor.execute(check_query, (user_id, exercise, date_hour, duration, nbok, nbtrials))
             (match_count,) = cursor.fetchone()
 
-            # if there is a row, we will update it
+            # If the row exists, update it
             if match_count > 0:
-                update_query = "UPDATE results SET duration = %s, nbok = %s, nbtrials = %s WHERE pseudo = %s AND exercise = %s AND date_hour = %s"
-                update_values = (new_duration, new_nbok, new_nbtrials, pseudo, exercise, date_hour)
+                update_query = """
+                UPDATE results 
+                SET duration = %s, nbok = %s, nbtrials = %s 
+                WHERE user_id = %s AND exercise = %s AND date_hour = %s
+                """
+                update_values = (new_duration, new_nbok, new_nbtrials, user_id, exercise, date_hour)
 
                 cursor.execute(update_query, update_values)
-                db_connection.commit()
-                print(f"{cursor.rowcount} row is updated")
+                if cursor.rowcount == 0:
+                    print(Fore.YELLOW + "Aucun enregistrement correspondant trouvé pour mise à jour.")
+                else:
+                    print(Fore.GREEN + f"{cursor.rowcount} ligne(s) mise(s) à jour.")
             else:
-                print("No matching row found for update.")
+                print(Fore.YELLOW + "Aucune ligne correspondante trouvée pour mise à jour.")
 
     except mysql.connector.Error as error:
-        print(Fore.RED + f"Failed to update game result: {error}")
+        print(Fore.RED + f"Échec de la mise à jour du résultat du jeu : {error}")
 
 
-    # Delete results
+
+# (DELETE) Delete results
 def remove_match_record(pseudo, exercise, date_hour, duration, nbok, nbtrials):
     try:
         with db_connection.connect() as cursor:
@@ -361,7 +385,7 @@ def remove_match_record(pseudo, exercise, date_hour, duration, nbok, nbtrials):
         
         
 
-
+# Get all exercise names
 def retrieve_exercise_catalog():
     try:
         with db_connection.connect() as cursor:
