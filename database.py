@@ -151,13 +151,18 @@ ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 """
 
 
+
 import contextlib
 import mysql.connector
 import colorama
 import datetime
 from colorama import Fore, Style
 
+
+
 colorama.init(autoreset=True)
+
+
 
 class DatabaseConnection:
     def __init__(self, host, port, user, password, database):
@@ -181,89 +186,138 @@ class DatabaseConnection:
             cursor.close()
             connection.close()
 
+
+
 # Creating an instance of DatabaseConnection
 db_connection = DatabaseConnection('127.0.0.1', '3306', 'root', 'root', 'brain_games_db')
 
 
 
 # Insert results
-# Insert results
 def record_match_outcome(pseudo, exercise, duration, nbtrials, nbok):
     try:
         with db_connection.connect() as cursor:
-            # Check if user exists
-            user_check_query = "SELECT id FROM users WHERE pseudo = %s"
+            
+            # Regarde si l'utilisateur existe déjà dans la base de données
+            user_check_query = """
+                SELECT id 
+                FROM users 
+                WHERE pseudo = %s
+            """
+            
+            # Exécute la requête
             cursor.execute(user_check_query, (pseudo,))
             user = cursor.fetchone()
 
+            # Si l'utilisateur n'existe pas, on le crée
             if user is None:
-                # User doesn't exist, so create a new user
-                insert_user_query = "INSERT INTO users (pseudo, role_id) VALUES (%s, %s)"
+                # Insère le nouvel utilisateur dans la table users (momentanément, on lui attribue le rôle (1) d'élève par défaut)
+                insert_user_query = """
+                    INSERT INTO users (pseudo, role_id) 
+                    VALUES (%s, %s)
+                """
+                
+                # Exécute la requête
                 cursor.execute(insert_user_query, (pseudo, 1))
                 user_id = cursor.lastrowid
+            
+            # Si l'utilisateur existe déjà, on récupère son user_id
             else:
-                # User exists, get the user_id
                 user_id = user[0]
 
-            # Insert the game result into the results table
-            insert_result_query = '''
-            INSERT INTO results (user_id, exercise, date_hour, duration, nbtrials, nbok)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            # On insère le résultat dans la table results
+            record_match_outcome_query = '''
+                INSERT INTO results (user_id, exercise, date_hour, duration, nbtrials, nbok)
+                VALUES (%s, %s, %s, %s, %s, %s)
             '''
+            
+            # Exécute la requête
             values = (user_id, exercise, datetime.datetime.now(), duration, nbtrials, nbok)
-            cursor.execute(insert_result_query, values)
+            cursor.execute(record_match_outcome_query, values)
 
+            # Si tout se passe bien, on affiche un message que l'enregistrement s'est bien passé
+            print(Fore.GREEN + f"Game result is saved successfully for {pseudo}.")
+            
     except mysql.connector.Error as error:
+        # Si une erreur se produit, on affiche un message d'erreur comme quoi l'enregistrement a échoué, rien n'est enregistré dans la base de données
         print(Fore.RED + f"Failed to save game data: {error}")
 
 
-def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=None):
+# Fetch results
+def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=None, page=1, page_size=20):
+    results = []
+    total = None
     try:
         with db_connection.connect() as cursor:
-            # to retrieve values from the 'results' table
-            load_data_query = "SELECT pseudo AS 'Élève', date_hour AS 'Date Heure', duration AS 'Temps', exercise AS 'Exercice', nbok AS 'nb OK' , nbtrials AS 'nb Total' FROM results WHERE 1=1"
+            # Requête de base pour récupérer les valeurs de la table 'results' et les joindre avec la table 'users'
+            load_data_query = """
+                SELECT u.pseudo AS 'Élève', r.date_hour AS 'Date Heure', r.duration AS 'Temps',
+                    r.exercise AS 'Exercice', r.nbok AS 'nb OK', r.nbtrials AS 'nb Total' 
+                FROM results r
+                INNER JOIN users u ON r.user_id = u.id
+                WHERE 1 = 1
+            """
 
-            # create parameters
+            # Création des paramètres
             params = []
 
-            # filters, when any of these parameters are specified, the query is filtered based on these parameters.
-            # e.g. results = load_results(pseudo=pseudo)
+            # Filtres
             if pseudo:
-                load_data_query += " AND pseudo = %s"
+                load_data_query += " AND u.pseudo = %s"
                 params.append(pseudo)
             if exercise:
-                load_data_query += " AND exercise = %s"
+                load_data_query += " AND r.exercise = %s"
                 params.append(exercise)
             if start_date:
-                load_data_query += " AND date_hour >= %s"
+                load_data_query += " AND r.date_hour >= %s"
                 params.append(start_date)
             if end_date:
-                load_data_query += " AND date_hour <= %s"
+                load_data_query += " AND r.date_hour <= %s"
                 params.append(end_date)
 
-            # execute the query
-            cursor.execute(load_data_query, params)
+            # Pagination
+            offset = (page - 1) * page_size
+            load_data_query += " LIMIT %s OFFSET %s"
+            params.extend([page_size, offset])
+
+            # Exécution de la requête pour récupérer les résultats
+            cursor.execute(load_data_query, tuple(params))
             results = cursor.fetchall()
 
-    except mysql.connector.Error as error:
-        print(Fore.RED + f"Failed to fetch game statistics: {error}")
+            # Requête pour récupérer le nombre total d'enregistrements
+            count_query = """
+                SELECT COUNT(*)
+                FROM results r
+                INNER JOIN users u ON r.user_id = u.id
+                WHERE 1 = 1
+            """
+            if pseudo or exercise or start_date or end_date:
+                count_query += load_data_query.split("WHERE")[1].replace("LIMIT %s OFFSET %s", "")
+            cursor.execute(count_query, tuple(params[:-2]))  # Exclure les paramètres de pagination
+            total = cursor.fetchone()[0]
+            
+            print(Fore.GREEN + f"Statistiques de jeu récupérées avec succès.")
 
-    return results
+    except mysql.connector.Error as error:
+        print(Fore.RED + f"Échec de la récupération des statistiques de jeu : {error}")
+
+    return results, total
 
 
 def delete_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials):
     try:
         with db_connection.connect() as cursor:
             # script for delete
-            query = "DELETE FROM results WHERE pseudo = %s AND exercise = %s AND date_hour = %s AND duration = %s AND nbok = %s AND nbtrials = %s"
-            cursor.execute(query, (pseudo, exercise, date_hour, duration, nbok, nbtrials))
+            delete_query = "DELETE FROM results WHERE pseudo = %s AND exercise = %s AND date_hour = %s AND duration = %s AND nbok = %s AND nbtrials = %s"
+            delete_values = (pseudo, exercise, date_hour, duration, nbok, nbtrials)
+            cursor.execute(delete_query, delete_values)
             db_connection.commit()
-            print(f"{cursor.rowcount} row is deleted")
-    except mysql.connector.Error as err:
-        print("Error:", err)
+            print(Fore.GREEN + f"{cursor.rowcount} ligne supprimée")
+    except mysql.connector.Error as error:
+        print(Fore.RED + f"Échec de la suppression du résultat du jeu : : {error}")
 
 
-def update_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nb_ok, new_nb_trials):
+def update_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nbok, new_nbtrials):
     try:
         with db_connection.connect() as cursor:
             # first we will check if this row exists in the database
@@ -274,7 +328,7 @@ def update_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials, ne
             # if there is a row, we will update it
             if match_count > 0:
                 update_query = "UPDATE results SET duration = %s, nbok = %s, nbtrials = %s WHERE pseudo = %s AND exercise = %s AND date_hour = %s"
-                update_values = (new_duration, new_nb_ok, new_nb_trials, pseudo, exercise, date_hour)
+                update_values = (new_duration, new_nbok, new_nbtrials, pseudo, exercise, date_hour)
 
                 cursor.execute(update_query, update_values)
                 db_connection.commit()
@@ -287,7 +341,7 @@ def update_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials, ne
 
 
 
-def get_all_exercise_names():
+def retrieve_exercise_catalog():
     try:
         with db_connection.connect() as cursor:
             query = "SELECT DISTINCT exercise FROM results"
