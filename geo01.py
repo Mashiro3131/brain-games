@@ -38,7 +38,7 @@ def canvas_click(event):
     # distance between clicked and (x,y)
     dx = abs(click_x - target_x)
     dy = abs(click_y - target_y)
-    d = sqrt((dx)**2 + (dy)**2) # Pythagore
+    d = sqrt((dx)**2 + (dy)**2) # Pythagor
 
     # display a red circle where clicked (global variable mycircle)
     mycircle = circle(target_x,target_y,0.5,"red")
