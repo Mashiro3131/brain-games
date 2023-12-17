@@ -221,6 +221,7 @@ def update_result(selected_item, new_duration, new_nbok, new_nbtrials):
 
     update_window.destroy()
 
+
 def refresh_treeview():
     # Clear all existing data in the treeview
     tree.delete(*tree.get_children())
