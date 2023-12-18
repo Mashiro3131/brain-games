@@ -39,18 +39,16 @@ entry_date_fin = None
 derniers_filtres = {"pseudo": "", "exercise": ""}
 donnees_chargees = False # Pour suivre si les données ont été chargées
 
-
-
 def create_result_window():
     global tree, entry_pseudo, entry_exercise, lbl_nblignes, lbl_tempTotal, lbl_nbOK, lbl_nbTotal, lbl_pourcentageTotal, entry_date_debut, entry_date_fin
 
     # Create a new window with CustomTkinter
     window = ctk.CTk()
-    window.title("TRAINING : AFFICHAGE")
+    window.title("BRAINGAMES : Statistics")
     window.geometry("1300x700+300+150")
 
     # Title label
-    lbl_title = ctk.CTkLabel(window, text="TRAINING : AFFICHAGE", font=("Arial", 16))
+    lbl_title = ctk.CTkLabel(window, text="BRAINGAMES : Statistics", font=("Arial", 16))
     lbl_title.grid(row=0, column=0, columnspan=8, pady=(0, 20))
 
     # Pseudo input
@@ -118,6 +116,25 @@ def create_result_window():
     lbl_pourcentageTotal.grid(row=5, column=4, sticky='w')
 
     window.mainloop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def insert_data_into_treeview(tree, values, percentage):
     color = colorize_percentage(percentage)
