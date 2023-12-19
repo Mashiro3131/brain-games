@@ -28,9 +28,9 @@ nbok=0 #number of successfull trials
 
 # on canvas click, check if succeded or failed
 def canvas_click(event):
-    global mycircle, nbtrials, nbok, entry_pseudo
+    global mycircle, nbtrials, nbok, pseudo_entry
 
-    pseudo = entry_pseudo.get()
+    pseudo = pseudo_entry.get()
     # x et y clicked
     click_x = (event.x - l/2) / scale
     click_y = -(event.y - h/2) / scale
@@ -97,7 +97,7 @@ def save_game(event):
     # pour calculer le temps de partie
     duration = (end_time - start_date).total_seconds() # Changer ici
 
-    pseudo = entry_pseudo.get()
+    pseudo = pseudo_entry.get()
 
     # insert bd
     database.record_match_outcome(pseudo, exercise, duration, nbtrials, nbok) # Changer ici
@@ -116,7 +116,7 @@ def display_timer():
 
 def open_window_geo_01(window):
     # window = tk.Tk()
-    global window_geo01, hex_color, lbl_title, lbl_duration, lbl_result, lbl_target, canvas, start_date, entry_pseudo
+    global window_geo01, hex_color, title_label, lbl_duration, lbl_result, lbl_target, canvas, start_date, pseudo_entry
     window_geo01 = tk.Toplevel(window)
 
     window_geo01.title("Exercice de géométrie")
@@ -128,15 +128,15 @@ def open_window_geo_01(window):
     window_geo01.configure(bg=hex_color)
 
     # Canvas creation
-    lbl_title = tk.Label(window_geo01, text=f"{exercise}", font=("Arial", 15))
-    lbl_title.grid(row=0, column=1, padx=5, pady=5)
+    title_label = tk.Label(window_geo01, text=f"{exercise}", font=("Arial", 15))
+    title_label.grid(row=0, column=1, padx=5, pady=5)
 
     lbl_duration = tk.Label(window_geo01, text="0:00", font=("Arial", 15))
     lbl_duration.grid(row=0,column=2, ipady=5, padx=10,pady=10)
 
     tk.Label(window_geo01, text='Pseudo:', font=("Arial", 15)).grid(row=1, column=0, padx=5, pady=5)
-    entry_pseudo = tk.Entry(window_geo01, font=("Arial", 15))
-    entry_pseudo.grid(row=1, column=1)
+    pseudo_entry = tk.Entry(window_geo01, font=("Arial", 15))
+    pseudo_entry.grid(row=1, column=1)
 
     lbl_result = tk.Label(window_geo01, text=f"Essais réussis : 0/0", font=("Arial", 15))
     lbl_result.grid(row=1, column=3, padx=5, pady=5, columnspan=4)

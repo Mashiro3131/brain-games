@@ -34,9 +34,9 @@ class ResultDisplay():
         self.root.title("Statisques")
         self.root.geometry("1300x390")
         
-        lbl_title = ctk.CTkLabel(self.root, text="Statistiques", font=ctk.CTkFont(size=15, weight="bold"))
-        lbl_title.grid(row=0, column=0, ipady=20, padx=40, pady=40)
-        lbl_title.pack()
+        title_label = ctk.CTkLabel(self.root, text="Statistiques", font=ctk.CTkFont(size=15, weight="bold"))
+        title_label.grid(row=0, column=0, ipady=20, padx=40, pady=40)
+        title_label.pack()
         
         # Create and configure the filter options
         filter_frame = ctk.CTkFrame(self.root)
