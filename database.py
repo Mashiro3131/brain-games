@@ -270,10 +270,10 @@ def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=
                 load_data_query += " AND r.exercise LIKE %s"
                 params.append(f"%{exercise}%")
             if start_date:
-                load_data_query += " AND r.date_hour LIKE %s"
+                load_data_query += " AND r.date_hour >= %s"
                 params.append(f"%{start_date}%")
             if end_date:
-                load_data_query += " AND r.date_hour LIKE %s"
+                load_data_query += " AND r.date_hour <= %s"
                 params.append(f"%{end_date}%")
 
             # Pagination
