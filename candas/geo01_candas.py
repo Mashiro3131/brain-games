@@ -28,9 +28,9 @@ nbsuccess=0 #number of successfull trials
 
 # on canvas click, check if succeded or failed
 def canvas_click(event):
-    global mycircle, nbtrials, nbsuccess, entry_pseudo
+    global mycircle, nbtrials, nbsuccess, pseudo_entry
 
-    pseudo = entry_pseudo.get()
+    pseudo = pseudo_entry.get()
     # x et y clicked
     click_x = (event.x - l/2) / scale
     click_y = -(event.y - h/2) / scale
@@ -97,7 +97,7 @@ def save_game(event):
     # pour calculer le temps de partie
     duration_seconds = (end_time - start_date).total_seconds()
 
-    pseudo = entry_pseudo.get()
+    pseudo = pseudo_entry.get()
 
     # insert bd
     database.save_game_result(pseudo, exercise, duration_seconds, nbtrials, nbsuccess)
@@ -110,13 +110,13 @@ def display_timer():
     duration=datetime.datetime.now()-start_date #elapsed time since beginning, in time with decimals
     duration_s=int(duration.total_seconds()) #idem but in seconds (integer)
     #display min:sec (00:13)
-    lbl_duration.configure(text="{:02d}".format(int(duration_s /60)) + ":" + "{:02d}".format(duration_s %60))
+    duration_label.configure(text="{:02d}".format(int(duration_s /60)) + ":" + "{:02d}".format(duration_s %60))
     window_geo01.after(1000, display_timer) #recommencer après 15 ms
 
 
 def open_window_geo_01(window):
     # window = tk.Tk()
-    global window_geo01, hex_color, lbl_title, lbl_duration, lbl_result, lbl_target, canvas, start_date, entry_pseudo
+    global window_geo01, hex_color, lbl_title, duration_label, lbl_result, lbl_target, canvas, start_date, pseudo_entry
     window_geo01 = tk.Toplevel(window)
 
     window_geo01.title("Exercice de géométrie")
@@ -131,12 +131,12 @@ def open_window_geo_01(window):
     lbl_title = tk.Label(window_geo01, text=f"{exercise}", font=("Arial", 15))
     lbl_title.grid(row=0, column=1, padx=5, pady=5)
 
-    lbl_duration = tk.Label(window_geo01, text="0:00", font=("Arial", 15))
-    lbl_duration.grid(row=0,column=2, ipady=5, padx=10,pady=10)
+    duration_label = tk.Label(window_geo01, text="0:00", font=("Arial", 15))
+    duration_label.grid(row=0,column=2, ipady=5, padx=10,pady=10)
 
     tk.Label(window_geo01, text='Pseudo:', font=("Arial", 15)).grid(row=1, column=0, padx=5, pady=5)
-    entry_pseudo = tk.Entry(window_geo01, font=("Arial", 15))
-    entry_pseudo.grid(row=1, column=1)
+    pseudo_entry = tk.Entry(window_geo01, font=("Arial", 15))
+    pseudo_entry.grid(row=1, column=1)
 
     lbl_result = tk.Label(window_geo01, text=f"Essais réussis : 0/0", font=("Arial", 15))
     lbl_result.grid(row=1, column=3, padx=5, pady=5, columnspan=4)

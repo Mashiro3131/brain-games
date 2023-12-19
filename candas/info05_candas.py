@@ -130,9 +130,9 @@ def dist_color(c1,c2):
 
 #check if the color given in hex is near (max dist=5)
 def test(event):
-    global nbsuccess, nbtrials ,entry_pseudo
+    global nbsuccess, nbtrials ,pseudo_entry
 
-    pseudo = entry_pseudo.get()
+    pseudo = pseudo_entry.get()
     # Fonction pour tester si la valeur est juste
     txt_color = entry_response.get().replace(" ", "") #delete spaces
     rgb_entry=hex_to_rgb(txt_color)
@@ -202,7 +202,7 @@ def save_game(event):
     # pour calculer le temps de partie
     duration_seconds = (end_time - start_date).total_seconds()
 
-    pseudo = entry_pseudo.get()
+    pseudo = pseudo_entry.get()
 
     # insert bd
     database.save_game_result(pseudo, exercise, duration_seconds, nbtrials, nbsuccess)
@@ -214,12 +214,12 @@ def display_timer():
     duration=datetime.datetime.now()-start_date #elapsed time since beginning, in time with decimals
     duration_s=int(duration.total_seconds()) #idem but in seconds (integer)
     #display min:sec (00:13)
-    lbl_duration.configure(text="{:02d}".format(int(duration_s /60)) + ":" + "{:02d}".format(duration_s %60))
+    duration_label.configure(text="{:02d}".format(int(duration_s /60)) + ":" + "{:02d}".format(duration_s %60))
     window_info05.after(1000, display_timer) #recommencer après 15 ms
 
 
 def open_window_info_05(window):
-    global window_info05, lbl_duration, lbl_result, hex_color, start_date, slider_r, slider_g, slider_b, slider_v, entry_response, canvas,entry_pseudo
+    global window_info05, duration_label, lbl_result, hex_color, start_date, slider_r, slider_g, slider_b, slider_v, entry_response, canvas,pseudo_entry
     window_info05 = tk.Toplevel(window)
     window_info05.title("La couleur perdue")
     window_info05.geometry("1100x900")
@@ -233,12 +233,12 @@ def open_window_info_05(window):
     lbl_title = tk.Label(window_info05, text=f"{exercise} : La couleur perdue", font=("Arial", 15))
     lbl_title.grid(row=0,column=1, ipady=5, padx=10,pady=10)
 
-    lbl_duration = tk.Label(window_info05, text="0:00", font=("Arial", 15))
-    lbl_duration.grid(row=0,column=2, ipady=5, padx=10,pady=10)
+    duration_label = tk.Label(window_info05, text="0:00", font=("Arial", 15))
+    duration_label.grid(row=0,column=2, ipady=5, padx=10,pady=10)
 
     tk.Label(window_info05, text='Pseudo:', font=("Arial", 15)).grid(row=1, column=0, padx=5, pady=5, sticky='E')
-    entry_pseudo = tk.Entry(window_info05, font=("Arial", 15))
-    entry_pseudo.grid(row=1, column=1,sticky='W')
+    pseudo_entry = tk.Entry(window_info05, font=("Arial", 15))
+    pseudo_entry.grid(row=1, column=1,sticky='W')
 
     lbl_result = tk.Label(window_info05, text=f"Essais réussis : 0/0", font=("Arial", 15))
     lbl_result.grid( row=1, column=2, ipady=5, padx=20,pady=10)

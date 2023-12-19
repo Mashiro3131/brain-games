@@ -55,7 +55,7 @@ def save_game(event):
     # pour calculer le temps de partie
     duration_seconds = (end_time - start_date).total_seconds()
 
-    pseudo = entry_pseudo.get()
+    pseudo = pseudo_entry.get()
 
     # insert bd
     database.save_game_result(pseudo, exercise, duration_seconds, nbtrials, nbsuccess)
@@ -63,7 +63,7 @@ def save_game(event):
     window_info02.destroy()
 
 def test(event):
-    global n2, nbsuccess, nbtrials, entry_pseudo
+    global n2, nbsuccess, nbtrials, pseudo_entry
     # Fonction pour tester si la valeur est juste
     n2 = float(entry_n2.get().replace(" ", ""))
     nbtrials+=1
@@ -74,7 +74,7 @@ def test(event):
     else:
         window_info02.configure(bg="red")
 
-    pseudo = entry_pseudo.get()
+    pseudo = pseudo_entry.get()
     lbl_result.configure(text=f"{pseudo} Essais réussis : {nbsuccess} / {nbtrials}")
     window_info02.update()
     time.sleep(1) # delai 1s
@@ -85,12 +85,12 @@ def display_timer():
     duration = datetime.datetime.now() - start_date  # elapsed time since beginning, in time with decimals
     duration_s = int(duration.total_seconds())  # idem but in seconds (integer)
     # display min:sec (00:13)
-    lbl_duration.configure(text="{:02d}".format(int(duration_s / 60)) + ":" + "{:02d}".format(duration_s % 60))
+    duration_label.configure(text="{:02d}".format(int(duration_s / 60)) + ":" + "{:02d}".format(duration_s % 60))
     window_info02.after(1000, display_timer)  # recommencer après 15 ms
 
 
 def open_window_info_02(window):
-    global window_info02, lbl_duration, lbl_result, entry_n2, label_u2, label_n1, hex_color, start_date,entry_pseudo
+    global window_info02, duration_label, lbl_result, entry_n2, label_u2, label_n1, hex_color, start_date,pseudo_entry
     window_info02 = tk.Toplevel(window)
 
     #window_info02 = tk.Tk()
@@ -105,13 +105,13 @@ def open_window_info_02(window):
 
     lbl_title = tk.Label(window_info02, text=f"{exercise}", font=("Arial", 15))
     lbl_title.grid(row=0,column=0,columnspan=3, ipady=5, padx=20,pady=20)
-    lbl_duration = tk.Label(window_info02, text="0:00", font=("Arial", 15))
-    lbl_duration.grid(row=0,column=2, ipady=5, padx=10,pady=10)
+    duration_label = tk.Label(window_info02, text="0:00", font=("Arial", 15))
+    duration_label.grid(row=0,column=2, ipady=5, padx=10,pady=10)
 
     tk.Label(window_info02, text='Pseudo:', font=("Arial", 15)).grid(row=1, column=0, padx=5, pady=5)
-    entry_pseudo = tk.Entry(window_info02, font=("Arial", 15))
-    # entry_pseudo.pack(ipadx=2, ipady=10, padx=5,pady=5)
-    entry_pseudo.grid(row=1, column=1)
+    pseudo_entry = tk.Entry(window_info02, font=("Arial", 15))
+    # pseudo_entry.pack(ipadx=2, ipady=10, padx=5,pady=5)
+    pseudo_entry.grid(row=1, column=1)
 
 
 

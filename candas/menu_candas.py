@@ -58,7 +58,7 @@ for ex in range(len(a_exercise)):
 # Buttons, display results & quit
 btn_display = tk.Button(window, text="Display results", font=("Arial", 15))
 btn_display.grid(row=1+ 2*len(a_exercise)//3 , column=1)
-btn_display.bind("<Button-1>",lambda e: displayResult.create_result_window())
+btn_display.bind("<Button-1>",lambda e: displayResult.display_results())
 
 btn_finish = tk.Button(window, text="Quitter", font=("Arial", 15))
 btn_finish.grid(row=2+ 2*len(a_exercise)//3 , column=1)

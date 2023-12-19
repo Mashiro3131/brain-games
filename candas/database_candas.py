@@ -51,7 +51,7 @@ def save_game_result(pseudo, exercise, duration, nb_trials, nb_success):
     conn.close()
 
 
-def get_game_results(pseudo=None, exercise=None, start_date=None, end_date=None):
+def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=None):
     conn, cursor = get_db_connection()
 
     # pour obtenir les valeurs de table 'partie'
@@ -61,7 +61,7 @@ def get_game_results(pseudo=None, exercise=None, start_date=None, end_date=None)
     params = []
 
     # les filtres, Lorsque l'un de ces paramètres est indiqué, la requête est filtrée en fonction de ces paramètres.
-    # par ex: resultats = database.get_game_results(pseudo=pseudo)
+    # par ex: results = database.fetch_game_statistics(pseudo=pseudo)
     if pseudo:
         query += " AND Pseudo = %s"
         params.append(pseudo)
@@ -101,7 +101,7 @@ def delete_game_result(Pseudo,Exercise,DateHour,Duration,NbOk,NbTrials):
         conn.close()
 
 
-def update_game_result(Pseudo, Exercise, DateHour, Duration, NbOk, NbTrials, new_duration, new_nb_ok, new_nb_trials):
+def update_game_result(Pseudo, Exercise, DateHour, Duration, NbOk, NbTrials, new_duration, new_nbok, new_nbtrials):
     conn, cursor = get_db_connection()
 
     # d'abord on va verifier, cette ligne est existe ou pas dans bd
@@ -112,7 +112,7 @@ def update_game_result(Pseudo, Exercise, DateHour, Duration, NbOk, NbTrials, new
     # si il y a une ligne on va modifier
     if match_count > 0:
         update_query = "UPDATE partie SET Duration = %s, NbOk = %s, NbTrials = %s WHERE Pseudo = %s AND Exercise = %s AND DateHour = %s"
-        update_values = (new_duration, new_nb_ok, new_nb_trials, Pseudo, Exercise, DateHour)
+        update_values = (new_duration, new_nbok, new_nbtrials, Pseudo, Exercise, DateHour)
 
         try:
             cursor.execute(update_query, update_values)
@@ -128,7 +128,7 @@ def update_game_result(Pseudo, Exercise, DateHour, Duration, NbOk, NbTrials, new
 
 
 
-def get_all_exercise_names():
+def retrieve_exercise_catalog():
     conn, cursor = get_db_connection()
 
     query = "SELECT DISTINCT Exercise FROM partie"
