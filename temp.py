@@ -5,7 +5,7 @@ SQL de la base de données pour les références
 """
 4. Affichage des résultats 
 On souhaite maintenant un nouvel écran, accessible depuis le menu principal, qui affiche les résultats sous une forme proche de celle-ci. 
-Si possible on aimerait pouvoir filtrer au moins par élève et exercice. En bonus, on aimerait aussi : 
+Si possible on aimerait pouvoir filtrer au moins par élève et exercise. En bonus, on aimerait aussi : 
 
     - filtrer en donnant une date de début et une date de fin pour les exercices affichés. 
     - avoir un résumé des lignes affichées (partie « Total ») 
