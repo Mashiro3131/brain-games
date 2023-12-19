@@ -97,17 +97,17 @@ def create_result_window():
     # Treeview under-frame
     treeview_frame = ctk.CTkFrame(window, corner_radius=15)
     treeview_frame.pack(expand=True, fill='both', padx=15, pady=15)
-    
-    
+
     # Treeview main frame
-    tree = ttk.Treeview(treeview_frame, columns=("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", "% réussi"), show="headings")
+    tree = ttk.Treeview(treeview_frame, columns=("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", "% réussi"), show="headings", height=10)  # Adjust the height here
     tree.column("#0", width=0, stretch=ctk.NO)
-    
+
     for col in tree["columns"]:
         tree.column(col, width=150, anchor="center")
         tree.heading(col, text=col, anchor="center")
-        
-    tree.pack(expand=True, fill='both', pady=10)
+
+    tree.pack(expand=True, fill='both', pady=20, padx=20)  # Adjust padding here
+
 
 
     # Custom Treeview Styling
