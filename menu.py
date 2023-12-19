@@ -35,8 +35,8 @@ window.configure(bg=hex_color)
 window.grid_columnconfigure((0,1,2), minsize=300, weight=1)
 
 # Title création
-lbl_title = tk.Label(window, text="TRAINING MENU", font=("Arial", 15))
-lbl_title.grid(row=0, column=1,ipady=5, padx=40,pady=40)
+title_label = tk.Label(window, text="TRAINING MENU", font=("Arial", 15))
+title_label.grid(row=0, column=1,ipady=5, padx=40,pady=40)
 
 # labels creation and positioning
 for ex in range(len(a_exercise)):
