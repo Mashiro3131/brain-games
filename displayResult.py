@@ -28,7 +28,7 @@ from database import remove_match_record, fetch_game_statistics, retrieve_exerci
 
 tree = None # Global
 entry_pseudo = None
-entry_exercise = None
+exercise_entry = None
 lbl_nblignes = None
 lbl_tempTotal = None
 lbl_nbOK = None
@@ -40,7 +40,7 @@ derniers_filtres = {"pseudo": "", "exercise": ""}
 donnees_chargees = False # Pour suivre si les données ont été chargées
 
 def create_result_window():
-    global tree, entry_pseudo, entry_exercise, lbl_nblignes, lbl_tempTotal, lbl_nbOK, lbl_nbTotal, lbl_pourcentageTotal, entry_date_debut, entry_date_fin
+    global tree, entry_pseudo, exercise_entry, lbl_nblignes, lbl_tempTotal, lbl_nbOK, lbl_nbTotal, lbl_pourcentageTotal, entry_date_debut, entry_date_fin
 
     # Create a new window with CustomTkinter
     window = ctk.CTk()
@@ -48,44 +48,52 @@ def create_result_window():
     window.geometry("1300x700+300+150")
 
     # Title label
-    lbl_title = ctk.CTkLabel(window, text="BRAINGAMES : Statistics", font=("Arial", 16))
-    lbl_title.grid(row=0, column=0, columnspan=8, pady=(0, 20))
+    lbl_title = ctk.CTkLabel(window, text="Statistics", font=ctk.CTkFont(size=15, weight="bold"))
+    # lbl_title.grid(row=0, column=0, columnspan=8, pady=(0, 20))
+    # lbl_title.pack()
+    
 
+    """ Filter and headers """
+    
+    filter_frame = ctk.CTkFrame(window)
+    # filter_frame.pack()
+    
+    
     # Pseudo input
-    lbl_pseudo = ctk.CTkLabel(window, text="Pseudo:")
-    lbl_pseudo.grid(row=1, column=0, sticky="e", padx=(0, 60))
+    pseudo_label = ctk.CTkLabel(window, text="Pseudo:")
+    pseudo_label.grid(row=1, column=0)
     entry_pseudo = ctk.CTkEntry(window)
-    entry_pseudo.grid(row=1, column=1, sticky="w", padx=(0, 60))
+    entry_pseudo.grid(row=1, column=1)
 
     # Exercise input
-    lbl_exercice = ctk.CTkLabel(window, text="Exercice:")
-    lbl_exercice.grid(row=1, column=2, sticky="e", padx=(0, 60))
-    entry_exercise = ctk.CTkEntry(window)
-    entry_exercise.grid(row=1, column=3, sticky="w", padx=(0, 60))
+    exercise_label = ctk.CTkLabel(window, text="Exercice:")
+    exercise_label.grid(row=1, column=2)
+    exercise_entry = ctk.CTkEntry(window)
+    exercise_entry.grid(row=1, column=3)
 
     # Date start input
-    lbl_date_debut = ctk.CTkLabel(window, text="Date debut:")
-    lbl_date_debut.grid(row=1, column=4, sticky="e", padx=(0, 60))
+    start_date_label = ctk.CTkLabel(window, text="Date debut:")
+    start_date_label.grid(row=1, column=4)
     entry_date_debut = ctk.CTkEntry(window)
-    entry_date_debut.grid(row=1, column=5, sticky="w", padx=(0, 60))
+    entry_date_debut.grid(row=1, column=5)
 
     # Date end input
     lbl_date_fin = ctk.CTkLabel(window, text="Date fin:")
-    lbl_date_fin.grid(row=1, column=6, sticky="e", padx=(0, 60))
+    lbl_date_fin.grid(row=1, column=6)
     entry_date_fin = ctk.CTkEntry(window)
-    entry_date_fin.grid(row=1, column=7, sticky="w", padx=(0, 60))
+    entry_date_fin.grid(row=1, column=7)
 
     # Buttons
     btn_voir_resultat = ctk.CTkButton(window, text="Voir Resultat", command=lambda: voir_resultat())
     btn_voir_resultat.grid(row=2, padx=(0, 5))
     btn_total = ctk.CTkButton(window, text="Total", command=lambda: voir_total())
-    btn_total.grid(row=21, padx=(0, 0))
-    btn_ajouter = ctk.CTkButton(window, text="Ajouter", command=ajouter_resultat)
-    btn_ajouter.grid(row=2, column=3, padx=(0, 5))
-    btn_supprimer = ctk.CTkButton(window, text="Supprimer", command=supprimer_resultat)
-    btn_supprimer.grid(row=2, column=1, padx=(0, 5))
-    btn_modifier = ctk.CTkButton(window, text="Modifier", command=modifier_resultat)
-    btn_modifier.grid(row=2, column=2, padx=(0, 5))
+    # btn_total.grid(row=21, padx=(0, 0))
+    # btn_ajouter = ctk.CTkButton(window, text="Ajouter", command=ajouter_resultat)
+    # btn_ajouter.grid(row=2, column=3, padx=(0, 5))
+    # btn_supprimer = ctk.CTkButton(window, text="Supprimer", command=supprimer_resultat)
+    # btn_supprimer.grid(row=2, column=1, padx=(0, 5))
+    # btn_modifier = ctk.CTkButton(window, text="Modifier", command=modifier_resultat)
+    # btn_modifier.grid(row=2, column=2, padx=(0, 5))
 
     # Treeview (still using ttk as CTK does not provide a Treeview)
     tree = ttk.Treeview(window, height=20)
@@ -96,24 +104,24 @@ def create_result_window():
         tree.heading(col, text=col, anchor="center")
     tree.grid(row=3, column=0, columnspan=8)
 
-    # Total section labels
-    ctk.CTkLabel(window, text="NbLignes").grid(row=4, column=0, sticky='w')
-    ctk.CTkLabel(window, text="Temps total").grid(row=4, column=1, sticky='w')
-    ctk.CTkLabel(window, text="Nb OK").grid(row=4, column=2, sticky='w')
-    ctk.CTkLabel(window, text="Nb Total").grid(row=4, column=3, sticky='w')
-    ctk.CTkLabel(window, text="% Total").grid(row=4, column=4, sticky='w')
+    # # Total section labels
+    # ctk.CTkLabel(window, text="NbLignes").grid(row=4, column=0, sticky='w')
+    # ctk.CTkLabel(window, text="Temps total").grid(row=4, column=1, sticky='w')
+    # ctk.CTkLabel(window, text="Nb OK").grid(row=4, column=2, sticky='w')
+    # ctk.CTkLabel(window, text="Nb Total").grid(row=4, column=3, sticky='w')
+    # ctk.CTkLabel(window, text="% Total").grid(row=4, column=4, sticky='w')
 
-    # Total section dynamic labels
-    lbl_nblignes = ctk.CTkLabel(window, text="")
-    lbl_nblignes.grid(row=5, column=0, sticky='w')
-    lbl_tempTotal = ctk.CTkLabel(window, text="")
-    lbl_tempTotal.grid(row=5, column=1, sticky='w')
-    lbl_nbOK = ctk.CTkLabel(window, text="")
-    lbl_nbOK.grid(row=5, column=2, sticky='w')
-    lbl_nbTotal = ctk.CTkLabel(window, text="")
-    lbl_nbTotal.grid(row=5, column=3, sticky='w')
-    lbl_pourcentageTotal = ctk.CTkLabel(window, text="")
-    lbl_pourcentageTotal.grid(row=5, column=4, sticky='w')
+    # # Total section dynamic labels
+    # lbl_nblignes = ctk.CTkLabel(window, text="")
+    # lbl_nblignes.grid(row=5, column=0, sticky='w')
+    # lbl_tempTotal = ctk.CTkLabel(window, text="")
+    # lbl_tempTotal.grid(row=5, column=1, sticky='w')
+    # lbl_nbOK = ctk.CTkLabel(window, text="")
+    # lbl_nbOK.grid(row=5, column=2, sticky='w')
+    # lbl_nbTotal = ctk.CTkLabel(window, text="")
+    # lbl_nbTotal.grid(row=5, column=3, sticky='w')
+    # lbl_pourcentageTotal = ctk.CTkLabel(window, text="")
+    # lbl_pourcentageTotal.grid(row=5, column=4, sticky='w')
 
     window.mainloop()
 
@@ -264,7 +272,7 @@ def voir_resultat():
 
     # Retrieve values from input fields
     pseudo = entry_pseudo.get().strip()
-    exercise = entry_exercise.get().strip()
+    exercise = exercise_entry.get().strip()
     date_debut = entry_date_debut.get().strip()
     date_fin = entry_date_fin.get().strip()
 
@@ -344,14 +352,14 @@ def ajouter_resultat():
     ajout_window.grab_set()  # Focus on this window
 
     # Input for "pseudo"
-    lbl_pseudo = ctk.CTkLabel(ajout_window, text="Pseudo:")
-    lbl_pseudo.pack()
+    pseudo_label = ctk.CTkLabel(ajout_window, text="Pseudo:")
+    pseudo_label.pack()
     entry_pseudo = ctk.CTkEntry(ajout_window)
     entry_pseudo.pack()
 
     # Input for 'Exercice'
-    lbl_exercice = ctk.CTkLabel(ajout_window, text="Exercice:")
-    lbl_exercice.pack()
+    exercise_label = ctk.CTkLabel(ajout_window, text="Exercice:")
+    exercise_label.pack()
     entry_exercice = ctk.CTkEntry(ajout_window)
     entry_exercice.pack()
 
