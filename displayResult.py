@@ -27,71 +27,93 @@ from database import remove_match_record, fetch_game_statistics, retrieve_exerci
 
 
 tree = None # Global
-entry_pseudo = None
+pseudo_entry = None
 exercise_entry = None
 lbl_nblignes = None
 lbl_tempTotal = None
 lbl_nbOK = None
 lbl_nbTotal = None
 lbl_pourcentageTotal = None
-entry_date_debut = None
+start_date_entry = None
 entry_date_fin = None
 derniers_filtres = {"pseudo": "", "exercise": ""}
 donnees_chargees = False # Pour suivre si les données ont été chargées
 
 def create_result_window():
-    global tree, entry_pseudo, entry_exercise, lbl_nblignes, lbl_tempTotal, lbl_nbOK, lbl_nbTotal, lbl_pourcentageTotal, entry_date_debut, entry_date_fin
+    global tree, pseudo_entry, exercise_entry, lbl_nblignes, lbl_tempTotal, lbl_nbOK, lbl_nbTotal, lbl_pourcentageTotal, start_date_entry, entry_date_fin
 
-    # Create a new window with CustomTkinter
+
+
+    """ Initialization """
+    
+    # Main window
     window = ctk.CTk()
     window.title("BRAINGAMES : STATISTICS")
     window.geometry("1300x700+300+150")
 
-    # Title label
-    lbl_title = ctk.CTkLabel(window, text="Statistics", font=ctk.CTkFont(size=15, weight="bold"))
-    lbl_title.pack(pady=20)
+    # Title
+    title_label = ctk.CTkLabel(window, text="Statistics", font=ctk.CTkFont(size=15, weight="bold"))
+    title_label.pack(pady=20)
 
+
+
+    """ Filters """
+    
     # Filter frame
     filter_frame = ctk.CTkFrame(window)
     filter_frame.pack(pady=10)
 
-    # Filter options
-    lbl_pseudo = ctk.CTkLabel(filter_frame, text="Student:")
-    lbl_pseudo.grid(row=0, column=0, padx=5, pady=5)
-    entry_pseudo = ctk.CTkEntry(filter_frame)
-    entry_pseudo.grid(row=0, column=1, padx=5, pady=5)
+    # Pseudo filter
+    pseudo_label = ctk.CTkLabel(filter_frame, text="Pseudo:")
+    pseudo_label.grid(row=0, column=0, padx=5, pady=5)
+    pseudo_entry = ctk.CTkEntry(filter_frame)
+    pseudo_entry.grid(row=0, column=1, padx=5, pady=5)
 
-    lbl_exercice = ctk.CTkLabel(filter_frame, text="Exercise:")
-    lbl_exercice.grid(row=0, column=2, padx=5, pady=5)
-    entry_exercise = ctk.CTkEntry(filter_frame)
-    entry_exercise.grid(row=0, column=3, padx=5, pady=5)
+    
+    # Exercise filter
+    exercise_label = ctk.CTkLabel(filter_frame, text="Exercise:")
+    exercise_label.grid(row=0, column=2, padx=5, pady=5)
+    exercise_entry = ctk.CTkEntry(filter_frame)
+    exercise_entry.grid(row=0, column=3, padx=5, pady=5)
 
-    lbl_date_debut = ctk.CTkLabel(filter_frame, text="Start Date:")
-    lbl_date_debut.grid(row=0, column=4, padx=5, pady=5)
-    entry_date_debut = ctk.CTkEntry(filter_frame)
-    entry_date_debut.grid(row=0, column=5, padx=5, pady=5)
 
-    lbl_date_fin = ctk.CTkLabel(filter_frame, text="End Date:")
-    lbl_date_fin.grid(row=0, column=6, padx=5, pady=5)
+    # Start date filter
+    start_date_label = ctk.CTkLabel(filter_frame, text="Start Date:")
+    start_date_label.grid(row=0, column=4, padx=5, pady=5)
+    start_date_entry = ctk.CTkEntry(filter_frame)
+    start_date_entry.grid(row=0, column=5, padx=5, pady=5)
+
+
+    # End date filter
+    end_date_label = ctk.CTkLabel(filter_frame, text="End Date:")
+    end_date_label.grid(row=0, column=6, padx=5, pady=5)
     entry_date_fin = ctk.CTkEntry(filter_frame)
     entry_date_fin.grid(row=0, column=7, padx=5, pady=5)
 
 
-    # Treeview container
+
+    """ Treeview """
+    
+    # Treeview under-frame
     treeview_frame = ctk.CTkFrame(window, corner_radius=15)
     treeview_frame.pack(expand=True, fill='both', padx=15, pady=15)
-
-    # Treeview
-    tree = ttk.Treeview(window, columns=("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", "% réussi"), show="headings")
+    
+    
+    # Treeview main frame
+    tree = ttk.Treeview(treeview_frame, columns=("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", "% réussi"), show="headings")
     tree.column("#0", width=0, stretch=ctk.NO)
+    
     for col in tree["columns"]:
         tree.column(col, width=150, anchor="center")
         tree.heading(col, text=col, anchor="center")
+        
     tree.pack(expand=True, fill='both', pady=10)
 
-    # Style configuration for Treeview
+
+    # Custom Treeview Styling
     style = ttk.Style(window)
-    style.theme_use("clam")  # Use the "clam" theme as a base for customization
+    style.theme_use("default")
+    
     style.configure("Treeview",
                     background="#2a2d2e",
                     foreground="white",
@@ -99,11 +121,15 @@ def create_result_window():
                     fieldbackground="#343638",
                     bordercolor="#343638",
                     borderwidth=0)
-    style.map('Treeview', background=[('selected', '#22559b')])
+    
+    style.map('Treeview',
+              background=[('selected', '#22559b')])
+    
     style.configure("Treeview.Heading",
                     background="#565b5e",
                     foreground="white",
                     relief="flat")
+    
     style.map("Treeview.Heading",
               background=[('active', '#3484F0')])
 
@@ -255,9 +281,9 @@ def voir_resultat():
     global donnees_chargees, derniers_filtres
 
     # Retrieve values from input fields
-    pseudo = entry_pseudo.get().strip()
+    pseudo = pseudo_entry.get().strip()
     exercise = exercise_entry.get().strip()
-    date_debut = entry_date_debut.get().strip()
+    date_debut = start_date_entry.get().strip()
     date_fin = entry_date_fin.get().strip()
 
     # Check if filters have changed
@@ -338,8 +364,8 @@ def ajouter_resultat():
     # Input for "pseudo"
     pseudo_label = ctk.CTkLabel(ajout_window, text="Pseudo:")
     pseudo_label.pack()
-    entry_pseudo = ctk.CTkEntry(ajout_window)
-    entry_pseudo.pack()
+    pseudo_entry = ctk.CTkEntry(ajout_window)
+    pseudo_entry.pack()
 
     # Input for 'Exercice'
     exercise_label = ctk.CTkLabel(ajout_window, text="Exercice:")
@@ -367,7 +393,7 @@ def ajouter_resultat():
 
     # Button to add the new result
     btn_ajouter = ctk.CTkButton(ajout_window, text="Ajouter résultat", command=lambda: enregistrer_resultat(
-        entry_pseudo.get(),
+        pseudo_entry.get(),
         entry_exercice.get(),
         entry_temps.get(),
         entry_nbok.get(),
