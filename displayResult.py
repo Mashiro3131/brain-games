@@ -5,7 +5,7 @@ SQL de la base de données pour les références
 """
 4. Affichage des résultats 
 On souhaite maintenant un nouvel écran, accessible depuis le menu principal, qui affiche les résultats sous une forme proche de celle-ci. 
-Si possible on aimerait pouvoir filtrer au moins par élève et exercice. En bonus, on aimerait aussi : 
+Si possible on aimerait pouvoir filtrer au moins par élève et exercise. En bonus, on aimerait aussi : 
 
     - filtrer en donnant une date de début et une date de fin pour les exercices affichés. 
     - avoir un résumé des lignes affichées (partie « Total ») 
@@ -26,121 +26,123 @@ from tkinter import messagebox
 from database import remove_match_record, fetch_game_statistics, retrieve_exercise_catalog
 
 
-tree = None # Global
+tree = None  # Global
+
 pseudo_entry = None
 exercise_entry = None
-nblines_label = None
-duration_label = None
-nbok_label = None
-nbtotal_label = None
-percentage_label = None
-start_date_entry = None
-end_date_entry = None
+global last_filters,loaded_data
 last_filters = {"pseudo": "", "exercise": ""}
-loaded_data = False # Pour suivre si les données ont été chargées
+loaded_data = False  # Pour suivre si les données ont été chargées
+
+
 
 def display_results():
-    global tree, pseudo_entry, exercise_entry, start_date_entry, end_date_entry, duration_label, nbok_label, nbtotal_label, percentage_label, nblines_label
+    global tree,pseudo_entry,exercise_entry, nblines_label, duration_label, nbok_label, nbtotal_label, percentage_label , start_date_entry, end_date_entry#pour definir global
+    #cree nouvelle fenetre avec titre
+    window = tk.Tk()
+    window.title("TRAINING : AFFICHAGE")
+    window.configure(bg='#8aded5')
 
-
-    """ Initialization """
-    
-    # Main window
-    window = ctk.CTk()
-    window.title("BRAINGAMES : STATISTICS")
+    #pour gere la taille de fenetre
     window.geometry("1300x700+300+150")
 
-    # Title
-    title_label = ctk.CTkLabel(window, text="Statistics", font=ctk.CTkFont(size=15, weight="bold"))
-    title_label.pack(pady=20)
+
+    #titre
+    lbl_title = tk.Label(window, text="TRAINING : AFFICHAGE", font=("Arial",16))
+    lbl_title.grid(row=0,column=0, columnspan=8, pady=(0,20))
+
+    #pour les inputs
+    #Pseudo
+    pseudo_label = tk.Label(window, text="Pseudo:")
+    pseudo_label.grid(row=1,column=0 , sticky="e", padx=(0,60))
+    pseudo_entry = tk.Entry(window)
+    pseudo_entry.grid(row=1,column=1,sticky="w", padx=(0,60))
+
+    # exercise
+    exercise_label = tk.Label(window, text="Exercice:")
+    exercise_label.grid(row=1,column=2, sticky="e", padx=(0,60))
+    exercise_entry = tk.Entry(window)
+    exercise_entry.grid(row=1,column=3,sticky="w", padx=(0,60))
+
+    # date debut
+    lbl_date_debut = tk.Label(window, text="Date debut:")
+    lbl_date_debut.grid(row=1,column=4,sticky="e", padx=(0,60))
+    start_date_entry = tk.Entry(window)
+    start_date_entry.grid(row=1,column=5,sticky="w", padx=(0,60))
+
+    # date fin
+    lbl_date_fin = tk.Label(window, text="Date fin:")
+    lbl_date_fin.grid(row=1,column=6,sticky="e", padx=(0,60))
+    end_date_entry = tk.Entry(window)
+    end_date_entry.grid(row=1,column=7,sticky="w", padx=(0,60))
+
+    # button "voir result"
+
+    btn_voir_resultat = tk.Button(window, text="Voir Resultat", command=lambda:voir_resultat())
+    btn_voir_resultat.grid(row=2, padx=(0,5))
+
+    btn_total = tk.Button(window, text="Total", command=lambda: view_total())
+    btn_total.grid(row=21, padx=(0,0))
+
+    # bouton "nouvelle result"
+    add_result = tk.Button(window, text="Ajouter", command=add_results)
+    add_result.grid(row=2, column=3, padx=(0, 5))
+
+    #les titre de tableau
 
 
 
-    """ Filters """
-    
-    # Filter frame
-    filter_frame = ctk.CTkFrame(window)
-    filter_frame.pack(pady=10)
+    # pour cree Treeview
+    tree = ttk.Treeview(window, height=20)
+    tree["columns"] = ("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", "% réussi")
+    tree.column("#0", width=0, stretch=tk.NO)
+    # tree.column
 
-
-    # Pseudo filter
-    pseudo_label = ctk.CTkLabel(filter_frame, text="Pseudo:")
-    pseudo_label.grid(row=0, column=0, padx=15, pady=8)
-    pseudo_entry = ctk.CTkEntry(filter_frame)
-    pseudo_entry.grid(row=0, column=1, padx=5, pady=8)
-
-    
-    # Exercise filter
-    exercise_label = ctk.CTkLabel(filter_frame, text="Exercise:")
-    exercise_label.grid(row=0, column=2, padx=5, pady=8)
-    exercise_entry = ctk.CTkEntry(filter_frame)
-    exercise_entry.grid(row=0, column=3, padx=5, pady=8)
-
-
-    # Start date filter
-    start_date_label = ctk.CTkLabel(filter_frame, text="Start Date:")
-    start_date_label.grid(row=0, column=4, padx=5, pady=8)
-    start_date_entry = ctk.CTkEntry(filter_frame)
-    start_date_entry.grid(row=0, column=5, padx=5, pady=8)
-
-
-    # End date filter
-    end_date_label = ctk.CTkLabel(filter_frame, text="End Date:")
-    end_date_label.grid(row=0, column=6, padx=5, pady=8)
-    end_date_entry = ctk.CTkEntry(filter_frame)
-    end_date_entry.grid(row=0, column=7, padx=5, pady=8)
-
-    
-    # Display Data Button
-    display_statistics_button = ctk.CTkButton(filter_frame, text="Voir Resultat", command=lambda:fetch_game_statistics())
-    display_statistics_button.grid(row=0, column=8, padx=15, pady=8)
-    
-    
-    """ Treeview """
-    
-    # Treeview under-frame
-    treeview_frame = ctk.CTkFrame(window, corner_radius=15)
-    treeview_frame.pack(expand=True, fill='both', padx=15, pady=15)
-
-    # Treeview main frame
-    tree = ttk.Treeview(treeview_frame, columns=("Pseudo", "Date Time", "Time", "Exercise", "NB OK", "NB Trials", "% Success"), show="headings", height=10)  # Adjust the height here
-    tree.column("#0", width=0, stretch=ctk.NO)
-
+    # definir les tittre et leur taille et styles
     for col in tree["columns"]:
-        tree.column(col, width=150, anchor="center")
+        tree.column(col, width=150,anchor="center")
         tree.heading(col, text=col, anchor="center")
 
-    tree.pack(expand=True, fill='both', pady=20, padx=20)  # Adjust padding here
+    tree.grid(row=3, column=0, columnspan=8)
 
 
+    # partie total
 
-    # Custom Treeview Styling
-    style = ttk.Style(window)
-    style.theme_use("default")
-    
-    style.configure("Treeview",
-                    background="#2a2d2e",
-                    foreground="white",
-                    rowheight=25,
-                    fieldbackground="#343638",
-                    bordercolor="#343638",
-                    borderwidth=0)
-    
-    style.map('Treeview',
-              background=[('selected', '#22559b')])
-    
-    style.configure("Treeview.Heading",
-                    background="#565b5e",
-                    foreground="white",
-                    relief="flat")
-    
-    style.map("Treeview.Heading",
-              background=[('active', '#3484F0')])
+    # total
+    tk.Label(window, text="NbLignes").grid(row=4, column=0, sticky='w')
+    tk.Label(window, text="Temps total").grid(row=4, column=1, sticky='w')
+    tk.Label(window, text="Nb OK").grid(row=4, column=2, sticky='w')
+    tk.Label(window, text="Nb Total").grid(row=4, column=3, sticky='w')
+    tk.Label(window, text="% Total").grid(row=4, column = 4, sticky="w")
+
+    # total
+    nblines_label = tk.Label(window, text="")
+    nblines_label.grid(row=5, column=0, sticky='w')
+
+    duration_label = tk.Label(window, text="")
+    duration_label.grid(row=5, column=1, sticky='w')
+
+    nbok_label = tk.Label(window, text="")
+    nbok_label.grid(row=5, column=2, sticky='w')
+
+    nbtotal_label = tk.Label(window, text="")
+    nbtotal_label.grid(row=5, column=3, sticky='w')
+
+    percentage_label = tk.Label(window, text="")
+    percentage_label.grid(row=5, column=4,sticky="w")
+
+    # Bouton Supprimer
+    btn_supprimer = tk.Button(window, text="Supprimer", command=supprimer_resultat)
+    btn_supprimer.grid(row=2, column=1, padx=(0, 5))
+
+    # Bouton Modifier
+    btn_modifier = tk.Button(window, text="Modifier", command=modifier_resultat)
+    btn_modifier.grid(row=2, column=2, padx=(0, 5))
+
+
 
     window.mainloop()
 
-
-# CREATE
 def insert_data_into_treeview(tree, values, percentage):
     color = colorize_percentage(percentage)
     row_id = tree.insert('', 'end', values=(*values, ''))
@@ -148,7 +150,122 @@ def insert_data_into_treeview(tree, values, percentage):
     tree.tag_configure(row_id, background=color)
     tree.item(row_id, tags=(row_id,))
 
-# READ
+def supprimer_resultat():
+    try:
+        selected_item = tree.selection()[0]  # Sélectionner l'élément
+    except IndexError:
+        messagebox.showwarning("Attention", "Veuillez sélectionner la ligne à supprimer.")
+        return
+
+    pseudo = tree.item(selected_item, 'values')[0]
+    date_hour = tree.item(selected_item, 'values')[1]
+    duration = tree.item(selected_item, 'values')[2]
+    exercise = tree.item(selected_item, 'values')[3]
+    nbok = tree.item(selected_item, 'values')[4]
+    nbtrials = tree.item(selected_item, 'values')[5]
+
+    remove_match_record(pseudo, exercise, date_hour, duration, nbok, nbtrials)
+    tree.delete(selected_item)
+
+def modifier_resultat():
+    global update_window
+
+    try:
+        selected_item = tree.selection()[0]  # Select the item
+    except IndexError:
+        messagebox.showwarning("Attention", "Veuillez sélectionner la ligne à modifier.")
+        return
+
+    current_values = tree.item(selected_item, 'values')
+
+    # Open a new window for updating
+    update_window = ctk.CTkToplevel()  # Using CustomTkinter
+    update_window.title("Modifier un résultat")
+    update_window.geometry("400x200+700+350")
+    update_window.grab_set()  # Focus on this window
+
+    # Input for Duration
+    duration_label = ctk.CTkLabel(update_window, text="Temps:")
+    duration_label.pack()
+    duration_entry = ctk.CTkEntry(update_window)
+    duration_entry.pack()
+    duration_entry.insert(0, current_values[2])  # Default to original value
+
+    # Input for nbok
+    nbok_label = ctk.CTkLabel(update_window, text="Nb d’essais réussi:")
+    nbok_label.pack()
+    nbok_entry = ctk.CTkEntry(update_window)
+    nbok_entry.pack()
+    nbok_entry.insert(0, current_values[4])  # Default to original value
+
+    # Input for NbTrials
+    nbtrails_label = ctk.CTkLabel(update_window, text="Nb total:")
+    nbtrails_label.pack()
+    nbtrials_entry = ctk.CTkEntry(update_window)
+    nbtrials_entry.pack()
+    nbtrials_entry.insert(0, current_values[5])  # Default to original value
+
+    # Update button
+    update_button = ctk.CTkButton(update_window, text="Update", command=lambda: update_result(selected_item, duration_entry.get(), nbok_entry.get(), nbtrials_entry.get()))
+    update_button.pack()
+
+def update_result(selected_item, new_duration, new_nbok, new_nbtrials):
+
+    global update_window
+    current_values = tree.item(selected_item, 'values')
+    pseudo = tree.item(selected_item, 'values')[0]  # pour pseudo
+    date_hour = tree.item(selected_item, 'values')[1]  # pour date
+    duration = tree.item(selected_item, 'values')[2]  # pour temps
+    exercise = tree.item(selected_item, 'values')[3]  # pour exercise
+    nbok = tree.item(selected_item, 'values')[4]  # pour nbok
+    nbtrials = tree.item(selected_item, 'values')[5]  # pour nbtrials
+
+    # mise a jour de bd
+    database.revise_game_outcome(pseudo, exercise, date_hour, duration, nbok,nbtrials, new_duration, new_nbok, new_nbtrials)
+
+    # mise a jour de tkinter
+    updated_values = (pseudo, exercise, date_hour, new_duration, new_nbok, new_nbtrials, calculate_percentage(int(new_nbok), int(new_nbtrials)))
+    tree.item(selected_item, values=updated_values)
+
+    refresh_treeview()
+
+    update_window.destroy()
+
+def refresh_treeview():
+    # Clear all existing data in the treeview
+    tree.delete(*tree.get_children())
+
+    # Fetch updated data from the database
+    results, _ = database.fetch_game_statistics()  # Assuming the second value (total) is not used here
+    for result in results:
+        if isinstance(result, (list, tuple)):
+            nbok = result[4]
+            nbtrials = result[5]
+            percentage = calculate_percentage(nbok, nbtrials)
+            insert_data_into_treeview(tree, result, percentage)
+
+def calculate_percentage(nbok, nbtrials):
+    if isinstance(nbtrials, int) and nbtrials > 0:
+        return round((nbok / nbtrials) * 100, 2)
+    else:
+        return 0
+
+def convert_time_to_seconds(time_str):
+    """ Convert a given time string (HH:MM:SS) to seconds. """
+    hours, minutes, seconds = map(int, time_str.split(':'))
+    return hours * 3600 + minutes * 60 + seconds
+
+def colorize_percentage(percentage):
+    """ Define colors based on the percentage. """
+    if percentage < 25:
+        return 'red'
+    elif percentage < 50:
+        return 'orange'
+    elif percentage < 75:
+        return 'yellow'
+    else:
+        return 'green'
+
 def voir_resultat():
     global loaded_data, last_filters
 
@@ -178,177 +295,51 @@ def voir_resultat():
     last_filters.update({"pseudo": pseudo, "exercise": exercise, "start_date": start_date, "end_date": end_date})
 
     # Fetch results from the database
-    resultats, _ = database.fetch_game_statistics(pseudo=pseudo, exercise=exercise, start_date=start_date, end_date=end_date)
+    results, _ = database.fetch_game_statistics(pseudo=pseudo, exercise=exercise, start_date=start_date, end_date=end_date)
 
     # Check if results are available
-    if not resultats:
+    if not results:
         messagebox.showwarning("Erreur", "Aucun enregistrement trouvé pour les critères donnés.")
         loaded_data = False
         return
 
     # Clear existing data and display new results in Treeview
     tree.delete(*tree.get_children())
-    for resultat in resultats:
-        nbok = resultat[4]
-        nbtrials = resultat[5]
+    for result in results:
+        nbok = result[4]
+        nbtrials = result[5]
         percentage = calculate_percentage(nbok, nbtrials)
-        insert_data_into_treeview(tree, resultat, percentage)
+        insert_data_into_treeview(tree, result, percentage)
 
     # Mark that data has been loaded
     loaded_data = True
 
-# UPADTE
-
-def modifier_resultat():
-
-def modifier_resultat():
-    global update_window
-
-    try:
-        selected_item = tree.selection()[0]  # Select the item
-    except IndexError:
-        messagebox.showwarning("Attention", "Veuillez sélectionner la ligne à modifier.")
-        return
-
-    current_values = tree.item(selected_item, 'values')
-
-    # Open a new window for updating
-    update_window = ctk.CTkToplevel()  # Using CustomTkinter
-    update_window.title("Modifier un résultat")
-    update_window.geometry("400x200+700+350")
-    update_window.grab_set()  # Focus on this window
-
-    # Input for Duration
-    duration_label = ctk.CTkLabel(update_window, text="Temps:")
-    duration_label.pack()
-    duration_entry = ctk.CTkEntry(update_window)
-    duration_entry.pack()
-    duration_entry.insert(0, current_values[2])  # Default to original value
-
-    # Input for nbok
-    lbl_nbok = ctk.CTkLabel(update_window, text="Nb d’essais réussi:")
-    lbl_nbok.pack()
-    entry_nbok = ctk.CTkEntry(update_window)
-    entry_nbok.pack()
-    entry_nbok.insert(0, current_values[4])  # Default to original value
-
-    # Input for NbTrials
-    lbl_nbtrials = ctk.CTkLabel(update_window, text="Nb total:")
-    lbl_nbtrials.pack()
-    entry_nbtrials = ctk.CTkEntry(update_window)
-    entry_nbtrials.pack()
-    entry_nbtrials.insert(0, current_values[5])  # Default to original value
-
-    # Update button
-    btn_update = ctk.CTkButton(update_window, text="Update", command=lambda: update_result(selected_item, duration_entry.get(), entry_nbok.get(), entry_nbtrials.get()))
-    btn_update.pack()
-
-
-
-
-def supprimer_resultat():
-    try:
-        selected_item = tree.selection()[0]  # Sélectionner l'élément
-    except IndexError:
-        messagebox.showwarning("Attention", "Veuillez sélectionner la ligne à supprimer.")
-        return
-
-    pseudo = tree.item(selected_item, 'values')[0]
-    dateHour = tree.item(selected_item, 'values')[1]
-    duration = tree.item(selected_item, 'values')[2]
-    exercise = tree.item(selected_item, 'values')[3]
-    nbok = tree.item(selected_item, 'values')[4]
-    nbtrials = tree.item(selected_item, 'values')[5]
-
-    remove_match_record(pseudo, exercise, dateHour, duration, nbok, nbtrials)
-    tree.delete(selected_item)
-
-
-
-def update_result(selected_item, new_duration, new_nbok, new_nbtrials):
-
-    global update_window
-    current_values = tree.item(selected_item, 'values')
-    pseudo = tree.item(selected_item, 'values')[0]  # pour pseudo
-    dateHour = tree.item(selected_item, 'values')[1]  # pour date
-    duration = tree.item(selected_item, 'values')[2]  # pour temps
-    exercise = tree.item(selected_item, 'values')[3]  # pour exercise
-    nbok = tree.item(selected_item, 'values')[4]  # pour nbok
-    nbtrials = tree.item(selected_item, 'values')[5]  # pour nbtrials
-
-    # mise a jour de bd
-    database.revise_game_outcome(pseudo, exercise, dateHour, duration, nbok,nbtrials, new_duration, new_nbok, new_nbtrials)
-
-    # mise a jour de tkinter
-    updated_values = (pseudo, exercise, dateHour, new_duration, new_nbok, new_nbtrials, calculate_percentage(int(new_nbok), int(new_nbtrials)))
-    tree.item(selected_item, values=updated_values)
-
-    refresh_treeview()
-
-    update_window.destroy()
-
-def refresh_treeview():
-    # Clear all existing data in the treeview
-    tree.delete(*tree.get_children())
-
-    # Fetch updated data from the database
-    resultats, _ = database.fetch_game_statistics()  # Assuming the second value (total) is not used here
-    for resultat in resultats:
-        if isinstance(resultat, (list, tuple)):
-            nbok = resultat[4]
-            nbtrials = resultat[5]
-            percentage = calculate_percentage(nbok, nbtrials)
-            insert_data_into_treeview(tree, resultat, percentage)
-
-def calculate_percentage(nbok, nbtrials):
-    if isinstance(nbtrials, int) and nbtrials > 0:
-        return round((nbok / nbtrials) * 100, 2)
-    else:
-        return 0
-
-def convert_time_to_seconds(time_str):
-    """ Convert a given time string (HH:MM:SS) to seconds. """
-    hours, minutes, seconds = map(int, time_str.split(':'))
-    return hours * 3600 + minutes * 60 + seconds
-
-def colorize_percentage(percentage):
-    """ Define colors based on the percentage. """
-    if percentage < 25:
-        return 'red'
-    elif percentage < 50:
-        return 'orange'
-    elif percentage < 75:
-        return 'yellow'
-    else:
-        return 'green'
-
-
-def voir_total():
-    total_lignes = 0
-    total_duration = 0
-    total_nbok = 0
-    total_nbtrials = 0
-    total_pourcentage = 0
+def view_total():
+    lines_total = 0
+    duration_total = 0
+    nbok_total = 0
+    nbtrials_total = 0
+    percentage_total = 0
 
     for child in tree.get_children():
         values = tree.item(child, 'values')
-        total_lignes += 1
-        total_duration += convert_time_to_seconds(values[2])  # Convert duration to seconds
-        total_nbok += int(values[4])  # Add NbOk
-        total_nbtrials += int(values[5])  # Add NbTrials
+        lines_total += 1
+        duration_total += convert_time_to_seconds(values[2])  # Convert duration to seconds
+        nbok_total += int(values[4])  # Add NbOk
+        nbtrials_total += int(values[5])  # Add NbTrials
 
     # Calculate the average success rate
-    if total_nbtrials > 0:
-        total_pourcentage = (total_nbok / total_nbtrials) * 100
+    if nbtrials_total > 0:
+        percentage_total = (nbok_total / nbtrials_total) * 100
     else:
-        total_pourcentage = 0
+        percentage_total = 0
 
     # Update the labels with the total statistics
-    nblines_label.config(text=f"{total_lignes}")
-    duration_label.config(text=f"{total_duration} sec")
-    nbok_label.config(text=f"{total_nbok}")
-    nbtotal_label.config(text=f"{total_nbtrials}")
-    percentage_label.config(text=f"{total_pourcentage:.2f}%")
+    nblines_label.config(text=f"{lines_total}")
+    duration_label.config(text=f"{duration_total} sec")
+    nbok_label.config(text=f"{nbok_total}")
+    nbtotal_label.config(text=f"{nbtrials_total}")
+    percentage_label.config(text=f"{percentage_total:.2f}%")
 
 def add_results():
     global add_window
@@ -368,44 +359,44 @@ def add_results():
     # Input for 'Exercice'
     exercise_label = ctk.CTkLabel(add_window, text="Exercice:")
     exercise_label.pack()
-    entry_exercice = ctk.CTkEntry(add_window)
-    entry_exercice.pack()
+    exercise_entry = ctk.CTkEntry(add_window)
+    exercise_entry.pack()
 
     # Input for 'Temps'
-    lbl_temps = ctk.CTkLabel(add_window, text="Temps:")
-    lbl_temps.pack()
-    entry_temps = ctk.CTkEntry(add_window)
-    entry_temps.pack()
+    time_label = ctk.CTkLabel(add_window, text="Temps:")
+    time_label.pack()
+    time_entry = ctk.CTkEntry(add_window)
+    time_entry.pack()
 
     # Input for 'NB OK'
-    lbl_nbok = ctk.CTkLabel(add_window, text="NB OK:")
-    lbl_nbok.pack()
-    entry_nbok = ctk.CTkEntry(add_window)
-    entry_nbok.pack()
+    nbok_label = ctk.CTkLabel(add_window, text="NB OK:")
+    nbok_label.pack()
+    nbok_entry = ctk.CTkEntry(add_window)
+    nbok_entry.pack()
 
     # Input for 'Nb Trial'
-    lbl_nbtrial = ctk.CTkLabel(add_window, text="Nb Trial:")
-    lbl_nbtrial.pack()
-    entry_nbtrial = ctk.CTkEntry(add_window)
-    entry_nbtrial.pack()
+    nbtrials_label = ctk.CTkLabel(add_window, text="NB Trials:")
+    nbtrials_label.pack()
+    nbtrial_entry = ctk.CTkEntry(add_window)
+    nbtrial_entry.pack()
 
     # Button to add the new result
-    btn_ajouter = ctk.CTkButton(add_window, text="Ajouter résultat", command=lambda: save_results(
+    add_result = ctk.CTkButton(add_window, text="Ajouter résultat", command=lambda: save_results(
         pseudo_entry.get(),
-        entry_exercice.get(),
-        entry_temps.get(),
-        entry_nbok.get(),
-        entry_nbtrial.get()
+        exercise_entry.get(),
+        time_entry.get(),
+        nbok_entry.get(),
+        nbtrial_entry.get()
     ))
-    btn_ajouter.pack()
+    add_result.pack()
 
-def save_results(pseudo, exercice, temps, nbok, nbtrials):
+def save_results(pseudo, exercise, temps, nbok, nbtrials):
     global add_window
 
     # Verify if the exercise exists
-    if not check_exercise_exists(exercice):
+    if not check_exercise_exists(exercise):
         existing_exercises = retrieve_exercise_catalog()
-        messagebox.showwarning("Erreur", f"Cet exercice n'existe pas. Les exercices disponibles dans la BD sont: {', '.join(existing_exercises)}")
+        messagebox.showwarning("Erreur", f"Cet exercise n'existe pas. Les exercices disponibles dans la BD sont: {', '.join(existing_exercises)}")
         return
 
     # Verify the time format
@@ -414,7 +405,7 @@ def save_results(pseudo, exercice, temps, nbok, nbtrials):
         return
 
     # Send data to the database
-    database.save_game_result(pseudo, exercice, temps, nbok, nbtrials)
+    database.save_game_result(pseudo, exercise, temps, nbok, nbtrials)
     refresh_treeview()
 
     # Display a success message
@@ -423,15 +414,15 @@ def save_results(pseudo, exercice, temps, nbok, nbtrials):
     # Close the add result window
     add_window.destroy()
 
-def check_exercise_exists(exercice):
+def check_exercise_exists(exercise):
     """
     Checks if a given exercise exists in the database.
     """
     # Use the fetch_game_statistics function to check for the existence of the exercise
-    resultats = fetch_game_statistics(exercise=exercice)
+    results = fetch_game_statistics(exercise=exercise)
 
     # If no results are returned, the exercise does not exist
-    return len(resultats) > 0
+    return len(results) > 0
 
 def time_format(temps_str):
     """
@@ -443,3 +434,4 @@ def time_format(temps_str):
         return True
     except (ValueError, AssertionError):
         return False
+ 
