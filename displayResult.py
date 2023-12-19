@@ -29,19 +29,18 @@ from database import remove_match_record, fetch_game_statistics, retrieve_exerci
 tree = None # Global
 pseudo_entry = None
 exercise_entry = None
-lbl_nblignes = None
-lbl_tempTotal = None
-lbl_nbOK = None
-lbl_nbTotal = None
-lbl_pourcentageTotal = None
+nblines_label = None
+duration_label = None
+nbok_label = None
+nbtotal_label = None
+percentage_label = None
 start_date_entry = None
-entry_date_fin = None
-derniers_filtres = {"pseudo": "", "exercise": ""}
-donnees_chargees = False # Pour suivre si les données ont été chargées
+end_date_entry = None
+last_filters = {"pseudo": "", "exercise": ""}
+loaded_data = False # Pour suivre si les données ont été chargées
 
 def create_result_window():
-    global tree, pseudo_entry, exercise_entry, lbl_nblignes, lbl_tempTotal, lbl_nbOK, lbl_nbTotal, lbl_pourcentageTotal, start_date_entry, entry_date_fin
-
+    global tree, pseudo_entry, exercise_entry, start_date_entry, end_date_entry, duration_label, nbok_label, nbtotal_label, percentage_label, nblines_label
 
 
     """ Initialization """
@@ -63,35 +62,40 @@ def create_result_window():
     filter_frame = ctk.CTkFrame(window)
     filter_frame.pack(pady=10)
 
+
     # Pseudo filter
     pseudo_label = ctk.CTkLabel(filter_frame, text="Pseudo:")
-    pseudo_label.grid(row=0, column=0, padx=5, pady=5)
+    pseudo_label.grid(row=0, column=0, padx=15, pady=8)
     pseudo_entry = ctk.CTkEntry(filter_frame)
-    pseudo_entry.grid(row=0, column=1, padx=5, pady=5)
+    pseudo_entry.grid(row=0, column=1, padx=5, pady=8)
 
     
     # Exercise filter
     exercise_label = ctk.CTkLabel(filter_frame, text="Exercise:")
-    exercise_label.grid(row=0, column=2, padx=5, pady=5)
+    exercise_label.grid(row=0, column=2, padx=5, pady=8)
     exercise_entry = ctk.CTkEntry(filter_frame)
-    exercise_entry.grid(row=0, column=3, padx=5, pady=5)
+    exercise_entry.grid(row=0, column=3, padx=5, pady=8)
 
 
     # Start date filter
     start_date_label = ctk.CTkLabel(filter_frame, text="Start Date:")
-    start_date_label.grid(row=0, column=4, padx=5, pady=5)
+    start_date_label.grid(row=0, column=4, padx=5, pady=8)
     start_date_entry = ctk.CTkEntry(filter_frame)
-    start_date_entry.grid(row=0, column=5, padx=5, pady=5)
+    start_date_entry.grid(row=0, column=5, padx=5, pady=8)
 
 
     # End date filter
     end_date_label = ctk.CTkLabel(filter_frame, text="End Date:")
-    end_date_label.grid(row=0, column=6, padx=5, pady=5)
-    entry_date_fin = ctk.CTkEntry(filter_frame)
-    entry_date_fin.grid(row=0, column=7, padx=5, pady=5)
+    end_date_label.grid(row=0, column=6, padx=5, pady=8)
+    end_date_entry = ctk.CTkEntry(filter_frame)
+    end_date_entry.grid(row=0, column=7, padx=5, pady=8)
 
-
-
+    
+    # Display Data Button
+    display_statistics_button = ctk.CTkButton(filter_frame, text="Voir Resultat", command=lambda:fetch_game_statistics())
+    display_statistics_button.grid(row=0, column=8, padx=15, pady=8)
+    
+    
     """ Treeview """
     
     # Treeview under-frame
@@ -99,7 +103,7 @@ def create_result_window():
     treeview_frame.pack(expand=True, fill='both', padx=15, pady=15)
 
     # Treeview main frame
-    tree = ttk.Treeview(treeview_frame, columns=("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", "% réussi"), show="headings", height=10)  # Adjust the height here
+    tree = ttk.Treeview(treeview_frame, columns=("Pseudo", "Date Time", "Time", "Exercise", "NB OK", "NB Trials", "% Success"), show="headings", height=10)  # Adjust the height here
     tree.column("#0", width=0, stretch=ctk.NO)
 
     for col in tree["columns"]:
@@ -278,32 +282,32 @@ def colorize_percentage(percentage):
         return 'green'
 
 def voir_resultat():
-    global donnees_chargees, derniers_filtres
+    global loaded_data, last_filters
 
     # Retrieve values from input fields
     pseudo = pseudo_entry.get().strip()
     exercise = exercise_entry.get().strip()
     date_debut = start_date_entry.get().strip()
-    date_fin = entry_date_fin.get().strip()
+    date_fin = end_date_entry.get().strip()
 
     # Check if filters have changed
-    if (pseudo == derniers_filtres["pseudo"] and
-        exercise == derniers_filtres["exercise"] and
-        date_debut == derniers_filtres.get("date_debut", "") and
-        date_fin == derniers_filtres.get("date_fin", "") and
-        donnees_chargees):
+    if (pseudo == last_filters["pseudo"] and
+        exercise == last_filters["exercise"] and
+        date_debut == last_filters.get("date_debut", "") and
+        date_fin == last_filters.get("date_fin", "") and
+        loaded_data):
         messagebox.showinfo("Information", "Les données sont déjà à jour.")
         return
 
     # Reload data if any filter has changed
-    if (pseudo != derniers_filtres["pseudo"] or
-        exercise != derniers_filtres["exercise"] or
-        date_debut != derniers_filtres.get("date_debut", "") or
-        date_fin != derniers_filtres.get("date_fin", "")):
-        donnees_chargees = False
+    if (pseudo != last_filters["pseudo"] or
+        exercise != last_filters["exercise"] or
+        date_debut != last_filters.get("date_debut", "") or
+        date_fin != last_filters.get("date_fin", "")):
+        loaded_data = False
 
     # Save the current filters
-    derniers_filtres.update({"pseudo": pseudo, "exercise": exercise, "date_debut": date_debut, "date_fin": date_fin})
+    last_filters.update({"pseudo": pseudo, "exercise": exercise, "date_debut": date_debut, "date_fin": date_fin})
 
     # Fetch results from the database
     resultats, _ = database.fetch_game_statistics(pseudo=pseudo, exercise=exercise, start_date=date_debut, end_date=date_fin)
@@ -311,7 +315,7 @@ def voir_resultat():
     # Check if results are available
     if not resultats:
         messagebox.showwarning("Erreur", "Aucun enregistrement trouvé pour les critères donnés.")
-        donnees_chargees = False
+        loaded_data = False
         return
 
     # Clear existing data and display new results in Treeview
@@ -323,7 +327,7 @@ def voir_resultat():
         insert_data_into_treeview(tree, resultat, percentage)
 
     # Mark that data has been loaded
-    donnees_chargees = True
+    loaded_data = True
 
 def voir_total():
     total_lignes = 0
@@ -346,11 +350,11 @@ def voir_total():
         total_pourcentage = 0
 
     # Update the labels with the total statistics
-    lbl_nblignes.config(text=f"{total_lignes}")
-    lbl_tempTotal.config(text=f"{total_duration} sec")
-    lbl_nbOK.config(text=f"{total_nbok}")
-    lbl_nbTotal.config(text=f"{total_nbtrials}")
-    lbl_pourcentageTotal.config(text=f"{total_pourcentage:.2f}%")
+    nblines_label.config(text=f"{total_lignes}")
+    duration_label.config(text=f"{total_duration} sec")
+    nbok_label.config(text=f"{total_nbok}")
+    nbtotal_label.config(text=f"{total_nbtrials}")
+    percentage_label.config(text=f"{total_pourcentage:.2f}%")
 
 def ajouter_resultat():
     global ajout_window
