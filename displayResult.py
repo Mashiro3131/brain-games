@@ -40,88 +40,72 @@ derniers_filtres = {"pseudo": "", "exercise": ""}
 donnees_chargees = False # Pour suivre si les données ont été chargées
 
 def create_result_window():
-    global tree, entry_pseudo, exercise_entry, lbl_nblignes, lbl_tempTotal, lbl_nbOK, lbl_nbTotal, lbl_pourcentageTotal, entry_date_debut, entry_date_fin
+    global tree, entry_pseudo, entry_exercise, lbl_nblignes, lbl_tempTotal, lbl_nbOK, lbl_nbTotal, lbl_pourcentageTotal, entry_date_debut, entry_date_fin
 
     # Create a new window with CustomTkinter
     window = ctk.CTk()
-    window.title("BRAINGAMES : Statistics")
+    window.title("BRAINGAMES : STATISTICS")
     window.geometry("1300x700+300+150")
 
     # Title label
     lbl_title = ctk.CTkLabel(window, text="Statistics", font=ctk.CTkFont(size=15, weight="bold"))
-    # lbl_title.grid(row=0, column=0, columnspan=8, pady=(0, 20))
-    # lbl_title.pack()
-    
+    lbl_title.pack(pady=20)
 
-    """ Filter and headers """
-    
+    # Filter frame
     filter_frame = ctk.CTkFrame(window)
-    # filter_frame.pack()
-    
-    
-    # Pseudo input
-    pseudo_label = ctk.CTkLabel(window, text="Pseudo:")
-    pseudo_label.grid(row=1, column=0)
-    entry_pseudo = ctk.CTkEntry(window)
-    entry_pseudo.grid(row=1, column=1)
+    filter_frame.pack(pady=10)
 
-    # Exercise input
-    exercise_label = ctk.CTkLabel(window, text="Exercice:")
-    exercise_label.grid(row=1, column=2)
-    exercise_entry = ctk.CTkEntry(window)
-    exercise_entry.grid(row=1, column=3)
+    # Filter options
+    lbl_pseudo = ctk.CTkLabel(filter_frame, text="Student:")
+    lbl_pseudo.grid(row=0, column=0, padx=5, pady=5)
+    entry_pseudo = ctk.CTkEntry(filter_frame)
+    entry_pseudo.grid(row=0, column=1, padx=5, pady=5)
 
-    # Date start input
-    start_date_label = ctk.CTkLabel(window, text="Date debut:")
-    start_date_label.grid(row=1, column=4)
-    entry_date_debut = ctk.CTkEntry(window)
-    entry_date_debut.grid(row=1, column=5)
+    lbl_exercice = ctk.CTkLabel(filter_frame, text="Exercise:")
+    lbl_exercice.grid(row=0, column=2, padx=5, pady=5)
+    entry_exercise = ctk.CTkEntry(filter_frame)
+    entry_exercise.grid(row=0, column=3, padx=5, pady=5)
 
-    # Date end input
-    lbl_date_fin = ctk.CTkLabel(window, text="Date fin:")
-    lbl_date_fin.grid(row=1, column=6)
-    entry_date_fin = ctk.CTkEntry(window)
-    entry_date_fin.grid(row=1, column=7)
+    lbl_date_debut = ctk.CTkLabel(filter_frame, text="Start Date:")
+    lbl_date_debut.grid(row=0, column=4, padx=5, pady=5)
+    entry_date_debut = ctk.CTkEntry(filter_frame)
+    entry_date_debut.grid(row=0, column=5, padx=5, pady=5)
 
-    # Buttons
-    btn_voir_resultat = ctk.CTkButton(window, text="Voir Resultat", command=lambda: voir_resultat())
-    btn_voir_resultat.grid(row=2, padx=(0, 5))
-    btn_total = ctk.CTkButton(window, text="Total", command=lambda: voir_total())
-    # btn_total.grid(row=21, padx=(0, 0))
-    # btn_ajouter = ctk.CTkButton(window, text="Ajouter", command=ajouter_resultat)
-    # btn_ajouter.grid(row=2, column=3, padx=(0, 5))
-    # btn_supprimer = ctk.CTkButton(window, text="Supprimer", command=supprimer_resultat)
-    # btn_supprimer.grid(row=2, column=1, padx=(0, 5))
-    # btn_modifier = ctk.CTkButton(window, text="Modifier", command=modifier_resultat)
-    # btn_modifier.grid(row=2, column=2, padx=(0, 5))
+    lbl_date_fin = ctk.CTkLabel(filter_frame, text="End Date:")
+    lbl_date_fin.grid(row=0, column=6, padx=5, pady=5)
+    entry_date_fin = ctk.CTkEntry(filter_frame)
+    entry_date_fin.grid(row=0, column=7, padx=5, pady=5)
 
-    # Treeview (still using ttk as CTK does not provide a Treeview)
-    tree = ttk.Treeview(window, height=20)
-    tree["columns"] = ("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", "% réussi")
+
+    # Treeview container
+    treeview_frame = ctk.CTkFrame(window, corner_radius=15)
+    treeview_frame.pack(expand=True, fill='both', padx=15, pady=15)
+
+    # Treeview
+    tree = ttk.Treeview(window, columns=("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", "% réussi"), show="headings")
     tree.column("#0", width=0, stretch=ctk.NO)
     for col in tree["columns"]:
         tree.column(col, width=150, anchor="center")
         tree.heading(col, text=col, anchor="center")
-    tree.grid(row=3, column=0, columnspan=8)
+    tree.pack(expand=True, fill='both', pady=10)
 
-    # # Total section labels
-    # ctk.CTkLabel(window, text="NbLignes").grid(row=4, column=0, sticky='w')
-    # ctk.CTkLabel(window, text="Temps total").grid(row=4, column=1, sticky='w')
-    # ctk.CTkLabel(window, text="Nb OK").grid(row=4, column=2, sticky='w')
-    # ctk.CTkLabel(window, text="Nb Total").grid(row=4, column=3, sticky='w')
-    # ctk.CTkLabel(window, text="% Total").grid(row=4, column=4, sticky='w')
-
-    # # Total section dynamic labels
-    # lbl_nblignes = ctk.CTkLabel(window, text="")
-    # lbl_nblignes.grid(row=5, column=0, sticky='w')
-    # lbl_tempTotal = ctk.CTkLabel(window, text="")
-    # lbl_tempTotal.grid(row=5, column=1, sticky='w')
-    # lbl_nbOK = ctk.CTkLabel(window, text="")
-    # lbl_nbOK.grid(row=5, column=2, sticky='w')
-    # lbl_nbTotal = ctk.CTkLabel(window, text="")
-    # lbl_nbTotal.grid(row=5, column=3, sticky='w')
-    # lbl_pourcentageTotal = ctk.CTkLabel(window, text="")
-    # lbl_pourcentageTotal.grid(row=5, column=4, sticky='w')
+    # Style configuration for Treeview
+    style = ttk.Style(window)
+    style.theme_use("clam")  # Use the "clam" theme as a base for customization
+    style.configure("Treeview",
+                    background="#2a2d2e",
+                    foreground="white",
+                    rowheight=25,
+                    fieldbackground="#343638",
+                    bordercolor="#343638",
+                    borderwidth=0)
+    style.map('Treeview', background=[('selected', '#22559b')])
+    style.configure("Treeview.Heading",
+                    background="#565b5e",
+                    foreground="white",
+                    relief="flat")
+    style.map("Treeview.Heading",
+              background=[('active', '#3484F0')])
 
     window.mainloop()
 
