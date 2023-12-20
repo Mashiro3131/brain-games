@@ -16,11 +16,11 @@ albl_image=[None, None, None] # label (with images) array
 a_image=[None, None, None] # images array
 a_title=[None, None, None] # array of title (ex: GEO01)
 
-dict_games = {"geo01": geo01.open_window_geo_01, "info02": info02.open_window_info_02, "info05": info05.open_window_info_05}
+menu_options = {"geo01": geo01.open_window_geo_01, "info02": info02.open_window_info_02, "info05": info05.open_window_info_05}
 
 # call other windows (exercices)
 def exercise(event,exer):
-    dict_games[exer](window)
+    menu_options[exer](window)
 
 
 #call display_results

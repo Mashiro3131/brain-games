@@ -59,7 +59,7 @@ def display_results():
 
     # button "voir result"
 
-    btn_voir_resultat = tk.Button(window, text="Voir Resultat", command=lambda:voir_resultat())
+    btn_voir_resultat = tk.Button(window, text="Voir Resultat", command=lambda:view_results())
     btn_voir_resultat.grid(row=2, padx=(0,5))
 
     btn_total = tk.Button(window, text="Total", command=lambda: view_total())
@@ -75,7 +75,7 @@ def display_results():
 
     # pour cree Treeview
     tree = ttk.Treeview(window, height=20)
-    tree["columns"] = ("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", "% réussi")
+    tree["columns"] = ("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", ""% Success")
     tree.column("#0", width=0, stretch=tk.NO)
     # tree.column
 
@@ -129,7 +129,7 @@ def display_results():
 def insert_data_into_treeview(tree, values, percentage):
     color = colorize_percentage(percentage)
     row_id = tree.insert('', 'end', values=(*values, ''))
-    tree.set(row_id, column="% réussi", value=f"{percentage} %")
+    tree.set(row_id, column=""% Success", value=f"{percentage} %")
     tree.tag_configure(row_id, background=color)
     tree.item(row_id, tags=(row_id,))
 
@@ -260,7 +260,7 @@ def colorize_percentage(percentage):
         return 'green'
 
 
-# def voir_resultat():
+# def view_results():
 #     global loaded_data, last_filters
 #     pseudo = pseudo_entry.get().strip()
 #     exercise = exercise_entry.get().strip()
@@ -299,7 +299,7 @@ def colorize_percentage(percentage):
 #     # Marquer que les données sont chargées
 #     loaded_data = True
 
-def voir_resultat():
+def view_results():
     global loaded_data, last_filters
 
     # Récupérer les valeur d'inputs de champ de saisie
