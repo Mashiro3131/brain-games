@@ -44,9 +44,15 @@ loaded_data = False # Pour suivre si les données ont été chargées
 def display_results():
     global tree, pseudo_entry, exercise_entry, start_date_entry, end_date_entry, duration_label, nbok_label, nbtotal_label, percentage_label, nbrows_label
 
+    # Function to sort treeview columns
+    def treeview_sort_column(tv, col, reverse):
+        l = [(tv.set(k, col), k) for k in tv.get_children('')]
+        l.sort(reverse=reverse)
 
-    """ Initialization """
-    
+        # Rearrange items in sorted positions
+        for index, (val, k) in enumerate(l):
+            tv.move(k, '', index)
+
     # Main window
     window = ctk.CTk()
     window.title("BRAINGAMES : STATISTICS")
@@ -56,14 +62,9 @@ def display_results():
     title_label = ctk.CTkLabel(window, text="Statistics", font=ctk.CTkFont(size=15, weight="bold"))
     title_label.pack(pady=20)
 
-
-
-    """ Filters """
-    
     # Filter frame
     filter_frame = ctk.CTkFrame(window)
     filter_frame.pack(pady=10)
-
 
     # Pseudo filter
     pseudo_label = ctk.CTkLabel(filter_frame, text="Pseudo:")
@@ -71,20 +72,17 @@ def display_results():
     pseudo_entry = ctk.CTkEntry(filter_frame)
     pseudo_entry.grid(row=0, column=1, padx=5, pady=8)
 
-    
     # Exercise filter
     exercise_label = ctk.CTkLabel(filter_frame, text="Exercise:")
     exercise_label.grid(row=0, column=2, padx=5, pady=8)
     exercise_entry = ctk.CTkEntry(filter_frame)
     exercise_entry.grid(row=0, column=3, padx=5, pady=8)
 
-
     # Start date filter
-    start_date_label = ctk.CTkLabel(filter_frame, text="Start Date:")
+    start_date_label = ctk.CTkLabel(filter_frame, text="Start Date:", size=10)
     start_date_label.grid(row=0, column=4, padx=5, pady=8)
     start_date_entry = ctk.CTkEntry(filter_frame)
     start_date_entry.grid(row=0, column=5, padx=5, pady=8)
-
 
     # End date filter
     end_date_label = ctk.CTkLabel(filter_frame, text="End Date:")
@@ -92,68 +90,84 @@ def display_results():
     end_date_entry = ctk.CTkEntry(filter_frame)
     end_date_entry.grid(row=0, column=7, padx=5, pady=8)
 
-    
     # Display Data Button
     display_statistics_button = ctk.CTkButton(filter_frame, text="Search !", command=view_results)
     display_statistics_button.grid(row=0, column=8, padx=15, pady=8)
-    
-    
-    """ Treeview """
-    
-    # Treeview under-frame
+
+    # Treeview setup
     treeview_frame = ctk.CTkFrame(window, corner_radius=15)
     treeview_frame.pack(expand=True, fill='both', padx=15, pady=15)
-
-    # Treeview main frame
-    tree = ttk.Treeview(treeview_frame, columns=("Pseudo", "Date Time", "Time", "Exercise", "NB OK", "NB Trials", "% Success"), show="headings", height=10)  # Adjust the height here
+    tree = ttk.Treeview(treeview_frame, columns=("Pseudo", "Date Time", "Time", "Exercise", "NB OK", "NB Trials", "% Success"), show="headings", height=10)
     tree.column("#0", width=0, stretch=ctk.NO)
 
     for col in tree["columns"]:
         tree.column(col, width=150, anchor="center")
-        tree.heading(col, text=col, anchor="center")
+        tree.heading(col, text=col, anchor="center", command=lambda _col=col: treeview_sort_column(tree, _col, False))
+        # Custom Treeview Styling
+        style = ttk.Style(window)
+        style.theme_use("default")
+        style.configure("Treeview", background="#2a2d2e", foreground="white", rowheight=25, fieldbackground="#343638", bordercolor="#343638", borderwidth=0)
+        style.map('Treeview', background=[('selected', '#22559b')])
+        style.configure("Treeview.Heading", background="#565b5e", foreground="white", relief="flat")
+        style.map("Treeview.Heading", background=[('active', '#3484F0')])
 
-    tree.pack(expand=True, fill='both', pady=20, padx=20)  # Adjust padding here
+    tree.pack(expand=True, fill='both', pady=20, padx=20)
 
 
-
-    # Custom Treeview Styling
-    style = ttk.Style(window)
-    style.theme_use("default")
-    
-    style.configure("Treeview",
-                    background="#2a2d2e",
-                    foreground="white",
-                    rowheight=25,
-                    fieldbackground="#343638",
-                    bordercolor="#343638",
-                    borderwidth=0)
-    
-    style.map('Treeview',
-              background=[('selected', '#22559b')])
-    
-    style.configure("Treeview.Heading",
-                    background="#565b5e",
-                    foreground="white",
-                    relief="flat")
-    
-    style.map("Treeview.Heading",
-              background=[('active', '#3484F0')])
-    
-    
-    
-    # Total statistics frame (under the treeview) but in the same frame as the treeview
-    nbtotal_label
-    
-    
-    
-
-    window.mainloop()
-
+    """ Scrollbar """
+    ctk.CTkScrollbar(treeview_frame, command=tree.yview).pack(side="right", fill="y")
 
 
     """ Total Statistics """
     
-    # Total statistics frame (under the treeview) like we did for the filters like this: 
+    # Total Statistics Frame
+    total_stats_frame = ctk.CTkFrame(window)
+    total_stats_frame.pack(padx=20, pady=10)
+    
+    # Total Statistics Title
+    ctk.CTkLabel(total_stats_frame, text="Total Statistics", font=ctk.CTkFont(size=13, weight="bold")).pack(pady=5)
+    
+    # Separator between title and statistics
+    #tk.Separator(treeview_frame, orient="horizontal").pack(fill="x", pady=10)
+    separator = ttk.Separator(total_stats_frame, orient='horizontal', style='Line.TSeparator')
+    separator.pack(fill='x', pady=2)
+
+    # Statistics Labels (Rows: , Duration: , NB OK: , NB Total: , % Success: )
+    ctk.CTkLabel(total_stats_frame, text="Rows:").pack(side='left', padx=10)
+    nbrows_label = ctk.CTkLabel(total_stats_frame, text="")
+    nbrows_label.pack(side="left", padx=10)
+ 
+    ctk.CTkLabel(total_stats_frame, text="Duration:").pack(side='left', padx=10)
+    duration_label = ctk.CTkLabel(total_stats_frame, text="")
+    duration_label.pack(side="left", padx=10)    
+    
+    ctk.CTkLabel(total_stats_frame, text="NB OK:").pack(side='left', padx=10)  
+    nbok_label = ctk.CTkLabel(total_stats_frame, text="")
+    nbok_label.pack(side="left", padx=10)   
+    
+    ctk.CTkLabel(total_stats_frame, text="NB Total:").pack(side='left', padx=10)
+    nbtotal_label = ctk.CTkLabel(total_stats_frame, text="")
+    nbtotal_label.pack(side="left", padx=10)    
+    
+    ctk.CTkLabel(total_stats_frame, text="% Success:").pack(side='left', padx=10)
+    percentage_label = ctk.CTkLabel(total_stats_frame, text="")
+    percentage_label.pack(side="left", padx=10) 
+
+
+    """ Display Data By Default """
+    view_results()
+    
+    
+    """ Main Loop """
+    window.mainloop()
+
+
+    # Call view_results to display data initially
+    view_results()
+
+    window.mainloop()
+
+
 
 
 def display_total_statistics():
@@ -264,7 +278,6 @@ def modifier_resultat():
     update_button = ctk.CTkButton(update_window, text="Update", command=lambda: update_result(selected_item, duration_entry.get(), nbok_entry.get(), nbtrials_entry.get()))
     update_button.pack()
 
-
 def update_result(selected_item, new_duration, new_nbok, new_nbtrials):
 
     global update_window
@@ -304,7 +317,6 @@ def supprimer_resultat():
 
     remove_match_record(pseudo, exercise, date_hour, duration, nbok, nbtrials)
     tree.delete(selected_item)
-
 
 
 def refresh_treeview():
@@ -463,3 +475,7 @@ def time_format(temps_str):
         return True
     except (ValueError, AssertionError):
         return False
+
+
+if __name__ == "__main__":
+    display_results()
