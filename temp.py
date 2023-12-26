@@ -42,29 +42,29 @@ class ResultDisplay():
         filter_frame = ctk.CTkFrame(self.root)
         filter_frame.pack()
 
-        self.student_label = ctk.CTkLabel(self.filter_frame, text="Student:")
-        self.student_label.grid(row=0, column=0, padx=5, pady=5)
+        student_label = ctk.CTkLabel(filter_frame, text="Student:")
+        student_label.grid(row=0, column=0, padx=5, pady=5)
 
-        self.student_entry = ctk.CTkEntry(self.filter_frame)
-        self.student_entry.grid(row=0, column=1, padx=5, pady=5)
+        student_entry = ctk.CTkEntry(filter_frame)
+        student_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        self.exercise_label = ctk.CTkLabel(self.filter_frame, text="Exercise:")
-        self.exercise_label.grid(row=0, column=2, padx=5, pady=5)
+        exercise_label = ctk.CTkLabel(filter_frame, text="Exercise:")
+        exercise_label.grid(row=0, column=2, padx=5, pady=5)
 
-        self.exercise_entry = ctk.CTkEntry(self.filter_frame)
-        self.exercise_entry.grid(row=0, column=3, padx=5, pady=5)
+        exercise_entry = ctk.CTkEntry(filter_frame)
+        exercise_entry.grid(row=0, column=3, padx=5, pady=5)
 
-        self.start_date_label = ctk.CTkLabel(self.filter_frame, text="Start Date:")
-        self.start_date_label.grid(row=0, column=4, padx=5, pady=5)
+        start_date_label = ctk.CTkLabel(filter_frame, text="Start Date:")
+        start_date_label.grid(row=0, column=4, padx=5, pady=5)
 
-        self.start_date_entry = ctk.CTkEntry(self.filter_frame)
-        self.start_date_entry.grid(row=0, column=5, padx=5, pady=5)
+        start_date_entry = ctk.CTkEntry(filter_frame)
+        start_date_entry.grid(row=0, column=5, padx=5, pady=5)
 
-        self.end_date_label = ctk.CTkLabel(self.filter_frame, text="End Date:")
-        self.end_date_label.grid(row=0, column=6, padx=5, pady=5)
+        end_date_label = ctk.CTkLabel(filter_frame, text="End Date:")
+        end_date_label.grid(row=0, column=6, padx=5, pady=5)
 
-        self.end_date_entry = ctk.CTkEntry(self.filter_frame)
-        self.end_date_entry.grid(row=0, column=7, padx=5, pady=5)
+        end_date_entry = ctk.CTkEntry(filter_frame)
+        end_date_entry.grid(row=0, column=7, padx=5, pady=5)
 
         # Create the result table
         self.result_table = ttk.Treeview(self.root, columns=("Student", "Exercise", "Date", "Duration", "Trials", "Success"), show="headings")
@@ -183,7 +183,7 @@ class ResultDisplay():
         self.show_current_results()
     
     # It will be put under the total rows displaying the number of rows, the total duration, the total number of trials that were successful and the total number of trials
-    # for e.g. Total: 10 rows, 00:00:00 duration, 5 successful trials, 10 trials
+    # for e.g. Total: 10 rows, 00:00:00 duration, 5 successful trials, 10 trials, 50% success rate
     #            12             
         
 
