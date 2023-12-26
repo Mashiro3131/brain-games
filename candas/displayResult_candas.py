@@ -75,7 +75,7 @@ def display_results():
 
     # pour cree Treeview
     tree = ttk.Treeview(window, height=20)
-    tree["columns"] = ("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", ""% Success")
+    tree["columns"] = ("Élève", "Date Heure", "Temps", "Exercice", "NB OK", "NB Trial", ""% Success")
     tree.column("#0", width=0, stretch=tk.NO)
     # tree.column
 
@@ -92,8 +92,8 @@ def display_results():
     # total
     tk.Label(window, text="NbLignes").grid(row=4, column=0, sticky='w')
     tk.Label(window, text="Temps total").grid(row=4, column=1, sticky='w')
-    tk.Label(window, text="Nb OK").grid(row=4, column=2, sticky='w')
-    tk.Label(window, text="Nb Total").grid(row=4, column=3, sticky='w')
+    tk.Label(window, text="NB OK").grid(row=4, column=2, sticky='w')
+    tk.Label(window, text="NB Total").grid(row=4, column=3, sticky='w')
     tk.Label(window, text="% Total").grid(row=4, column = 4, sticky="w")
 
     # total
@@ -188,7 +188,7 @@ def modifier_resultat():
     nbok_entry.insert(0, current_values[4])  # par default value original
 
     # input pour NbTrials
-    nbtrials_label = tk.Label(update_window, text="Nb total:")
+    nbtrials_label = tk.Label(update_window, text="NB Total")
     nbtrials_label.pack()
     nbtrials_entry = tk.Entry(update_window)
     nbtrials_entry.pack()
@@ -409,7 +409,7 @@ def add_results():
     nbok_entry = tk.Entry(add_window)
     nbok_entry.pack()
 
-    # input pour 'Nb Trial'
+    # input pour 'NB Trial'
     nbtrials_label = tk.Label(add_window, text="NB Trials:")
     nbtrials_label.pack()
     nbtrial_entry = tk.Entry(add_window)
