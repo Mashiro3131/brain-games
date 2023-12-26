@@ -172,4 +172,3 @@ def open_window_geo_01(window):
     window_geo01.mainloop()
 
 
-
