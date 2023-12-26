@@ -20,9 +20,9 @@ Important ! Ca ne doit pas être affiché dans la console mais dans une interfac
 
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import customtkinter as ctk
 import database
-from tkinter import messagebox
 from database import remove_match_record, fetch_game_statistics, retrieve_exercise_catalog
 
 
@@ -142,6 +142,19 @@ def display_results():
     window.mainloop()
 
 
+
+    """ Total Statistics """
+    
+    # Total statistics frame (under the treeview) like we did for the filters like this: 
+
+
+def display_total_statistics():
+    pass
+
+
+
+
+
 # CREATE
 def insert_data_into_treeview(tree, values, percentage):
     bgcolor, fgcolor = colorize_percentage(percentage)
@@ -233,7 +246,7 @@ def modifier_resultat():
     nbok_entry.insert(0, current_values[4])  # Default to original value
 
     # Input for NbTrials
-    nbtrails_label = ctk.CTkLabel(update_window, text="Nb total:")
+    nbtrails_label = ctk.CTkLabel(update_window, text="NB Total")
     nbtrails_label.pack()
     nbtrials_entry = ctk.CTkEntry(update_window)
     nbtrials_entry.pack()
@@ -382,7 +395,7 @@ def add_results():
     nbok_entry = ctk.CTkEntry(add_window)
     nbok_entry.pack()
 
-    # Input for 'Nb Trial'
+    # Input for 'NB Trial'
     nbtrials_label = ctk.CTkLabel(add_window, text="NB Trials:")
     nbtrials_label.pack()
     nbtrial_entry = ctk.CTkEntry(add_window)
