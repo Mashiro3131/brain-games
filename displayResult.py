@@ -32,7 +32,7 @@ exercise_entry = None
 start_date_entry = None
 end_date_entry = None
 
-nblines_label = None
+nbrows_label = None
 duration_label = None
 nbok_label = None
 nbtotal_label = None
@@ -42,7 +42,7 @@ last_filters = {"pseudo": "", "exercise": ""}
 loaded_data = False # Pour suivre si les données ont été chargées
 
 def display_results():
-    global tree, pseudo_entry, exercise_entry, start_date_entry, end_date_entry, duration_label, nbok_label, nbtotal_label, percentage_label, nblines_label
+    global tree, pseudo_entry, exercise_entry, start_date_entry, end_date_entry, duration_label, nbok_label, nbtotal_label, percentage_label, nbrows_label
 
 
     """ Initialization """
@@ -138,6 +138,14 @@ def display_results():
     
     style.map("Treeview.Heading",
               background=[('active', '#3484F0')])
+    
+    
+    
+    # Total statistics frame (under the treeview) but in the same frame as the treeview
+    nbtotal_label
+    
+    
+    
 
     window.mainloop()
 
@@ -336,7 +344,7 @@ def colorize_percentage(percentage):
 
 
 def view_total():
-    lines_total = 0
+    rows_total = 0
     duration_total = 0
     nbok_total = 0
     nbtrials_total = 0
@@ -344,7 +352,7 @@ def view_total():
 
     for child in tree.get_children():
         values = tree.item(child, 'values')
-        lines_total += 1
+        rows_total += 1
         duration_total += convert_time_to_seconds(values[2])  # Convert duration to seconds
         nbok_total += int(values[4])  # Add NbOk
         nbtrials_total += int(values[5])  # Add NbTrials
@@ -356,7 +364,7 @@ def view_total():
         percentage_total = 0
 
     # Update the labels with the total statistics
-    nblines_label.config(text=f"{lines_total}")
+    nbrows_label.config(text=f"{rows_total}")
     duration_label.config(text=f"{duration_total} sec")
     nbok_label.config(text=f"{nbok_total}")
     nbtotal_label.config(text=f"{nbtrials_total}")
