@@ -46,6 +46,7 @@ loaded_data = False # Pour suivre si les données ont été chargées
 
 current_page = 0
 rows_per_page = 20
+filtered_data = []  # This will hold the data that is filtered according to the applied filters
 
 
 
@@ -162,6 +163,19 @@ def display_results():
     percentage_label.pack(side="left", padx=10) 
 
 
+    """ Pagination """
+    pagination_frame = ctk.CTkFrame(window)
+    pagination_frame.pack(pady=10)
+
+    # Previous Page Button
+    prev_page_button = ctk.CTkButton(pagination_frame, text="Previous Page", command=previous_page)
+    prev_page_button.pack(side="left", padx=10)
+
+    # Next Page Button
+    next_page_button = ctk.CTkButton(pagination_frame, text="Next Page", command=next_page)
+    next_page_button.pack(side="left", padx=10)
+
+
 
     # Display the data by default
     view_results()
@@ -187,10 +201,38 @@ def insert_data_into_treeview(tree, values, percentage):
     tree.tag_configure(row_id, background=bgcolor, foreground=fgcolor)
     tree.item(row_id, tags=(row_id,))
 
-# READ
-def view_results():
-    global loaded_data, last_filters
 
+# READ
+def view_total():
+    rows_total = 0
+    duration_total = 0
+    nbok_total = 0
+    nbtrials_total = 0
+    percentage_total = 0
+
+    for child in tree.get_children():
+        values = tree.item(child, 'values')
+        rows_total += 1
+        duration_total += convert_time_to_seconds(values[2])  # Convert duration to seconds
+        nbok_total += int(values[4])  # Add NbOk
+        nbtrials_total += int(values[5])  # Add NbTrials
+
+    # Calculate the average success rate
+    if nbtrials_total > 0:
+        percentage_total = (nbok_total / nbtrials_total) * 100
+    else:
+        percentage_total = 0
+
+    # Update the labels with the total statistics
+    nbrows_label.configure(text=f"{rows_total}")
+    duration_label.configure(text=f"{duration_total} seconds")
+    nbok_label.configure(text=f"{nbok_total}")
+    nbtotal_label.configure(text=f"{nbtrials_total}")
+    percentage_label.configure(text=f"{percentage_total:.2f}%")
+    
+    
+def view_results():
+    global filtered_data, current_page, rows_per_page, loaded_data, last_filters
     # Retrieve values from input fields
     pseudo = pseudo_entry.get().strip()
     exercise = exercise_entry.get().strip()
@@ -225,19 +267,42 @@ def view_results():
         loaded_data = False
         return
 
-    # Clear existing data and display new results in Treeview
+    # Store the filtered data and reset the current page
+    filtered_data = results
+    current_page = 0
+    display_current_page()
+    
+def display_current_page():
+    global filtered_data, current_page, rows_per_page
+
+    # Calculate the slice of the data to display
+    start_index = current_page * rows_per_page
+    end_index = start_index + rows_per_page
+    page_data = filtered_data[start_index:end_index]
+
+    # Clear existing data in the treeview
     tree.delete(*tree.get_children())
-    for result in results:
+
+    # Insert new data for the current page
+    for result in page_data:
         nbok = result[4]
         nbtrials = result[5]
         percentage = calculate_percentage(nbok, nbtrials)
         insert_data_into_treeview(tree, result, percentage)
 
-    # Display total statistics
-    view_total()
+    # Update total statistics
+    view_total()    
 
-    # Mark that data has been loaded
-    loaded_data = True
+def next_page():
+    global current_page
+    current_page += 1
+    display_current_page()
+
+def previous_page():
+    global current_page
+    current_page = max(0, current_page - 1)
+    display_current_page()
+
 
 # UPADTE
 
@@ -359,32 +424,6 @@ def colorize_percentage(percentage):
     else:
         return ('#228b22', 'white') # Excellent
 
-def view_total():
-    rows_total = 0
-    duration_total = 0
-    nbok_total = 0
-    nbtrials_total = 0
-    percentage_total = 0
-
-    for child in tree.get_children():
-        values = tree.item(child, 'values')
-        rows_total += 1
-        duration_total += convert_time_to_seconds(values[2])  # Convert duration to seconds
-        nbok_total += int(values[4])  # Add NbOk
-        nbtrials_total += int(values[5])  # Add NbTrials
-
-    # Calculate the average success rate
-    if nbtrials_total > 0:
-        percentage_total = (nbok_total / nbtrials_total) * 100
-    else:
-        percentage_total = 0
-
-    # Update the labels with the total statistics
-    nbrows_label.configure(text=f"{rows_total}")
-    duration_label.configure(text=f"{duration_total} sec")
-    nbok_label.configure(text=f"{nbok_total}")
-    nbtotal_label.configure(text=f"{nbtrials_total}")
-    percentage_label.configure(text=f"{percentage_total:.2f}%")
 
 def add_results():
     global add_window
