@@ -41,6 +41,14 @@ percentage_label = None
 last_filters = {"pseudo": "", "exercise": ""}
 loaded_data = False # Pour suivre si les données ont été chargées
 
+
+# pagination
+
+current_page = 0
+rows_per_page = 20
+
+
+
 def display_results():
     global tree, pseudo_entry, exercise_entry, start_date_entry, end_date_entry, duration_label, nbok_label, nbtotal_label, percentage_label, nbrows_label
 
@@ -79,7 +87,7 @@ def display_results():
     exercise_entry.grid(row=0, column=3, padx=5, pady=8)
 
     # Start date filter
-    start_date_label = ctk.CTkLabel(filter_frame, text="Start Date:", size=10)
+    start_date_label = ctk.CTkLabel(filter_frame, text="Start Date:")
     start_date_label.grid(row=0, column=4, padx=5, pady=8)
     start_date_entry = ctk.CTkEntry(filter_frame)
     start_date_entry.grid(row=0, column=5, padx=5, pady=8)
@@ -114,15 +122,15 @@ def display_results():
     tree.pack(expand=True, fill='both', pady=20, padx=20)
 
 
-    """ Scrollbar """
-    ctk.CTkScrollbar(treeview_frame, command=tree.yview).pack(side="right", fill="y")
+    # """ Scrollbar """
+    # ctk.CTkScrollbar(treeview_frame, command=tree.yview).pack(side="right", fill="y")
 
 
     """ Total Statistics """
     
     # Total Statistics Frame
     total_stats_frame = ctk.CTkFrame(window)
-    total_stats_frame.pack(padx=20, pady=10)
+    total_stats_frame.pack(padx=20, pady=20)
     
     # Total Statistics Title
     ctk.CTkLabel(total_stats_frame, text="Total Statistics", font=ctk.CTkFont(size=13, weight="bold")).pack(pady=5)
@@ -154,17 +162,11 @@ def display_results():
     percentage_label.pack(side="left", padx=10) 
 
 
-    """ Display Data By Default """
+
+    # Display the data by default
     view_results()
     
     
-    """ Main Loop """
-    window.mainloop()
-
-
-    # Call view_results to display data initially
-    view_results()
-
     window.mainloop()
 
 
@@ -230,6 +232,9 @@ def view_results():
         nbtrials = result[5]
         percentage = calculate_percentage(nbok, nbtrials)
         insert_data_into_treeview(tree, result, percentage)
+
+    # Display total statistics
+    view_total()
 
     # Mark that data has been loaded
     loaded_data = True
@@ -354,7 +359,6 @@ def colorize_percentage(percentage):
     else:
         return ('#228b22', 'white') # Excellent
 
-
 def view_total():
     rows_total = 0
     duration_total = 0
@@ -376,11 +380,11 @@ def view_total():
         percentage_total = 0
 
     # Update the labels with the total statistics
-    nbrows_label.config(text=f"{rows_total}")
-    duration_label.config(text=f"{duration_total} sec")
-    nbok_label.config(text=f"{nbok_total}")
-    nbtotal_label.config(text=f"{nbtrials_total}")
-    percentage_label.config(text=f"{percentage_total:.2f}%")
+    nbrows_label.configure(text=f"{rows_total}")
+    duration_label.configure(text=f"{duration_total} sec")
+    nbok_label.configure(text=f"{nbok_total}")
+    nbtotal_label.configure(text=f"{nbtrials_total}")
+    percentage_label.configure(text=f"{percentage_total:.2f}%")
 
 def add_results():
     global add_window
