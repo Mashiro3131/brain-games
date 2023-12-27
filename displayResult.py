@@ -25,8 +25,7 @@ import customtkinter as ctk
 import database
 from database import remove_match_record, fetch_game_statistics, retrieve_exercise_catalog
 
-
-tree = None # Global
+tree = None  # Global
 pseudo_entry = None
 exercise_entry = None
 start_date_entry = None
@@ -39,15 +38,13 @@ nbtotal_label = None
 percentage_label = None
 
 last_filters = {"pseudo": "", "exercise": ""}
-loaded_data = False # Pour suivre si les données ont été chargées
-
+loaded_data = False  # Pour suivre si les données ont été chargées
 
 # pagination
 
 current_page = 0
 rows_per_page = 20
 filtered_data = []  # This will hold the data that is filtered according to the applied filters
-
 
 
 def display_results():
@@ -106,7 +103,9 @@ def display_results():
     # Treeview setup
     treeview_frame = ctk.CTkFrame(window, corner_radius=15)
     treeview_frame.pack(expand=True, fill='both', padx=15, pady=15)
-    tree = ttk.Treeview(treeview_frame, columns=("Pseudo", "Date Time", "Time", "Exercise", "NB OK", "NB Trials", "% Success"), show="headings", height=10)
+    tree = ttk.Treeview(treeview_frame,
+                        columns=("Pseudo", "Date Time", "Time", "Exercise", "NB OK", "NB Trials", "% Success"),
+                        show="headings", height=10)
     tree.column("#0", width=0, stretch=ctk.NO)
 
     for col in tree["columns"]:
@@ -115,29 +114,28 @@ def display_results():
         # Custom Treeview Styling
         style = ttk.Style(window)
         style.theme_use("default")
-        style.configure("Treeview", background="#2a2d2e", foreground="white", rowheight=25, fieldbackground="#343638", bordercolor="#343638", borderwidth=0)
+        style.configure("Treeview", background="#2a2d2e", foreground="white", rowheight=25, fieldbackground="#343638",
+                        bordercolor="#343638", borderwidth=0)
         style.map('Treeview', background=[('selected', '#22559b')])
         style.configure("Treeview.Heading", background="#565b5e", foreground="white", relief="flat")
         style.map("Treeview.Heading", background=[('active', '#3484F0')])
 
     tree.pack(expand=True, fill='both', pady=20, padx=20)
 
-
     # """ Scrollbar """
     # ctk.CTkScrollbar(treeview_frame, command=tree.yview).pack(side="right", fill="y")
 
-
     """ Total Statistics """
-    
+
     # Total Statistics Frame
     total_stats_frame = ctk.CTkFrame(window)
     total_stats_frame.pack(padx=20, pady=20)
-    
+
     # Total Statistics Title
     ctk.CTkLabel(total_stats_frame, text="Total Statistics", font=ctk.CTkFont(size=13, weight="bold")).pack(pady=5)
-    
+
     # Separator between title and statistics
-    #tk.Separator(treeview_frame, orient="horizontal").pack(fill="x", pady=10)
+    # tk.Separator(treeview_frame, orient="horizontal").pack(fill="x", pady=10)
     separator = ttk.Separator(total_stats_frame, orient='horizontal', style='Line.TSeparator')
     separator.pack(fill='x', pady=2)
 
@@ -145,23 +143,22 @@ def display_results():
     ctk.CTkLabel(total_stats_frame, text="Rows:").pack(side='left', padx=10)
     nbrows_label = ctk.CTkLabel(total_stats_frame, text="")
     nbrows_label.pack(side="left", padx=10)
- 
+
     ctk.CTkLabel(total_stats_frame, text="Duration:").pack(side='left', padx=10)
     duration_label = ctk.CTkLabel(total_stats_frame, text="")
-    duration_label.pack(side="left", padx=10)    
-    
-    ctk.CTkLabel(total_stats_frame, text="NB OK:").pack(side='left', padx=10)  
+    duration_label.pack(side="left", padx=10)
+
+    ctk.CTkLabel(total_stats_frame, text="NB OK:").pack(side='left', padx=10)
     nbok_label = ctk.CTkLabel(total_stats_frame, text="")
-    nbok_label.pack(side="left", padx=10)   
-    
+    nbok_label.pack(side="left", padx=10)
+
     ctk.CTkLabel(total_stats_frame, text="NB Total:").pack(side='left', padx=10)
     nbtotal_label = ctk.CTkLabel(total_stats_frame, text="")
-    nbtotal_label.pack(side="left", padx=10)    
-    
+    nbtotal_label.pack(side="left", padx=10)
+
     ctk.CTkLabel(total_stats_frame, text="% Success:").pack(side='left', padx=10)
     percentage_label = ctk.CTkLabel(total_stats_frame, text="")
-    percentage_label.pack(side="left", padx=10) 
-
+    percentage_label.pack(side="left", padx=10)
 
     """ Pagination """
     pagination_frame = ctk.CTkFrame(window)
@@ -175,22 +172,14 @@ def display_results():
     next_page_button = ctk.CTkButton(pagination_frame, text="Next Page", command=next_page)
     next_page_button.pack(side="left", padx=10)
 
-
-
     # Display the data by default
     view_results()
-    
-    
+
     window.mainloop()
-
-
 
 
 def display_total_statistics():
     pass
-
-
-
 
 
 # CREATE
@@ -229,8 +218,8 @@ def view_total():
     nbok_label.configure(text=f"{nbok_total}")
     nbtotal_label.configure(text=f"{nbtrials_total}")
     percentage_label.configure(text=f"{percentage_total:.2f}%")
-    
-    
+
+
 def view_results():
     global filtered_data, current_page, rows_per_page, loaded_data, last_filters
     # Retrieve values from input fields
@@ -241,25 +230,26 @@ def view_results():
 
     # Check if filters have changed
     if (pseudo == last_filters["pseudo"] and
-        exercise == last_filters["exercise"] and
-        start_date == last_filters.get("start_date", "") and
-        end_date == last_filters.get("end_date", "") and
-        loaded_data):
+            exercise == last_filters["exercise"] and
+            start_date == last_filters.get("start_date", "") and
+            end_date == last_filters.get("end_date", "") and
+            loaded_data):
         messagebox.showinfo("Information", "Les données sont déjà à jour.")
         return
 
     # Reload data if any filter has changed
     if (pseudo != last_filters["pseudo"] or
-        exercise != last_filters["exercise"] or
-        start_date != last_filters.get("start_date", "") or
-        end_date != last_filters.get("end_date", "")):
+            exercise != last_filters["exercise"] or
+            start_date != last_filters.get("start_date", "") or
+            end_date != last_filters.get("end_date", "")):
         loaded_data = False
 
     # Save the current filters
     last_filters.update({"pseudo": pseudo, "exercise": exercise, "start_date": start_date, "end_date": end_date})
 
     # Fetch results from the database
-    results, _ = database.fetch_game_statistics(pseudo=pseudo, exercise=exercise, start_date=start_date, end_date=end_date)
+    results, _ = database.fetch_game_statistics(pseudo=pseudo, exercise=exercise, start_date=start_date,
+                                                end_date=end_date)
 
     # Check if results are available
     if not results:
@@ -271,7 +261,8 @@ def view_results():
     filtered_data = results
     current_page = 0
     display_current_page()
-    
+
+
 def display_current_page():
     global filtered_data, current_page, rows_per_page
 
@@ -291,12 +282,14 @@ def display_current_page():
         insert_data_into_treeview(tree, result, percentage)
 
     # Update total statistics
-    view_total()    
+    view_total()
+
 
 def next_page():
     global current_page
     current_page += 1
     display_current_page()
+
 
 def previous_page():
     global current_page
@@ -345,11 +338,13 @@ def modifier_resultat():
     nbtrials_entry.insert(0, current_values[5])  # Default to original value
 
     # Update button
-    update_button = ctk.CTkButton(update_window, text="Update", command=lambda: update_result(selected_item, duration_entry.get(), nbok_entry.get(), nbtrials_entry.get()))
+    update_button = ctk.CTkButton(update_window, text="Update",
+                                  command=lambda: update_result(selected_item, duration_entry.get(), nbok_entry.get(),
+                                                                nbtrials_entry.get()))
     update_button.pack()
 
-def update_result(selected_item, new_duration, new_nbok, new_nbtrials):
 
+def update_result(selected_item, new_duration, new_nbok, new_nbtrials):
     global update_window
     current_values = tree.item(selected_item, 'values')
     pseudo = tree.item(selected_item, 'values')[0]  # pour pseudo
@@ -360,15 +355,18 @@ def update_result(selected_item, new_duration, new_nbok, new_nbtrials):
     nbtrials = tree.item(selected_item, 'values')[5]  # pour nbtrials
 
     # mise a jour de bd
-    database.revise_game_outcome(pseudo, exercise, date_hour, duration, nbok,nbtrials, new_duration, new_nbok, new_nbtrials)
+    database.revise_game_outcome(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nbok,
+                                 new_nbtrials)
 
     # mise a jour de tkinter
-    updated_values = (pseudo, exercise, date_hour, new_duration, new_nbok, new_nbtrials, calculate_percentage(int(new_nbok), int(new_nbtrials)))
+    updated_values = (pseudo, exercise, date_hour, new_duration, new_nbok, new_nbtrials,
+                      calculate_percentage(int(new_nbok), int(new_nbtrials)))
     tree.item(selected_item, values=updated_values)
 
     refresh_treeview()
 
     update_window.destroy()
+
 
 # DELETE
 def supprimer_resultat():
@@ -402,27 +400,30 @@ def refresh_treeview():
             percentage = calculate_percentage(nbok, nbtrials)
             insert_data_into_treeview(tree, result, percentage)
 
+
 def calculate_percentage(nbok, nbtrials):
     if isinstance(nbtrials, int) and nbtrials > 0:
         return round((nbok / nbtrials) * 100, 2)
     else:
         return 0
 
+
 def convert_time_to_seconds(time_str):
     """ Convert a given time string (HH:MM:SS) to seconds. """
     hours, minutes, seconds = map(int, time_str.split(':'))
     return hours * 3600 + minutes * 60 + seconds
 
+
 def colorize_percentage(percentage):
     """ Define colors based on the percentage. """
     if percentage < 25:
-        return ('#800000', 'white') # At the bottom... please do better
+        return ('#800000', 'white')  # At the bottom... please do better
     elif percentage < 50:
-        return ('#cc5500', 'white') # Below average
+        return ('#cc5500', 'white')  # Below average
     elif percentage < 75:
-        return ('#add8e6', 'black') # Average results
+        return ('#add8e6', 'black')  # Average results
     else:
-        return ('#228b22', 'white') # Excellent
+        return ('#228b22', 'white')  # Excellent
 
 
 def add_results():
@@ -474,13 +475,15 @@ def add_results():
     ))
     add_result.pack()
 
+
 def save_results(pseudo, exercise, temps, nbok, nbtrials):
     global add_window
 
     # Verify if the exercise exists
     if not check_exercise_exists(exercise):
         existing_exercises = retrieve_exercise_catalog()
-        messagebox.showwarning("Erreur", f"Cet exercise n'existe pas. Les exercices disponibles dans la BD sont: {', '.join(existing_exercises)}")
+        messagebox.showwarning("Erreur",
+                               f"Cet exercise n'existe pas. Les exercices disponibles dans la BD sont: {', '.join(existing_exercises)}")
         return
 
     # Verify the time format
@@ -498,6 +501,7 @@ def save_results(pseudo, exercise, temps, nbok, nbtrials):
     # Close the add result window
     add_window.destroy()
 
+
 def check_exercise_exists(exercise):
     """
     Checks if a given exercise exists in the database.
@@ -507,6 +511,7 @@ def check_exercise_exists(exercise):
 
     # If no results are returned, the exercise does not exist
     return len(results) > 0
+
 
 def time_format(temps_str):
     """
