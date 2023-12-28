@@ -1,7 +1,5 @@
 # Brain Games
 
-# Brain Games
-
 Welcome to Brain Games! This project is designed to provide a collection of fun and challenging brain training games to exercise your mind.
 
 ## Table of Contents
