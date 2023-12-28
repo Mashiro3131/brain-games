@@ -18,7 +18,7 @@ loaded_data = False  # Pour suivre si les données ont été chargées
 
 
 def display_results():
-    global tree,pseudo_entry,exercise_entry,nblines_label, duration_label, nbok_label, nbtotal_label, percentage_label , start_date_entry, end_date_entry#pour definir global
+    global tree,pseudo_entry,exercise_entry,nbrows_label, duration_label, nbok_label, nbtotal_label, percentage_label , start_date_entry, end_date_entry#pour definir global
     #cree nouvelle fenetre avec titre
     window = tk.Tk()
     window.title("TRAINING : AFFICHAGE")
@@ -75,7 +75,7 @@ def display_results():
 
     # pour cree Treeview
     tree = ttk.Treeview(window, height=20)
-    tree["columns"] = ("Éléve", "Date Heure", "Temps", "Exercice", "NB OK", "Nb Trial", ""% Success")
+    tree["columns"] = ("Élève", "Date Heure", "Temps", "Exercice", "NB OK", "NB Trial", ""% Success")
     tree.column("#0", width=0, stretch=tk.NO)
     # tree.column
 
@@ -92,13 +92,13 @@ def display_results():
     # total
     tk.Label(window, text="NbLignes").grid(row=4, column=0, sticky='w')
     tk.Label(window, text="Temps total").grid(row=4, column=1, sticky='w')
-    tk.Label(window, text="Nb OK").grid(row=4, column=2, sticky='w')
-    tk.Label(window, text="Nb Total").grid(row=4, column=3, sticky='w')
+    tk.Label(window, text="NB OK").grid(row=4, column=2, sticky='w')
+    tk.Label(window, text="NB Total").grid(row=4, column=3, sticky='w')
     tk.Label(window, text="% Total").grid(row=4, column = 4, sticky="w")
 
     # total
-    nblines_label = tk.Label(window, text="")
-    nblines_label.grid(row=5, column=0, sticky='w')
+    nbrows_label = tk.Label(window, text="")
+    nbrows_label.grid(row=5, column=0, sticky='w')
 
     duration_label = tk.Label(window, text="")
     duration_label.grid(row=5, column=1, sticky='w')
@@ -188,7 +188,7 @@ def modifier_resultat():
     nbok_entry.insert(0, current_values[4])  # par default value original
 
     # input pour NbTrials
-    nbtrials_label = tk.Label(update_window, text="Nb total:")
+    nbtrials_label = tk.Label(update_window, text="NB Total")
     nbtrials_label.pack()
     nbtrials_entry = tk.Entry(update_window)
     nbtrials_entry.pack()
@@ -351,7 +351,7 @@ def view_results():
 
 
 def view_total():
-    lines_total = 0
+    rows_total = 0
     duration_total = 0
     nbok_total = 0
     nbtrials_total = 0
@@ -359,7 +359,7 @@ def view_total():
 
     for child in tree.get_children():
         values = tree.item(child, 'values')
-        lines_total += 1
+        rows_total += 1
         duration_total += convert_time_to_seconds(values[2])  # converdir la valauer de duration minute en second
         nbok_total += int(values[4])  # ajouter NbOk
         nbtrials_total += int(values[5])  # ajouter NbTrials
@@ -370,7 +370,7 @@ def view_total():
     else:
         percentage_total = 0
 
-    nblines_label.config(text=f"{lines_total}")
+    nbrows_label.config(text=f"{rows_total}")
     duration_label.config(text=f"{duration_total}")
     nbok_label.config(text=f"{nbok_total}")
     nbtotal_label.config(text=f" {nbtrials_total}")
@@ -409,7 +409,7 @@ def add_results():
     nbok_entry = tk.Entry(add_window)
     nbok_entry.pack()
 
-    # input pour 'Nb Trial'
+    # input pour 'NB Trial'
     nbtrials_label = tk.Label(add_window, text="NB Trials:")
     nbtrials_label.pack()
     nbtrial_entry = tk.Entry(add_window)

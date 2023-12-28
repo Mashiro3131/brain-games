@@ -156,7 +156,7 @@ import contextlib
 import mysql.connector
 import colorama
 import datetime
-from colorama import Fore, Style
+from colorama import Fore
 
 
 
