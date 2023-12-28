@@ -22,6 +22,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import customtkinter as ctk
+from customtkinter import *
 import database
 from database import remove_match_record, fetch_game_statistics, retrieve_exercise_catalog
 
@@ -66,6 +67,7 @@ def display_results():
 
     # display results frame
     display_results_frame = ctk.CTkFrame(window)
+    display_results_frame.place(relx=0.5, rely=0.5, anchor="center")
     display_results_frame.pack(padx=20,pady=20)
 
     # # Menu Bar
