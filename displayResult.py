@@ -64,12 +64,34 @@ def display_results():
     window.title("BRAINGAMES : STATISTICS")
     window.geometry("1300x700+300+150")
 
+    # display results frame
+    display_results_frame = ctk.CTkFrame(window)
+    display_results_frame.pack(padx=20,pady=20)
+
+    # # Menu Bar
+    # menubar = tk.Menu(window)
+    # window.config(menu=menubar)
+    
+    # # Menu Bar - File
+    # file_menu = tk.Menu(menubar, tearoff=0)
+    # menubar.add_cascade(label="File", menu=file_menu)
+    # file_menu.add_command(label="Add result", command=add_results)
+    # file_menu.add_command(label="Update result", command=modifier_resultat)
+    # file_menu.add_command(label="Delete result", command=supprimer_resultat)
+    # file_menu.add_separator()
+    # file_menu.add_command(label="Exit", command=window.quit)
+    
+    # # Menu Bar - Help
+    # help_menu = tk.Menu(menubar, tearoff=0)
+    # menubar.add_cascade(label="Help", menu=help_menu)
+    # help_menu.add_command(label="About")
+
     # Title
-    title_label = ctk.CTkLabel(window, text="Statistics", font=ctk.CTkFont(size=15, weight="bold"))
+    title_label = ctk.CTkLabel(display_results_frame, text="Statistics", font=ctk.CTkFont(size=15, weight="bold"))
     title_label.pack(pady=20)
 
     # Filter frame
-    filter_frame = ctk.CTkFrame(window)
+    filter_frame = ctk.CTkFrame(display_results_frame)
     filter_frame.pack(pady=10)
 
     # Pseudo filter
@@ -101,7 +123,7 @@ def display_results():
     display_statistics_button.grid(row=0, column=8, padx=15, pady=8)
 
     # Treeview setup
-    treeview_frame = ctk.CTkFrame(window, corner_radius=15)
+    treeview_frame = ctk.CTkFrame(display_results_frame, corner_radius=15)
     treeview_frame.pack(expand=True, fill='both', padx=15, pady=15)
     tree = ttk.Treeview(treeview_frame,
                         columns=("Pseudo", "Date Time", "Time", "Exercise", "NB OK", "NB Trials", "% Success"),
@@ -112,7 +134,7 @@ def display_results():
         tree.column(col, width=150, anchor="center")
         tree.heading(col, text=col, anchor="center", command=lambda _col=col: treeview_sort_column(tree, _col, False))
         # Custom Treeview Styling
-        style = ttk.Style(window)
+        style = ttk.Style(display_results_frame)
         style.theme_use("default")
         style.configure("Treeview", background="#2a2d2e", foreground="white", rowheight=25, fieldbackground="#343638",
                         bordercolor="#343638", borderwidth=0)
@@ -128,7 +150,7 @@ def display_results():
     """ Total Statistics """
 
     # Total Statistics Frame
-    total_stats_frame = ctk.CTkFrame(window)
+    total_stats_frame = ctk.CTkFrame(display_results_frame)
     total_stats_frame.pack(padx=20, pady=20)
 
     # Total Statistics Title
@@ -161,16 +183,16 @@ def display_results():
     percentage_label.pack(side="left", padx=10)
 
     """ Pagination """
-    pagination_frame = ctk.CTkFrame(window)
+    pagination_frame = ctk.CTkFrame(display_results_frame)
     pagination_frame.pack(pady=10)
 
     # Previous Page Button
     prev_page_button = ctk.CTkButton(pagination_frame, text="Previous Page", command=previous_page)
-    prev_page_button.pack(side="left", padx=10)
+    prev_page_button.pack(side="left", padx=5,pady=5)
 
     # Next Page Button
     next_page_button = ctk.CTkButton(pagination_frame, text="Next Page", command=next_page)
-    next_page_button.pack(side="left", padx=10)
+    next_page_button.pack(side="left", padx=5,pady=5)
 
     # Display the data by default
     view_results()
