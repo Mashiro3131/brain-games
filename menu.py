@@ -1,10 +1,13 @@
+import os
 import tkinter as tk
 import geo01
 import info02
 import info05
 import displayResult
 import customtkinter as ctk
-from customtkinter import * 
+from customtkinter import *
+from PIL import *
+
 
 # exercises array
 a_exercise=["geo01", "info02", "info05"]
