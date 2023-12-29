@@ -1,10 +1,26 @@
-# braintraining
+# Brain Games
 
- - Vous devez mettre à jour les paramètres de la fonction de connexion dans le fichier database.py (tels que le port ou le mot de passe etc.). 
+Welcome to Brain Games! This project is designed to provide a collection of fun and challenging brain training games to exercise your mind.
 
- - Vous n'avez pas besoin d'un fichier SQL supplémentaire pour créer une base de données car le programme crée automatiquement une base de données et une table lorsque vous démarrez le programme.
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Installation
+
+To get started with Brain Games, follow these steps:
+
+1. Clone the repository: `git clone https://github.com/your-username/brain-games.git`
+2. Navigate to the project directory: `cd brain-games`
+3. Install the dependencies: `npm install`
+
+## Usage
+
+Once you have installed the dependencies, you can run the Brain Games application by executing the following command:
+
+* lainch the menu: `npm run menu`
 
 
- - Pour ajouter un nouveau joueur, vous devez d'abord avoir un enregistrement de ce nom de jeu dans la base de données. 
-En effet, la fonction d'ajout vérifie la base de données afin d'éviter une erreur telle qu'un nom de jeu non valide. 
-Pour éviter cela, il est nécessaire de créer d'abord un enregistrement dans les trois jeux. 
