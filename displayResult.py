@@ -99,25 +99,25 @@ def display_results():
     # Pseudo filter
     pseudo_label = ctk.CTkLabel(filter_frame, text="Pseudo:")
     pseudo_label.grid(row=0, column=0, padx=15, pady=8)
-    pseudo_entry = ctk.CTkEntry(filter_frame)
+    pseudo_entry = ctk.CTkEntry(filter_frame, placeholder_text="PSEUDO01")
     pseudo_entry.grid(row=0, column=1, padx=5, pady=8)
 
     # Exercise filter
     exercise_label = ctk.CTkLabel(filter_frame, text="Exercise:")
     exercise_label.grid(row=0, column=2, padx=5, pady=8)
-    exercise_entry = ctk.CTkEntry(filter_frame)
+    exercise_entry = ctk.CTkEntry(filter_frame, placeholder_text="EXE03")
     exercise_entry.grid(row=0, column=3, padx=5, pady=8)
 
     # Start date filter
     start_date_label = ctk.CTkLabel(filter_frame, text="Start Date:")
     start_date_label.grid(row=0, column=4, padx=5, pady=8)
-    start_date_entry = ctk.CTkEntry(filter_frame)
+    start_date_entry = ctk.CTkEntry(filter_frame, placeholder_text="YYYY-MM-DD")
     start_date_entry.grid(row=0, column=5, padx=5, pady=8)
 
     # End date filter
     end_date_label = ctk.CTkLabel(filter_frame, text="End Date:")
     end_date_label.grid(row=0, column=6, padx=5, pady=8)
-    end_date_entry = ctk.CTkEntry(filter_frame)
+    end_date_entry = ctk.CTkEntry(filter_frame, placeholder_text="YYYY-MM-DD")
     end_date_entry.grid(row=0, column=7, padx=5, pady=8)
 
     # Display Data Button
@@ -148,6 +148,8 @@ def display_results():
 
     # """ Scrollbar """
     # ctk.CTkScrollbar(treeview_frame, command=tree.yview).pack(side="right", fill="y")
+
+
 
     """ Total Statistics """
 
