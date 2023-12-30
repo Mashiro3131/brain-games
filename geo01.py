@@ -8,167 +8,174 @@ from math import sqrt
 import time
 import database
 import datetime
+import tkinter as tk
+import random
+from math import sqrt
+import time
+import database
+import datetime
+from customtkinter import *
 
 
-# Main window
-# graphical variables
-l = 1000 # canvas length
-h = 500 # canvas height
-target_x = 10 # x & y to find
-target_y = 10
-scale = 47.5 #100 pixels for x=1
-mycircle= None #objet utilisé pour le cercle rouge
+class GeoGame(CTkFrame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+
+        # Game configuration and initial state
+        self.l = 1000  # canvas length
+        self.h = 500  # canvas height
+        self.scale = 47.5  # scale for the canvas
+        self.target_x = 10  # initial target x-coordinate
+        self.target_y = 10  # initial target y-coordinate
+        self.pseudo = "Gaston"  # default player name
+        self.exercise = "GEO01"
+        self.nbtrials = 0  # number of total trials
+        self.nbok = 0  # number of successful trials
+        self.start_date = datetime.datetime.now()  # start time
+        self.hex_color = '#8bc9c2'  # background color
+
+        self.configure(fg_color=self.hex_color)  # Set the frame color
+
+        # Setup widgets
+        self.setup_widgets()
 
 
-#important data (to save)
-pseudo="Gaston" #provisory pseudo for user
-exercise="GEO01"
-nbtrials=0 #number of total trials
-nbok=0 #number of successfull trials
+    def setup_widgets(self):
+        # Create and place canvas
+        self.canvas = tk.Canvas(self, width=self.l, height=self.h, bg="#f9d893")
+        self.canvas.pack(padx=5, pady=5)
+        self.canvas.bind("<Button-1>", self.canvas_click)
 
-# on canvas click, check if succeded or failed
-def canvas_click(event):
-    global mycircle, nbtrials, nbok, pseudo_entry
+        # Create and place pseudo entry
+        self.pseudo_entry = CTkEntry(self, placeholder_text="Pseudo")
+        self.pseudo_entry.pack(pady=10)
 
-    pseudo = pseudo_entry.get()
-    # x et y clicked
-    click_x = (event.x - l/2) / scale
-    click_y = -(event.y - h/2) / scale
+        # Create and place result label
+        self.lbl_result = CTkLabel(self, text="Essais réussis : 0/0")
+        self.lbl_result.pack(pady=10)
 
-    # distance between clicked and (x,y)
-    dx = abs(click_x - target_x)
-    dy = abs(click_y - target_y)
-    d = sqrt((dx)**2 + (dy)**2) # Pythagor
+        # Create and place target label
+        self.lbl_target = CTkLabel(self, text="")
+        self.lbl_target.pack(pady=10)
 
-    # display a red circle where clicked (global variable mycircle)
-    mycircle = circle(target_x,target_y,0.5,"red")
+        # Create and place 'Next' button
+        self.btn_next = CTkButton(self, text="Suivant", command=self.next_point)
+        self.btn_next.pack(pady=10)
 
-    # check succeeded or failed
-    nbtrials+=1
-    if d > 0.5:
-        window_geo01.configure(bg="red")
-    else:
-        window_geo01.configure(bg="green")
-        nbok += 1
-    lbl_result.configure(text=f"{pseudo} Essais réussis : {nbok} / {nbtrials}")
-    window_geo01.update()
-    time.sleep(1) # delai 1s
-    next_point(event=None)
+        # Create and place 'Finish' button
+        self.btn_finish = CTkButton(self, text="Terminer", command=self.save_game)
+        self.btn_finish.pack(pady=10)
 
+        # Create and place duration label
+        self.duration_label = CTkLabel(self, text="0:00")
+        self.duration_label.pack(pady=10)
 
-def circle(x,y,r,color):
-    #circle, center x & y, r radius, color
-    mycircle=canvas.create_oval((x - r) * scale + l/2, -(y-r) * scale + h/2, (x + r) * scale + l/2, -(y + r)* scale + h/2, fill=color)
-    return mycircle
+        # Start the first point
+        self.next_point()
 
+    def canvas_click(self, event):
+        click_x = (event.x - self.l / 2) / self.scale
+        click_y = -(event.y - self.h / 2) / self.scale
 
-def next_point(event):
-    global target_x, target_y, mycircle
-    window_geo01.configure(bg=hex_color)#remettre couleur normale
-    print("next_point " + str(event))
-    #Clearing the canvas
-    canvas.delete('all')
+        dx = abs(click_x - self.target_x)
+        dy = abs(click_y - self.target_y)
+        d = sqrt(dx**2 + dy**2)
 
-    # x & y axis
-    canvas.create_line(0, h/2, l, h/2, fill="black")  # x
-    canvas.create_line(l/2, 0, l/2, h, fill="black")  # y
-    # graduation -10 +10
-    for i in range(-10,11,5):
-        canvas.create_line(l/2+i*scale, h/2-10,l/2+i*scale, h/2+10, fill="black")  # on x
-        canvas.create_text(l/2+i*scale, h/2+20, text=i, fill="black", font=("Helvetica 15"))
-    for i in range(-5,6,5):
-        canvas.create_line(l/2-10, h/2-i*scale,l/2+10, h/2-i*scale, fill="black")  # y
-        canvas.create_text(l/2-20, h/2-i*scale, text=i, fill="black", font=("Helvetica 15"))
+        self.mycircle = self.circle(self.target_x, self.target_y, 0.5, "red")
 
-    # x & y random
-    target_x = round(random.uniform(-10, 10),0)
-    target_y = round(random.uniform(-5, 5),0)
+        self.nbtrials += 1
+        if d > 0.5:
+            self.configure(fg_color="red")
+        else:
+            self.configure(fg_color="green")
+            self.nbok += 1
 
-    # display x & y, 1 decimal
-    lbl_target.configure(text=f"Cliquez sur le point ({round(target_x, 1)}, {round(target_y, 1)}). Echelle x -10 à +10, y-5 à +5")
+        # Update labels and other widgets as needed
+        self.lbl_result.configure(text=f"{self.pseudo} Essais réussis : {self.nbok} / {self.nbtrials}")
 
+    def circle(self, x, y, r, color):
+        return self.canvas.create_oval(
+            (x - r) * self.scale + self.l / 2, 
+            -(y - r) * self.scale + self.h / 2, 
+            (x + r) * self.scale + self.l / 2, 
+            -(y + r) * self.scale + self.h / 2, 
+            fill=color
+        )
 
-def save_game(event):
-    global start_date, pseudo, exercise, duration, nbtrials, nbok # Changer ici
+    def next_point(self, event=None):
+        self.configure(fg_color=self.hex_color)
+        self.canvas.delete('all')
 
-    # pour obtenir le temp dernier
-    end_time = datetime.datetime.now()
+        self.canvas.create_line(0, self.h/2, self.l, self.h/2, fill="black")
+        self.canvas.create_line(self.l/2, 0, self.l/2, self.h, fill="black")
+        for i in range(-10, 11, 5):
+            self.canvas.create_line(self.l/2+i*self.scale, self.h/2-10, self.l/2+i*self.scale, self.h/2+10, fill="black")
+            self.canvas.create_text(self.l/2+i*self.scale, self.h/2+20, text=i, fill="black", font=("Helvetica 15"))
+        for i in range(-5, 6, 5):
+            self.canvas.create_line(self.l/2-10, self.h/2-i*self.scale, self.l/2+10, self.h/2-i*self.scale, fill="black")
+            self.canvas.create_text(self.l/2-20, self.h/2-i*self.scale, text=i, fill="black", font=("Helvetica 15"))
 
-    # pour calculer le temps de partie
-    duration = (end_time - start_date).total_seconds() # Changer ici
+        self.target_x = round(random.uniform(-10, 10), 0)
+        self.target_y = round(random.uniform(-5, 5), 0)
 
-    pseudo = pseudo_entry.get()
+        self.lbl_target.configure(text=f"Cliquez sur le point ({round(self.target_x, 1)}, {round(self.target_y, 1)}). Echelle x -10 à +10, y-5 à +5")
 
-    # insert bd
-    database.record_match_outcome(pseudo, exercise, duration, nbtrials, nbok) # Changer ici
+    def save_game(self, event):
+        end_time = datetime.datetime.now()
+        duration = (end_time - self.start_date).total_seconds()
+        pseudo = self.pseudo_entry.get()
 
-    window_geo01.destroy()
+        database.record_match_outcome(pseudo, self.exercise, duration, self.nbtrials, self.nbok)
+        self.destroy()
 
+    def display_timer(self):
+        duration = datetime.datetime.now() - self.start_date
+        duration_s = int(duration.total_seconds())
+        self.duration_label.configure(text="{:02d}".format(int(duration_s / 60)) + ":" + "{:02d}".format(duration_s % 60))
+        self.after(1000, self.display_timer)
 
+    def open_window_geo_01(self, window):
+        self.window_geo01 = tk.Toplevel(window)
 
-def display_timer():
-    duration = datetime.datetime.now()-start_date #elapsed time since beginning, in time with decimals
-    duration_s = int(duration.total_seconds()) #idem but in seconds (integer)
-    #display min:sec (00:13)
-    duration_label.configure(text = "{:02d}".format(int(duration_s / 60)) + ":" + "{:02d}".format(duration_s % 60))
-    window_geo01.after(1000, display_timer) #recommencer après 15 ms
+        self.window_geo01.title("Exercice de géométrie")
+        self.window_geo01.geometry("1100x900")
 
+        rgb_color = (139, 201, 194)
+        self.hex_color = '#%02x%02x%02x' % rgb_color
+        self.window_geo01.configure(bg=self.hex_color)
 
-def open_window_geo_01(window):
-    # window = tk.Tk()
-    global window_geo01, hex_color, title_label, duration_label, lbl_result, lbl_target, canvas, start_date, pseudo_entry
-    window_geo01 = tk.Toplevel(window)
+        self.title_label = tk.Label(self.window_geo01, text=self.exercise, font=("Arial", 15))
+        self.title_label.grid(row=0, column=1, padx=5, pady=5)
 
-    window_geo01.title("Exercice de géométrie")
-    window_geo01.geometry("1100x900")
+        self.duration_label = tk.Label(self.window_geo01, text="0:00", font=("Arial", 15))
+        self.duration_label.grid(row=0, column=2, ipady=5, padx=10, pady=10)
 
-    # color définition
-    rgb_color = (139, 201, 194)
-    hex_color = '#%02x%02x%02x' % rgb_color # translation in hexa
-    window_geo01.configure(bg=hex_color)
+        tk.Label(self.window_geo01, text='Pseudo:', font=("Arial", 15)).grid(row=1, column=0, padx=5, pady=5)
+        self.pseudo_entry = tk.Entry(self.window_geo01, font=("Arial", 15))
+        self.pseudo_entry.grid(row=1, column=1)
 
-    # Canvas creation
-    title_label = tk.Label(window_geo01, text=f"{exercise}", font=("Arial", 15))
-    title_label.grid(row=0, column=1, padx=5, pady=5)
+        self.lbl_result = tk.Label(self.window_geo01, text=f"Essais réussis : 0/0", font=("Arial", 15))
+        self.lbl_result.grid(row=1, column=3, padx=5, pady=5, columnspan=4)
 
-    duration_label = tk.Label(window_geo01, text="0:00", font=("Arial", 15))
-    duration_label.grid(row=0,column=2, ipady=5, padx=10,pady=10)
+        self.lbl_target = tk.Label(self.window_geo01, text="", font=("Arial", 15))
+        self.lbl_target.grid(row=2, column=0, padx=5, pady=5, columnspan=6)
 
-    tk.Label(window_geo01, text='Pseudo:', font=("Arial", 15)).grid(row=1, column=0, padx=5, pady=5)
-    pseudo_entry = tk.Entry(window_geo01, font=("Arial", 15))
-    pseudo_entry.grid(row=1, column=1)
+        self.canvas = tk.Canvas(self.window_geo01, width=self.l, height=self.h, bg="#f9d893")
+        self.canvas.grid(row=4, column=0, padx=5, pady=5, columnspan=6)
+        self.btn_next = tk.Button(self.window_geo01, text="Suivant", font=("Arial", 15))
+        self.btn_next.grid(row=5, column=0, padx=5, pady=5, columnspan=6)
 
-    lbl_result = tk.Label(window_geo01, text=f"Essais réussis : 0/0", font=("Arial", 15))
-    lbl_result.grid(row=1, column=3, padx=5, pady=5, columnspan=4)
+        self.btn_finish = tk.Button(self.window_geo01, text="Terminer", font=("Arial", 15))
+        self.btn_finish.grid(row=6, column=0, columnspan=6)
 
-    lbl_target = tk.Label(window_geo01, text="", font=("Arial", 15))
-    lbl_target.grid(row=2, column=0, padx=5, pady=5, columnspan=6)
+        self.btn_finish.bind("<Button-1>", lambda event: (self.save_game(event)))
 
-    canvas = tk.Canvas(window_geo01, width=l, height=h, bg="#f9d893")
-    canvas.grid(row=4, column=0, padx=5, pady=5, columnspan=6)
-    btn_next = tk.Button(window_geo01, text="Suivant", font=("Arial", 15))
-    btn_next.grid(row=5, column=0, padx=5, pady=5, columnspan=6)
+        self.next_point(event=None)
+        self.start_date = datetime.datetime.now()
+        self.display_timer()
 
+        self.canvas.bind("<Button-1>", self.canvas_click)
+        self.btn_next.bind("<Button-1>", self.next_point)
+        self.btn_finish.bind("<Button-1>", self.save_game)
 
-    btn_finish = tk.Button(window_geo01, text="Terminer", font=("Arial", 15))
-    btn_finish.grid(row=6, column=0, columnspan=6)
-
-    # button-1 clic a gauche souris
-    # bind pour relier un function sur un bouton
-    btn_finish.bind("<Button-1>", lambda event: (save_game(event)))
-
-    # first call of next_point
-    next_point(event=None)
-    start_date = datetime.datetime.now()
-    display_timer()
-
-    # first call of next_point
-    # binding actions (canvas & buttons)
-    canvas.bind("<Button-1>", canvas_click)
-    btn_next.bind("<Button-1>", next_point)
-    btn_finish.bind("<Button-1>", save_game)
-
-    # main loop
-    window_geo01.mainloop()
-
-
+        self.window_geo01.mainloop()
