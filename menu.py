@@ -1,67 +1,117 @@
+from customtkinter import CTk, CTkFrame, CTkButton, CTkLabel, CTkImage, set_appearance_mode
+from PIL import Image, ImageTk
 import os
-import tkinter as tk
-import geo01
-import info02
-import info05
-import displayResult
-import customtkinter as ctk
-from customtkinter import *
-from PIL import *
 
+# Assuming GeoGame, Info02Game, and Info05Game are correctly defined in their respective files
+from geo01 import GeoGame  
+from info02 import Info02Game  
+# from info05 import Info05Game  
 
-# exercises array
-a_exercise=["geo01", "info02", "info05"]
-albl_image=[None, None, None] # label (with images) array
-a_image=[None, None, None] # images array
-a_title=[None, None, None] # array of title (ex: GEO01)
+def create_menu():
+    app = CTk()
+    app.title("Inventory Management")
+    app.geometry("1200x800")
+    app.resizable(0, 0)
 
-menu_options = {"geo01": geo01.open_window_geo_01, "info02": info02.open_window_info_02, "info05": info05.open_window_info_05}
+    set_appearance_mode("light")
 
-# call other windows (exercices)
-def exercise(event,exer):
-    menu_options[exer](window)
+    assets_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+    img_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "img")
 
+    # Sidebar
+    sidebar_frame = CTkFrame(master=app, fg_color="#2A8C55", width=176, height=800, corner_radius=0)
+    sidebar_frame.pack_propagate(0)
+    sidebar_frame.pack(fill="y", side="left")
 
-#call display_results
-def display_result(event):
-    # TODO
-    print("display_result")
+    # Logo
+    braingames_img_data = Image.open(os.path.join(assets_folder, "logo.png"))
+    logo_img_photo = ImageTk.PhotoImage(braingames_img_data)
+    logo_label = CTkLabel(master=sidebar_frame, image=logo_img_photo, text="")
+    logo_label.image = logo_img_photo  # Keep a reference so it's not garbage collected
+    logo_label.pack(pady=20)
 
+    # Function to create sidebar buttons
+    def create_sidebar_button(image_path, text, command):
+        img_data = Image.open(os.path.join(assets_folder, image_path))
+        img_photo = ImageTk.PhotoImage(img_data)
+        button = CTkButton(
+            master=sidebar_frame,
+            image=img_photo,
+            text=text,
+            fg_color="transparent",
+            hover_color="#207244",
+            text_color="white",
+            compound="left",
+            font=("Arial", 14),
+            width=160,
+            height=32,
+            corner_radius=8,
+            command=command
+        )
+        button.image = img_photo  # Keep a reference so it's not garbage collected
+        button.pack(pady=10)
+        return button
 
-# Main window
-window = tk.Tk()
-window.title("Training, entrainement cérébral")
-window.geometry("1100x550")
+    # Main content area
+    main_frame = CTkFrame(master=app, fg_color="#fff", width=680, height=800, corner_radius=0)
+    main_frame.pack_propagate(0)
+    main_frame.pack(side="left", fill="both", expand=True)
 
-# color définition
-rgb_color = (139, 201, 194)
-hex_color = '#%02x%02x%02x' % rgb_color # translation in hexa
-window.configure(bg=hex_color)
-window.grid_columnconfigure((0,1,2), minsize=300, weight=1)
+    # Game Frames
+    geo_game_frame = GeoGame(main_frame)
+    info02_game_frame = Info02Game(main_frame)
+    # info05_game_frame = Info05Game(main_frame)
 
-# Title création
-title_label = tk.Label(window, text="TRAINING MENU", font=("Arial", 15))
-title_label.grid(row=0, column=1,ipady=5, padx=40,pady=40)
+    # Dashboard Frame is the displayResult.py file
+    dashboard_frame = CTkFrame(main_frame, fg_color="#fff", corner_radius=0)
+    dashboard_frame.pack(fill="both", expand=True)
+    
+    
+    # Function to raise frames to the top
+    def show_frame(frame):
+        frame.tkraise()
 
-# labels creation and positioning
-for ex in range(len(a_exercise)):
-    a_title[ex]=tk.Label(window, text=a_exercise[ex], font=("Arial", 15))
-    a_title[ex].grid(row=1+2*(ex//3),column=ex % 3 , padx=40,pady=10) # 3 label per row
+    # Dashboard Button
+    dashboard_button = create_sidebar_button("analytics_icon.png", "Dashboard", lambda: show_frame(dashboard_frame))
 
-    a_image[ex] = tk.PhotoImage(file="img/" + a_exercise[ex] + ".gif") # image name
-    albl_image[ex] = tk.Label(window, image=a_image[ex]) # put image on label
-    albl_image[ex].grid(row=2 + 2*(ex // 3), column=ex % 3, padx=40, pady=10) # 3 label per row
-    albl_image[ex].bind("<Button-1>", lambda event, ex = ex :exercise(event=None, exer=a_exercise[ex])) #link to others .py
-    print(a_exercise[ex])
+    # Games Button (will raise a frame with game options)
+    games_button = create_sidebar_button("games_icon.png", "Games", lambda: show_frame(games_frame))
 
-# Buttons, display results & quit
-btn_display = tk.Button(window, text="Display results", font=("Arial", 15))
-btn_display.grid(row=1+ 2*len(a_exercise)//3 , column=1)
-btn_display.bind("<Button-1>",lambda e: displayResult.display_results())
+    # Other buttons can be created in a similar manner
+    # ...
 
-btn_finish = tk.Button(window, text="Quitter", font=("Arial", 15))
-btn_finish.grid(row=2+ 2*len(a_exercise)//3 , column=1)
-btn_finish.bind("<Button-1>", quit)
+    # Frame that will contain game options
+    games_frame = CTkFrame(main_frame, fg_color="#fff", corner_radius=0)
+    games_frame.pack(fill="both", expand=True)
 
-# main loop
-window.mainloop()
+    # Function to create game option buttons inside the games frame
+    def create_game_button(img_filename, game_frame):
+        game_img = Image.open(os.path.join(img_folder, img_filename))
+        game_photo = ImageTk.PhotoImage(game_img)
+        game_button = CTkButton(
+            master=games_frame,
+            image=game_photo,
+            text="",
+            fg_color="transparent",
+            hover_color="#207244",
+            width=150,
+            height=150,
+            corner_radius=10,
+            command=lambda: show_frame(game_frame)
+        )
+        game_button.image = game_photo  # Keep a reference
+        game_button.pack(pady=20)
+        return game_button
+
+    # Create buttons for each game
+    geo_game_button = create_game_button("geo01.gif", geo_game_frame)
+    info02_game_button = create_game_button("info02.gif", info02_game_frame)
+    #info05_game_button = create_game_button("info05.gif", info05_game_frame)
+
+    # Initially, show the games frame
+    show_frame(games_frame)
+
+    app.mainloop()
+
+if __name__ == "__main__":
+    create_menu()
