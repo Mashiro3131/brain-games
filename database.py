@@ -153,11 +153,12 @@ ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 
 
 import contextlib
+import string
 import mysql.connector
 import colorama
 import datetime
 from colorama import Fore
-
+import random
 
 
 colorama.init(autoreset=True)
@@ -251,7 +252,7 @@ def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=
         with db_connection.connect() as cursor:
             # Requête de base pour récupérer les valeurs de la table 'results' et les joindre avec la table 'users'
             load_data_query = """
-                SELECT u.pseudo AS 'Élève', r.date_hour AS 'Date Heure', r.duration AS 'Temps',
+                SELECT u.pseudo AS 'username', r.date_hour AS 'Date Heure', r.duration AS 'Temps',
                     r.exercise AS 'Exercice', r.nbok AS 'nb OK', r.nbtrials AS 'nb Total' 
                 FROM results r
                 INNER JOIN users u ON r.user_id = u.id
@@ -303,6 +304,33 @@ def fetch_game_statistics(pseudo=None, exercise=None, start_date=None, end_date=
         print(Fore.RED + f"Échec de la récupération des statistiques de jeu : {error}")
 
     return results, total
+
+
+
+# Get the statistics of the current user, if the user isn't logged in it will generate a generic name for the user example: user[randomnumbers] and give him the role of guest (id = 3)
+
+
+# It will only create a guest user if the user isn't logged in and starts playing a game, if the user is logged in and starts playing a game it will just save the results in the database
+def create_guest_user():
+    try:
+        with db_connection.connect() as cursor:
+            # Generate a random username
+            pseudo = "user" + ''.join(random.choices(string.digits, k=10))
+
+            # Insert the guest user in the users table
+            insert_guest_user_query = """
+                INSERT INTO users (pseudo, role_id) 
+                VALUES (%s, %s)
+            """
+            cursor.execute(insert_guest_user_query, (pseudo, 3))
+            user_id = cursor.lastrowid
+
+            # Return the user_id of the guest user
+            return user_id
+
+    except mysql.connector.Error as error:
+        print(Fore.RED + f"Failed to create guest user: {error}")
+        return None
 
 
 
