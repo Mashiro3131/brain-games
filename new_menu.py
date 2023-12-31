@@ -61,7 +61,6 @@ person_img_dark_data = Image.open(os.path.join(assets_folder, "account_icon.png"
 person_img = CTkImage(dark_image=person_img_light_data, light_image=person_img_light_data)
 
 
-""" Frames """
 
 # --- Sidebar ---
 
@@ -75,10 +74,10 @@ sidebar_frame.pack(fill="y", anchor="w", side="left")
 def switch_theme():
     if switch_theme_switch.get() == 1:
         ctk.set_appearance_mode("dark") # Dark Mode
-        switch_theme_switch.configure(progress_color="#663466", text_color="#51d743", button_color="#5C5C5C", button_hover_color="#333333")
+        switch_theme_switch.configure(progress_color="#663466", text_color="#51d743", button_color="#333333", button_hover_color="#5C5C5C")
     else:
         ctk.set_appearance_mode("light") # Light Mode
-        switch_theme_switch.configure(fg_color="#663466", text_color="#fff", button_color="#5C5C5C", button_hover_color="#333333")
+        switch_theme_switch.configure(fg_color="#663466", text_color="#fff", button_color="#333333", button_hover_color="#5C5C5C")
 
 
 # Main Logo in Sidebar
@@ -114,12 +113,34 @@ frame_account_button.pack(anchor="center", ipady=5, pady=(160, 0))
 
 
 # Switch Theme Button in Sidebar
-switch_theme_switch = ctk.CTkSwitch(master=sidebar_frame, command=switch_theme, fg_color="#663466", bg_color="transparent", button_color="#5C5C5C", button_hover_color="#333333", corner_radius=10, border_width=1, border_color="black", width=50, height=25, text_color="#fff", text="Dark Mode", font=("Arial Bold", 14))
+switch_theme_switch = ctk.CTkSwitch(master=sidebar_frame, command=switch_theme, fg_color="#663466", bg_color="transparent", button_color="#333333", button_hover_color="#5C5C5C", corner_radius=10, border_width=1, border_color="black", width=50, height=25, text_color="#fff", text="Dark Mode", font=("Arial Bold", 14))
 switch_theme_switch.pack(anchor="center", padx=(0,30), pady=(16, 0))
 
-# --- Main View (Right Side) ---
+
+# --- Main View (Right Side) Frames ---
 
 
+# Menu Frame (It will have a button for each games )
+
+# Game 1 frame (geo01 (GeoGame)) Button in Menu Frame
+
+# Create the Home Frame
+
+home_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
+home_frame.pack_propagate(0)
+
+home_frame_title = CTkLabel(master=home_frame, text="Welcome to Brain Games !", font=("Arial Black", 25), text_color="#51d743")
+home_frame_title.pack(anchor="center", pady=(29, 0))
+
+
+
+# Create the Statistics Frame
+
+# Create the Users Frame
+
+# Create the Settings Frame
+
+# Create the Account Frame
 
 
 
