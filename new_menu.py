@@ -4,7 +4,7 @@ from customtkinter import *
 from CTkTable import CTkTable
 from PIL import Image
 import displayResult
-
+from tkinter import font
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -40,6 +40,13 @@ home_img_light_data = Image.open(os.path.join(assets_folder, "home_light.png"))
 home_img_dark_data = Image.open(os.path.join(assets_folder, "home_dark.png"))
 home_img = CTkImage(dark_image=home_img_dark_data, light_image=home_img_light_data)
 
+# Geo01 (GeoGame) Icon in Home Frame
+geo01_img_light_data = Image.open(os.path.join(img_folder, "geo01_button.png"))
+geo01_img_dark_data = Image.open(os.path.join(img_folder, "geo01_button.png"))
+geo01_img = CTkImage(dark_image=geo01_img_dark_data, light_image=geo01_img_light_data)
+
+
+
 # Statistics (displayResult) Icon in Sidebar
 statistics_img_light_data = Image.open(os.path.join(assets_folder, "analytics_icon.png"))
 statistics_img_dark_data = Image.open(os.path.join(assets_folder, "analytics_icon.png")) # TODO Changer l'image
@@ -74,10 +81,10 @@ sidebar_frame.pack(fill="y", anchor="w", side="left")
 def switch_theme():
     if switch_theme_switch.get() == 1:
         ctk.set_appearance_mode("dark") # Dark Mode
-        switch_theme_switch.configure(progress_color="#663466", text_color="#51d743", button_color="#333333", button_hover_color="#5C5C5C")
+        switch_theme_switch.configure(progress_color="#663466", text_color="#51d743", button_color="#393939", button_hover_color="#5C5C5C")
     else:
         ctk.set_appearance_mode("light") # Light Mode
-        switch_theme_switch.configure(fg_color="#663466", text_color="#fff", button_color="#333333", button_hover_color="#5C5C5C")
+        switch_theme_switch.configure(fg_color="#663466", text_color="#fff", button_color="#393939", button_hover_color="#5C5C5C")
 
 
 # Main Logo in Sidebar
@@ -113,7 +120,7 @@ frame_account_button.pack(anchor="center", ipady=5, pady=(160, 0))
 
 
 # Switch Theme Button in Sidebar
-switch_theme_switch = ctk.CTkSwitch(master=sidebar_frame, command=switch_theme, fg_color="#663466", bg_color="transparent", button_color="#333333", button_hover_color="#5C5C5C", corner_radius=10, border_width=1, border_color="black", width=50, height=25, text_color="#fff", text="Dark Mode", font=("Arial Bold", 14))
+switch_theme_switch = ctk.CTkSwitch(master=sidebar_frame, command=switch_theme, fg_color="#663466", bg_color="transparent", button_color="#393939", button_hover_color="#5C5C5C", corner_radius=10, border_width=1, border_color="black", width=50, height=25, text_color="#fff", text="Dark Mode", font=("Arial Bold", 14))
 switch_theme_switch.pack(anchor="center", padx=(0,30), pady=(16, 0))
 
 
@@ -128,23 +135,68 @@ switch_theme_switch.pack(anchor="center", padx=(0,30), pady=(16, 0))
 
 home_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
 home_frame.pack_propagate(0)
+# home_frame.pack(side="left", fill="both", expand=True)
 
 home_frame_title = CTkLabel(master=home_frame, text="Welcome to Brain Games !", font=("Arial Black", 25), text_color="#51d743")
 home_frame_title.pack(anchor="center", pady=(29, 0))
 
+home_frame_subtitle = CTkLabel(master=home_frame, text="Choose a game to play", font=("Arial Black", 15), text_color="#51d743")
+home_frame_subtitle.pack(anchor="center", pady=(29, 0))
 
+home_frame_games = CTkFrame(master=home_frame, fg_color="transparent")
+home_frame_games.pack(anchor="center", pady=(29, 0))
+
+# Geo01 Game Button in Home Frame
+
+# home_frame_game_geo01_button = 
 
 # Create the Statistics Frame
+statistics_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
 
 # Create the Users Frame
 
+users_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
+
 # Create the Settings Frame
+
+settings_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
 
 # Create the Account Frame
 
+account_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
+
+# Select the Home Frame by default
 
 
-
+def select_frame_by_name (frame_name):
+    home_frame.configure(fg_color=("gray75", "gray25") if frame_name == "home" else "transparent")
+    statistics_frame.configure(fg_color=("gray75", "gray25") if frame_name == "statistics" else "transparent")
+    users_frame.configure(fg_color=("gray75", "gray25") if frame_name == "users" else "transparent")
+    settings_frame.configure(fg_color=("gray75", "gray25") if frame_name == "settings" else "transparent")
+    account_frame.configure(fg_color=("gray75", "gray25") if frame_name == "account" else "transparent")
+    
+    if frame_name == "home":
+        home_frame.pack(fill="both", expand=True)
+    else:
+        home_frame.pack_forget()
+    if frame_name == "statistics":
+        statistics_frame.pack(fill="both", expand=True)
+    else:
+        statistics_frame.pack_forget()
+    if frame_name == "users":
+        users_frame.pack(fill="both", expand=True)
+    else:
+        users_frame.pack_forget()
+    if frame_name == "settings":
+        settings_frame.pack(fill="both", expand=True)
+    else:
+        settings_frame.pack_forget()
+    if frame_name == "account":
+        account_frame.pack(fill="both", expand=True)
+    else:
+        account_frame.pack_forget()
+    
+select_frame_by_name("home")
 
 
 
