@@ -187,7 +187,9 @@ class DatabaseConnection:
             cursor.close()
             connection.close()
 
-
+# Creating an instance of DatabaseConnection
+# Replace the placeholder values with your actual database credentials
+# db_connection = DatabaseConnection('your_host', 'your_port', 'your_user', 'your_password', 'your_database')
 
 # Creating an instance of DatabaseConnection
 db_connection = DatabaseConnection('127.0.0.1', '3306', 'root', 'root', 'brain_games_db')
