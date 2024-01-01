@@ -6,6 +6,8 @@ from PIL import Image
 import displayResult
 from tkinter import font
 
+
+
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
 assets_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
@@ -23,10 +25,12 @@ app.resizable(0,0)
 
 ctk.set_appearance_mode("light")
 
-
+braingames_font = ctk.CTkFont(family="Sharp Grotesk Medium 20")
+# braingames_subtitle_font = font.Font(family='Test Söhne Kräftig', size=15)
+# braingames_text_font = font.Font(family='Test Söhne Kräftig', size=14)
 
 # TODO Créer les images dans adobe illustrator et ajouter les images den light et dark si possible ainsi que le texte en blanc et noir
-# TODO Couleurs : Violet --> #400241, Vert --> #51d743, Gris --> #E5E5E5, Blanc --> #FFFFFF, Noir --> #000000
+# TODO Couleurs : Loulou purple (#400241) for the BG and Dull Lime (#51d743) for text and logos, Gris --> #E5E5E5, Blanc --> #FFFFFF, Noir --> #000000
 
 """ Images """
 
@@ -43,9 +47,17 @@ home_img = CTkImage(dark_image=home_img_dark_data, light_image=home_img_light_da
 # Geo01 (GeoGame) Icon in Home Frame
 geo01_img_light_data = Image.open(os.path.join(img_folder, "geo01_button.png"))
 geo01_img_dark_data = Image.open(os.path.join(img_folder, "geo01_button.png"))
-geo01_img = CTkImage(dark_image=geo01_img_dark_data, light_image=geo01_img_light_data)
+geo01_img = CTkImage(dark_image=geo01_img_dark_data, light_image=geo01_img_light_data, size=(210,252))
 
+# Info02 (InfoGame) Icon in Home Frame
+info02_img_light_data = Image.open(os.path.join(img_folder, "info02_button.png"))
+info02_img_dark_data = Image.open(os.path.join(img_folder, "info02_button.png"))
+info02_img = CTkImage(dark_image=info02_img_dark_data, light_image=info02_img_light_data, size=(280,109))
 
+# Info05 (InfoGame) Icon in Home Frame
+info05_img_light_data = Image.open(os.path.join(img_folder, "info05_button.png"))
+info05_img_dark_data = Image.open(os.path.join(img_folder, "info05_button.png"))
+info05_img = CTkImage(dark_image=info05_img_dark_data, light_image=info05_img_light_data,  size=(280,109))
 
 # Statistics (displayResult) Icon in Sidebar
 statistics_img_light_data = Image.open(os.path.join(assets_folder, "analytics_icon.png"))
@@ -95,32 +107,32 @@ sidebar_frame_label.pack(pady=(38, 0), anchor="center")
 # --- Sidebar Buttons --- # TODO Ajouter les command= pour les boutons
 
 # Home (Menu) Button in Sidebar
-frame_home_button = CTkButton(master=sidebar_frame, image=home_img, text="Home", fg_color="transparent", text_color=("white","white"), font=("Arial Bold", 14), hover_color=("#000000", "gray70"), anchor="w")#, command=home_button_event)
+frame_home_button = CTkButton(master=sidebar_frame, image=home_img, text="Home", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color=("#000000", "gray70"), anchor="w")#, command=home_button_event)
 frame_home_button.pack(anchor="center", ipady=5, pady=(60, 0))
 
 
 # Statistics (displayResult) Button in Sidebar
-frame_statistics_button = CTkButton(master=sidebar_frame, image=statistics_img, text="Statistics", fg_color="transparent", text_color=("white","white"), font=("Arial Bold", 14), hover_color="#000000", anchor="w")#, command=statistics_button_event)
+frame_statistics_button = CTkButton(master=sidebar_frame, image=statistics_img, text="Statistics", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w")#, command=statistics_button_event)
 frame_statistics_button.pack(anchor="center", ipady=5, pady=(16, 0))
 
 
 # Orders (User List)
-frame_users_button = CTkButton(master=sidebar_frame, image=users_img, text="Users", fg_color="transparent", text_color=("white","white"), font=("Arial Bold", 14), hover_color="#000000", anchor="w")#, command=users_button_event)
+frame_users_button = CTkButton(master=sidebar_frame, image=users_img, text="Users", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w")#, command=users_button_event)
 frame_users_button.pack(anchor="center", ipady=5, pady=(16, 0))
 
 
 # Settings Button in Sidebar
-frame_settings_button = CTkButton(master=sidebar_frame, image=settings_img, text="Settings", fg_color="transparent", text_color=("white","white"), font=("Arial Bold", 14), hover_color="#000000", anchor="w")#, command=settings_button_event)
+frame_settings_button = CTkButton(master=sidebar_frame, image=settings_img, text="Settings", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w")#, command=settings_button_event)
 frame_settings_button.pack(anchor="center", ipady=5, pady=(16, 0))
 
 
 # Account Button in Sidebar
-frame_account_button = CTkButton(master=sidebar_frame, image=person_img, text="Account", fg_color="transparent", text_color=("white","white"), font=("Arial Bold", 14), hover_color="#000000", anchor="w")#, command=account_button_event)
+frame_account_button = CTkButton(master=sidebar_frame, image=person_img, text="Account", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w")#, command=account_button_event)
 frame_account_button.pack(anchor="center", ipady=5, pady=(160, 0))
 
 
 # Switch Theme Button in Sidebar
-switch_theme_switch = ctk.CTkSwitch(master=sidebar_frame, command=switch_theme, fg_color="#663466", bg_color="transparent", button_color="#393939", button_hover_color="#5C5C5C", corner_radius=10, border_width=1, border_color="black", width=50, height=25, text_color="#fff", text="Dark Mode", font=("Arial Bold", 14))
+switch_theme_switch = ctk.CTkSwitch(master=sidebar_frame, command=switch_theme, fg_color="#663466", bg_color="transparent", button_color="#393939", button_hover_color="#5C5C5C", corner_radius=10, border_width=1, border_color="black", width=50, height=25, text_color="#fff", text="Dark Mode", font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14))
 switch_theme_switch.pack(anchor="center", padx=(0,30), pady=(16, 0))
 
 
@@ -135,20 +147,29 @@ switch_theme_switch.pack(anchor="center", padx=(0,30), pady=(16, 0))
 
 home_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
 home_frame.pack_propagate(0)
-# home_frame.pack(side="left", fill="both", expand=True)
 
 home_frame_title = CTkLabel(master=home_frame, text="Welcome to Brain Games !", font=("Arial Black", 25), text_color="#51d743")
 home_frame_title.pack(anchor="center", pady=(29, 0))
 
 home_frame_subtitle = CTkLabel(master=home_frame, text="Choose a game to play", font=("Arial Black", 15), text_color="#51d743")
-home_frame_subtitle.pack(anchor="center", pady=(29, 0))
+home_frame_subtitle.pack(anchor="center", pady=(19, 0))
 
+
+# Game Menu in Home Frame
 home_frame_games = CTkFrame(master=home_frame, fg_color="transparent")
-home_frame_games.pack(anchor="center", pady=(29, 0))
+home_frame_games.pack(pady=(100, 0), padx=(50, 0), anchor="center")
 
 # Geo01 Game Button in Home Frame
+home_frame_game_geo01_button = CTkButton(master=home_frame_games, text="", fg_color="transparent", image=geo01_img, hover_color="#393939", corner_radius=7)
+home_frame_game_geo01_button.grid(row=0, column=0, rowspan=2, sticky="nw")
 
-# home_frame_game_geo01_button = 
+# Info02 Game Button in Home Frame
+home_frame_game_info02_button = CTkButton(master=home_frame_games, text="", fg_color="transparent",image=info02_img, hover_color="#393939", corner_radius=7)
+home_frame_game_info02_button.grid(row=0, column=1, sticky="nw", pady=(10, 0))
+
+# Info05 Game Button in Home Frame
+home_frame_game_info05_button = CTkLabel(master=home_frame_games, text="", fg_color="transparent", image=info05_img, hover_color="#393939", corner_radius=7)
+home_frame_game_info05_button.grid(row=1, column=1, sticky="nw", pady=(10, 0))
 
 # Create the Statistics Frame
 statistics_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
@@ -287,37 +308,37 @@ select_frame_by_name("home")
 # # Statistics Button in Sidebar
 # statistics_img_data = Image.open(os.path.join(assets_folder, "analytics_icon.png"))
 # statistics_img = CTkImage(dark_image=statistics_img_data, light_image=statistics_img_data)
-# frame_statistics_button = CTkButton(master=sidebar_frame, image=statistics_img, text="Statistics", fg_color="transparent", font=("Arial Bold", 14), hover_color="#000000", anchor="w", command=statistics_button_event).pack(anchor="center", ipady=5, pady=(60, 0))
+# frame_statistics_button = CTkButton(master=sidebar_frame, image=statistics_img, text="Statistics", fg_color="transparent", font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w", command=statistics_button_event).pack(anchor="center", ipady=5, pady=(60, 0))
 
 
 # # Package Button in Sidebar
 # package_img_data = Image.open(os.path.join(assets_folder, "package_icon.png"))
 # package_img = CTkImage(dark_image=package_img_data, light_image=package_img_data)
-# CTkButton(master=sidebar_frame, image=package_img, text="Orders", fg_color="transparent", font=("Arial Bold", 14), text_color="#eee", hover_color="#000000", anchor="w").pack(anchor="center", ipady=5, pady=(16, 0))
+# CTkButton(master=sidebar_frame, image=package_img, text="Orders", fg_color="transparent", font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), text_color="#eee", hover_color="#000000", anchor="w").pack(anchor="center", ipady=5, pady=(16, 0))
 
 
 # # List Button in Sidebar
 # list_img_data = Image.open(os.path.join(assets_folder, "user_list_icon.png"))
 # list_img = CTkImage(dark_image=list_img_data, light_image=list_img_data)
-# CTkButton(master=sidebar_frame, image=list_img, text="Orders", fg_color="transparent", font=("Arial Bold", 14), hover_color="#000000", anchor="w").pack(anchor="center", ipady=5, pady=(16, 0))
+# CTkButton(master=sidebar_frame, image=list_img, text="Orders", fg_color="transparent", font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w").pack(anchor="center", ipady=5, pady=(16, 0))
 
 
 # # Returns Button in Sidebar
 # returns_img_data = Image.open(os.path.join(assets_folder, "returns_icon.png"))
 # returns_img = CTkImage(dark_image=returns_img_data, light_image=returns_img_data)
-# CTkButton(master=sidebar_frame, image=returns_img, text="Returns", fg_color="transparent", font=("Arial Bold", 14), hover_color="#000000", anchor="w").pack(anchor="center", ipady=5, pady=(16, 0))
+# CTkButton(master=sidebar_frame, image=returns_img, text="Returns", fg_color="transparent", font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w").pack(anchor="center", ipady=5, pady=(16, 0))
 
 
 # # Settings Button in Sidebar
 # settings_img_data = Image.open(os.path.join(assets_folder, "settings_icon.png"))
 # settings_img = CTkImage(dark_image=settings_img_data, light_image=settings_img_data)
-# CTkButton(master=sidebar_frame, image=settings_img, text="Settings", fg_color="transparent", font=("Arial Bold", 14), hover_color="#000000", anchor="w").pack(anchor="center", ipady=5, pady=(16, 0))
+# CTkButton(master=sidebar_frame, image=settings_img, text="Settings", fg_color="transparent", font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w").pack(anchor="center", ipady=5, pady=(16, 0))
 
 
 # # Account Button in Sidebar
 # person_img_data = Image.open(os.path.join(assets_folder, "account_icon.png"))
 # person_img = CTkImage(dark_image=person_img_data, light_image=person_img_data)
-# CTkButton(master=sidebar_frame, image=person_img, text="Account", fg_color="transparent", font=("Arial Bold", 14), hover_color="#000000", anchor="w").pack(anchor="center", ipady=5, pady=(160, 0))
+# CTkButton(master=sidebar_frame, image=person_img, text="Account", fg_color="transparent", font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w").pack(anchor="center", ipady=5, pady=(160, 0))
 
 
 
@@ -333,7 +354,7 @@ select_frame_by_name("home")
 #     displayResult.display_results(main_view)  # Load content from displayResult.py
 
 # # statistics Button in Sidebar
-# statistics_button = CTkButton(master=sidebar_frame, image=statistics_img, text="Statistics", fg_color="transparent", font=("Arial Bold", 14), hover_color="#000000", anchor="w")
+# statistics_button = CTkButton(master=sidebar_frame, image=statistics_img, text="Statistics", fg_color="transparent", font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w")
 # statistics_button.pack(anchor="center", ipady=5, pady=(60, 0))
 # statistics_button.bind("<Button-1>", lambda e: load_statistics())
 
