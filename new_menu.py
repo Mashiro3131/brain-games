@@ -80,8 +80,37 @@ person_img_dark_data = Image.open(os.path.join(assets_folder, "account_icon.png"
 person_img = CTkImage(dark_image=person_img_light_data, light_image=person_img_light_data)
 
 
+""" --- Frames --- """
 
-# --- Sidebar ---
+def select_frame_by_name (frame_name):
+    home_frame.configure(fg_color=("gray75", "gray25") if frame_name == "home" else "transparent")
+    statistics_frame.configure(fg_color=("gray75", "gray25") if frame_name == "statistics" else "transparent")
+    users_frame.configure(fg_color=("gray75", "gray25") if frame_name == "users" else "transparent")
+    settings_frame.configure(fg_color=("gray75", "gray25") if frame_name == "settings" else "transparent")
+    account_frame.configure(fg_color=("gray75", "gray25") if frame_name == "account" else "transparent")
+    
+    if frame_name == "home":
+        home_frame.pack(fill="both", expand=True)
+    else:
+        home_frame.pack_forget()
+    if frame_name == "statistics":
+        statistics_frame.pack(fill="both", expand=True)
+    else:
+        statistics_frame.pack_forget()
+    if frame_name == "users":
+        users_frame.pack(fill="both", expand=True)
+    else:
+        users_frame.pack_forget()
+    if frame_name == "settings":
+        settings_frame.pack(fill="both", expand=True)
+    else:
+        settings_frame.pack_forget()
+    if frame_name == "account":
+        account_frame.pack(fill="both", expand=True)
+    else:
+        account_frame.pack_forget()
+
+"""  Sidebar  """
 
 # Sidebar Frame
 sidebar_frame = CTkFrame(master=app, fg_color="#400241",  width=176, height=650, corner_radius=0)
@@ -107,26 +136,41 @@ sidebar_frame_label.pack(pady=(38, 0), anchor="center")
 # --- Sidebar Buttons --- # TODO Ajouter les command= pour les boutons
 
 # Home (Menu) Button in Sidebar
-frame_home_button = CTkButton(master=sidebar_frame, image=home_img, text="Home", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color=("#000000", "gray70"), anchor="w")#, command=home_button_event)
+def home_button_event():
+    select_frame_by_name("home")
+    
+frame_home_button = CTkButton(master=sidebar_frame, image=home_img, text="Home", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color=("#000000", "gray70"), anchor="w", command=home_button_event)
 frame_home_button.pack(anchor="center", ipady=5, pady=(60, 0))
 
 
 # Statistics (displayResult) Button in Sidebar
-frame_statistics_button = CTkButton(master=sidebar_frame, image=statistics_img, text="Statistics", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w")#, command=statistics_button_event)
+def statistics_button_event():
+    select_frame_by_name("statistics")
+
+frame_statistics_button = CTkButton(master=sidebar_frame, image=statistics_img, text="Statistics", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w", command=statistics_button_event)
 frame_statistics_button.pack(anchor="center", ipady=5, pady=(16, 0))
 
 
 # Orders (User List)
+def users_button_event():
+    select_frame_by_name("users")
+    
 frame_users_button = CTkButton(master=sidebar_frame, image=users_img, text="Users", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w")#, command=users_button_event)
 frame_users_button.pack(anchor="center", ipady=5, pady=(16, 0))
 
 
 # Settings Button in Sidebar
+def settings_button_event():
+    select_frame_by_name("settings")
+    
 frame_settings_button = CTkButton(master=sidebar_frame, image=settings_img, text="Settings", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w")#, command=settings_button_event)
 frame_settings_button.pack(anchor="center", ipady=5, pady=(16, 0))
 
 
 # Account Button in Sidebar
+def account_button_event():
+    select_frame_by_name("account")
+    
 frame_account_button = CTkButton(master=sidebar_frame, image=person_img, text="Account", fg_color="transparent", text_color=("white","white"), font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=14), hover_color="#000000", anchor="w")#, command=account_button_event)
 frame_account_button.pack(anchor="center", ipady=5, pady=(160, 0))
 
@@ -188,34 +232,6 @@ account_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=6
 
 # Select the Home Frame by default
 
-
-def select_frame_by_name (frame_name):
-    home_frame.configure(fg_color=("gray75", "gray25") if frame_name == "home" else "transparent")
-    statistics_frame.configure(fg_color=("gray75", "gray25") if frame_name == "statistics" else "transparent")
-    users_frame.configure(fg_color=("gray75", "gray25") if frame_name == "users" else "transparent")
-    settings_frame.configure(fg_color=("gray75", "gray25") if frame_name == "settings" else "transparent")
-    account_frame.configure(fg_color=("gray75", "gray25") if frame_name == "account" else "transparent")
-    
-    if frame_name == "home":
-        home_frame.pack(fill="both", expand=True)
-    else:
-        home_frame.pack_forget()
-    if frame_name == "statistics":
-        statistics_frame.pack(fill="both", expand=True)
-    else:
-        statistics_frame.pack_forget()
-    if frame_name == "users":
-        users_frame.pack(fill="both", expand=True)
-    else:
-        users_frame.pack_forget()
-    if frame_name == "settings":
-        settings_frame.pack(fill="both", expand=True)
-    else:
-        settings_frame.pack_forget()
-    if frame_name == "account":
-        account_frame.pack(fill="both", expand=True)
-    else:
-        account_frame.pack_forget()
     
 select_frame_by_name("home")
 
