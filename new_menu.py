@@ -148,10 +148,10 @@ switch_theme_switch.pack(anchor="center", padx=(0,30), pady=(16, 0))
 home_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
 home_frame.pack_propagate(0)
 
-home_frame_title = CTkLabel(master=home_frame, text="Welcome to Brain Games !", font=("Arial Black", 25), text_color="#51d743")
+home_frame_title = CTkLabel(master=home_frame, text="Welcome to Brain Games !", font=ctk.CTkFont(family="Test Söhne Kräftig", size=25, weight="bold"), text_color="#51d743")
 home_frame_title.pack(anchor="center", pady=(29, 0))
 
-home_frame_subtitle = CTkLabel(master=home_frame, text="Choose a game to play", font=("Arial Black", 15), text_color="#51d743")
+home_frame_subtitle = CTkLabel(master=home_frame, text="Choose a game to play", font=ctk.CTkFont(family="Sharp Grotesk Medium 20", size=15), text_color="#51d743")
 home_frame_subtitle.pack(anchor="center", pady=(19, 0))
 
 
@@ -165,11 +165,11 @@ home_frame_game_geo01_button.grid(row=0, column=0, rowspan=2, sticky="nw")
 
 # Info02 Game Button in Home Frame
 home_frame_game_info02_button = CTkButton(master=home_frame_games, text="", fg_color="transparent",image=info02_img, hover_color="#393939", corner_radius=7)
-home_frame_game_info02_button.grid(row=0, column=1, sticky="nw", pady=(10, 0))
+home_frame_game_info02_button.grid(row=0, column=1, sticky="nw", pady=(7, 0))
 
 # Info05 Game Button in Home Frame
-home_frame_game_info05_button = CTkLabel(master=home_frame_games, text="", fg_color="transparent", image=info05_img, hover_color="#393939", corner_radius=7)
-home_frame_game_info05_button.grid(row=1, column=1, sticky="nw", pady=(10, 0))
+home_frame_game_info05_button = CTkButton(master=home_frame_games, text="", fg_color="transparent", image=info05_img, hover_color="#393939", corner_radius=7)
+home_frame_game_info05_button.grid(row=1, column=1, sticky="nw", pady=(7, 0))
 
 # Create the Statistics Frame
 statistics_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
