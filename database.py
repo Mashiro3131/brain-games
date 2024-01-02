@@ -428,3 +428,23 @@ def retrieve_exercise_catalog():
         return []
 
 
+def retrieve_usernames():
+    try:
+        with db_connection.connect() as cursor:
+            query = """
+            SELECT DISTINCT u.pseudo, r.role_name, 
+            (SUM(r.nbok) / SUM(r.nbtrials)) * 100 AS success_rate
+            FROM users u
+            LEFT JOIN results r ON u.id = r.user_id
+            GROUP BY u.pseudo, r.role_name
+            """
+            cursor.execute(query)
+            users = cursor.fetchall()
+
+            usernames = [user[0] for user in users]
+            role_names = [user[1] for user in users]
+            success_rates = [user[2] for user in users]
+            return usernames, role_names, success_rates
+    except mysql.connector.Error as error:
+        print(Fore.RED + f"Failed to get usernames: {error}")
+        return []
