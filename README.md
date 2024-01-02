@@ -40,5 +40,10 @@ Youtube Tutorials:
 - [Codemy.com](https://www.youtube.com/channel/UCFB0dxMudkws1q8w5NJEAmw)
 - [Tkinter.com](https://www.youtube.com/@TkinterPython)
 
+
+Logo:
+- [@vaniapietrasanta - Original Brain Design](https://www.br.freelancer.com/contest/Design-a-Brain-Logo-900094-byentry-11410678)
+
+
 LICENSE:
 - [MIT License](https://opensource.org/licenses/MIT)
