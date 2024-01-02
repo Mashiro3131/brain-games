@@ -7,6 +7,7 @@ from display_results import view_total, display_current_page
 from tkinter import font
 import matplotlib.pyplot as plt
 import database
+import geo01, info02, info05
 
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -277,7 +278,7 @@ home_frame_stats_game_avg_score_value_label.pack(anchor="nw", padx=(14, 0))
 """ Home Games Frame"""
 # Home Frame Subtitle
 home_frame_subtitle = CTkLabel(master=home_frame, text="Choose a game", font=braingames_subtitle_font, text_color="#d292ff")
-home_frame_subtitle.pack(anchor="n", pady=(25, 0), padx=(0, 290)) 
+home_frame_subtitle.pack(anchor="n", pady=(40, 0), padx=(0, 290)) 
 
 # Game Menu in Home Frame
 home_frame_games = CTkFrame(master=home_frame, fg_color="transparent")
@@ -287,18 +288,33 @@ home_frame_games.pack(pady=(5,0), padx=(0, 0), anchor="center")
 # Geo01 Game
 def geo01_button_event():
     select_frame_by_name("geo01")
+    for widget in game_geo01_frame.winfo_children():
+        widget.destroy()
+    geo_game_instance = geo01.GeoGame(game_geo01_frame)
+    geo_game_instance.pack(fill="both", expand=True)
+
 home_frame_game_geo01_button = CTkButton(master=home_frame_games, text="", fg_color="transparent", image=geo01_img, hover_color="#393939", corner_radius=7, command=geo01_button_event)
 home_frame_game_geo01_button.grid(row=0, column=0, rowspan=2, sticky="w")
 
 # Info02 Game
 def info02_button_event():
     select_frame_by_name("info02")
+    for widget in game_info02_frame.winfo_children():
+        widget.destroy()
+    info_game_instance = info02.InfoGame(game_info02_frame)
+    info_game_instance.pack(fill="both", expand=True)
 home_frame_game_info02_button = CTkButton(master=home_frame_games, text="", fg_color="transparent",image=info02_img, hover_color="#393939", corner_radius=7, command=info02_button_event)
 home_frame_game_info02_button.grid(row=0, column=1, sticky="w", pady=(7, 0))
 
 # Info05 Game
 def info05_button_event():
     select_frame_by_name("info05")
+    for widget in game_info05_frame.winfo_children():
+        widget.destroy()
+    info_game_instance = info05.InfoGame(game_info05_frame)
+    info_game_instance.pack(fill="both", expand=True)
+    
+    
 home_frame_game_info05_button = CTkButton(master=home_frame_games, text="", fg_color="transparent", image=info05_img, hover_color="#393939", corner_radius=7, command=info05_button_event)
 home_frame_game_info05_button.grid(row=1, column=1, sticky="w", pady=(7, 0))
 
