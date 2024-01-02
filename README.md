@@ -32,7 +32,7 @@ To get started with Brain Games, follow these steps:
 - [JetBrains PyCharm](https://www.jetbrains.com/pycharm/)
 - [Visual Studio Code](https://code.visualstudio.com/)
 
-## Resources
+## Resources / References
 Documentation:
 - [CustomTkinter](https://customtkinter.tomschimansky.com)
 
