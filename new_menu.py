@@ -222,44 +222,55 @@ sidebar_frame_author_label.pack(anchor="center",  pady=(16, 0))
 home_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
 home_frame.pack_propagate(0)
 
-home_frame_title = CTkLabel(master=app, fg_color="transparent", text="Welcome to Brain Games", font=braingames_title_font, text_color="#d292ff")
+home_frame_title = CTkLabel(master=home_frame, fg_color="transparent", text="Welcome to Brain Games", font=braingames_title_font, text_color="#d292ff")
 home_frame_title.pack(anchor="w", padx=(63, 0), pady=(25, ))
 
+# Container for the statistics in Home Frame
+home_frame_stats_container = CTkFrame(master=home_frame, fg_color="transparent", width=464, height=70)
+home_frame_stats_container.pack_propagate(0)
+home_frame_stats_container.pack(anchor="center", padx=(0, 0), pady=(0, 0))
 
 # Time Played Frame
-home_frame_stats_time_played = CTkFrame(master=home_frame, fg_color="#0000ff", width=132, height=70, corner_radius=8)
+home_frame_stats_time_played = CTkFrame(master=home_frame_stats_container, fg_color="#0000ff", width=132, height=70, corner_radius=7)
 home_frame_stats_time_played.pack_propagate(0)
-home_frame_stats_time_played.pack(anchor="w", side="top", padx=(0, 20))
+home_frame_stats_time_played.pack(side="left", padx=(0, 10))  # Use side="left" and add some padding if you want space between the frames
 
 # Time Played Title
-home_frame_stats_time_played_label = CTkLabel(master=home_frame_stats_time_played, text="Time Played", font=(braingames_regular_font, 10), text_color="#fff")
-home_frame_stats_time_played_label.pack(anchor="nw", padx=(14, 0))
+home_frame_stats_time_played_title_label = CTkLabel(master=home_frame_stats_time_played, text="Time Played", font=(braingames_regular_font, 10), text_color="#fff")
+home_frame_stats_time_played_title_label.pack(anchor="nw", padx=(14, 0))
 
 # Time Played Value
-home_frame_stats_time_played_value_label = CTkLabel(master=home_frame_stats_time_played, text=(f"70"), justify="left",  font=(braingames_title_font, 25), text_color="#fff")
+home_frame_stats_time_played_value_label = CTkLabel(master=home_frame_stats_time_played, text=(f"70 min."), justify="left",  font=(braingames_title_font, 25), text_color="#fff")
 home_frame_stats_time_played_value_label.pack(anchor="nw", padx=(14, 0))
 
 
 # Number of Games Played Frame
 # Game Played Frame
-home_frame_stats_game_played = CTkFrame(master=home_frame, fg_color="#0000ff", width=132, height=70, corner_radius=8)
+home_frame_stats_game_played = CTkFrame(master=home_frame_stats_container, fg_color="#0000ff", width=132, height=70, corner_radius=7)
 home_frame_stats_game_played.pack_propagate(0)
-home_frame_stats_game_played.pack(anchor="w", side="top", padx=(0, 20))
+home_frame_stats_game_played.pack(anchor="center", side="left", padx=(0, 10), pady=(0,0))
 
 # Game Played Title
-home_frame_stats_game_played_label = CTkLabel(master=home_frame_stats_game_played, text="Game Played", font=(braingames_regular_font, 10), text_color="#fff")
-home_frame_stats_time_played_label.pack(anchor="nw", padx=(14, 0))
+home_frame_stats_game_played_title_label = CTkLabel(master=home_frame_stats_game_played, text="Game Played", font=(braingames_regular_font, 10), text_color="#fff")
+home_frame_stats_game_played_title_label.pack(anchor="nw", padx=(14, 0))
 
 # Game Played Value #TODO Change the value to the number of games played by the user from the display_results.py view_total() function
 home_frame_stats_game_played_value_label = CTkLabel(master=home_frame_stats_game_played, text=(f"10"), justify="left",  font=(braingames_title_font, 25), text_color="#fff")
 home_frame_stats_game_played_value_label.pack(anchor="nw", padx=(14, 0))
 
 
+# Average Score Frame
+home_frame_stats_avg_score = CTkFrame(master=home_frame_stats_container, fg_color="#0000ff", width=132, height=70, corner_radius=7)
+home_frame_stats_avg_score.pack_propagate(0)
+home_frame_stats_avg_score.pack(anchor="center", side="left", padx=(0, 10), pady=(0,0))
 
+# Average Score Title
+home_frame_stats_game_avg_score_title_label = CTkLabel(master=home_frame_stats_avg_score, text="Average Score", font=(braingames_regular_font, 10), text_color="#fff")
+home_frame_stats_game_avg_score_title_label.pack(anchor="nw", padx=(14, 0))
 
-
-
-
+#TODO Change the value to the average score of the user from the display_results.py view_total() function
+home_frame_stats_game_avg_score_value_label = CTkLabel(master=home_frame_stats_avg_score, text=(f"30%"), justify="left",  font=(braingames_title_font, 25), text_color="#fff")
+home_frame_stats_game_avg_score_value_label.pack(anchor="nw", padx=(14, 0))
 
 
 
