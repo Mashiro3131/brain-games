@@ -48,8 +48,9 @@ rows_per_page = 20
 filtered_data = []  # This will hold the data that is filtered according to the applied filters
 
 
-def display_results():
-    global tree, pseudo_entry, exercise_entry, start_date_entry, end_date_entry, duration_label, nbok_label, nbtotal_label, percentage_label, nbrows_label
+def display_results(parent_frame): #display_results(parent_frame=None):
+    global tree, pseudo_entry, exercise_entry, start_date_entry, end_date_entry
+    global duration_label, nbok_label, nbtotal_label, percentage_label, nbrows_label
 
     # Function to sort treeview columns
     def treeview_sort_column(tv, col, reverse):
@@ -61,32 +62,16 @@ def display_results():
             tv.move(k, '', index)
 
     # Main window
-    window = ctk.CTk()
-    window.title("BRAINGAMES : STATISTICS")
-    window.geometry("1300x700+300+150")
+    parent_frame = ctk.CTk()
+    parent_frame.title("BRAINGAMES : STATISTICS")
+    parent_frame.geometry("1300x700+300+150")
 
     # display results frame
-    display_results_frame = ctk.CTkFrame(window)
+    display_results_frame = ctk.CTkFrame(parent_frame) # ctk.CTkFrame(parent_frame)
     display_results_frame.place(relx=0.5, rely=0.5, anchor="center")
     display_results_frame.pack(padx=20,pady=20)
+    
 
-    # # Menu Bar
-    # menubar = tk.Menu(window)
-    # window.config(menu=menubar)
-    
-    # # Menu Bar - File
-    # file_menu = tk.Menu(menubar, tearoff=0)
-    # menubar.add_cascade(label="File", menu=file_menu)
-    # file_menu.add_command(label="Add result", command=add_results)
-    # file_menu.add_command(label="Update result", command=modifier_resultat)
-    # file_menu.add_command(label="Delete result", command=supprimer_resultat)
-    # file_menu.add_separator()
-    # file_menu.add_command(label="Exit", command=window.quit)
-    
-    # # Menu Bar - Help
-    # help_menu = tk.Menu(menubar, tearoff=0)
-    # menubar.add_cascade(label="Help", menu=help_menu)
-    # help_menu.add_command(label="About")
 
     # Title
     title_label = ctk.CTkLabel(display_results_frame, text="Statistics", font=ctk.CTkFont(size=15, weight="bold"))
@@ -149,8 +134,6 @@ def display_results():
     # """ Scrollbar """
     # ctk.CTkScrollbar(treeview_frame, command=tree.yview).pack(side="right", fill="y")
 
-
-
     """ Total Statistics """
 
     # Total Statistics Frame
@@ -165,7 +148,7 @@ def display_results():
     separator = ttk.Separator(total_stats_frame, orient='horizontal', style='Line.TSeparator')
     separator.pack(fill='x', pady=2)
 
-    # Statistics Labels (Rows: , Duration: , NB OK: , NB Total: , % Success: )
+    # Total Statistics Labels (Rows: , Duration: , NB OK: , NB Total: , % Success: )
     ctk.CTkLabel(total_stats_frame, text="Rows:").pack(side='left', padx=10)
     nbrows_label = ctk.CTkLabel(total_stats_frame, text="")
     nbrows_label.pack(side="left", padx=10)
@@ -201,7 +184,7 @@ def display_results():
     # Display the data by default
     view_results()
 
-    window.mainloop()
+    # parent_frame.mainloop()
 
 
 def display_total_statistics():
