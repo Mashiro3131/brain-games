@@ -20,7 +20,9 @@ To get started with Brain Games, follow these steps:
 1. Clone the repository: `git clone https://github.com/Mashiro3131/brain-games.git`
 2. Navigate to the project directory: `cd brain-games`
 3. Install the requriements: `pip install -r requirements.txt`
-4. Run the program: `python main.py`
+4. Install the fonts for the game: `cd fonts` and double click on the fonts to install them
+5. Navigate back to the project directory: `cd ..`
+6. Run the program: `python main.py`
 
 # Tools and Resources
 
