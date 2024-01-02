@@ -64,7 +64,7 @@ def display_results(parent_frame): #display_results(parent_frame=None):
     # Main window
     parent_frame = ctk.CTk()
     parent_frame.title("BRAINGAMES : STATISTICS")
-    parent_frame.geometry("1300x700+300+150")
+    parent_frame.geometry("1200x645")
 
     # display results frame
     display_results_frame = ctk.CTkFrame(parent_frame) # ctk.CTkFrame(parent_frame)
@@ -189,6 +189,7 @@ def display_results(parent_frame): #display_results(parent_frame=None):
 
 def display_total_statistics():
     pass
+    
 
 
 # CREATE
