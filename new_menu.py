@@ -98,48 +98,93 @@ person_img = CTkImage(dark_image=person_img_light_data, light_image=person_img_l
 
 """ --- Frames --- """
 
-def select_frame_by_name (frame_name):
-    home_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "home" else "transparent")
-    game_geo01_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "geo01" else "transparent")
-    game_info02_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "info02" else "transparent")
-    game_info05_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "info05" else "transparent")
-    statistics_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "statistics" else "transparent")
-    users_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "users" else "transparent")
-    settings_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "settings" else "transparent")
-    account_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "account" else "transparent")
+
+def select_frame_by_name(frame_name):
+    frames = {
+        "home": (home_frame, "856x645"),
+        "geo01": (game_geo01_frame, "1200x645"),
+        "info02": (game_info02_frame, "1200x645"),
+        "info05": (game_info05_frame, "1200x645"),
+        "statistics": (statistics_frame, "856x645"),
+        "users": (users_frame, "856x645"),
+        "settings": (settings_frame, "856x645"),
+        "account": (account_frame, "856x645")
+    }
+
+    for name, (frame, size) in frames.items():
+        if name == frame_name:
+            frame.configure(fg_color=("gray75", "#00002E"))
+            app.geometry(size)
+            frame.pack(fill="both", expand=True)
+        else:
+            frame.configure(fg_color="transparent")
+            frame.pack_forget()
+
+
+
+# def select_frame_by_name (frame_name):
+#     home_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "home" else "transparent")
+#     game_geo01_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "geo01" else "transparent")
+#     game_info02_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "info02" else "transparent")
+#     game_info05_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "info05" else "transparent")
+#     statistics_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "statistics" else "transparent")
+#     users_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "users" else "transparent")
+#     settings_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "settings" else "transparent")
+#     account_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "account" else "transparent")
     
-    if frame_name == "home":
-        home_frame.pack(fill="both", expand=True)
-    else:
-        home_frame.pack_forget()
-    if frame_name == "geo01":
-        game_geo01_frame.pack(fill="both", expand=True)
-    else:
-        game_geo01_frame.pack_forget()
-    if frame_name == "info02":
-        game_info02_frame.pack(fill="both", expand=True)
-    else:
-        game_info02_frame.pack_forget()
-    if frame_name == "info05":
-        game_info05_frame.pack(fill="both", expand=True)
-    else:
-        game_info05_frame.pack_forget()
-    if frame_name == "statistics":
-        statistics_frame.pack(fill="both", expand=True)
-    else:
-        statistics_frame.pack_forget()
-    if frame_name == "users":
-        users_frame.pack(fill="both", expand=True)
-    else:
-        users_frame.pack_forget()
-    if frame_name == "settings":
-        settings_frame.pack(fill="both", expand=True)
-    else:
-        settings_frame.pack_forget()
-    if frame_name == "account":
-        account_frame.pack(fill="both", expand=True)
-    else:
-        account_frame.pack_forget()
+#     if frame_name == "home":
+#         app.geometry("856x645")
+#         home_frame.pack(fill="both", expand=True)
+#     else:
+#         app.geometry("856x645")
+#         home_frame.pack_forget()
+
+#     if frame_name == "geo01":
+#         app.geometry("1200x645")
+#         game_geo01_frame.pack(fill="both", expand=True)
+#     else:
+#         app.geometry("856x645")
+#         game_geo01_frame.pack_forget()
+        
+#     if frame_name == "info02":
+#         app.geometry("1200x645")
+#         game_info02_frame.pack(fill="both", expand=True)
+#     else:
+#         app.geometry("856x645")
+#         game_info02_frame.pack_forget()
+        
+#     if frame_name == "info05":
+#         game_info05_frame.pack(fill="both", expand=True)
+#     else:
+#         app.geometry("856x645")
+#         game_info05_frame.pack_forget()
+        
+#     if frame_name == "statistics":
+#         app.geometry("856x645")
+#         statistics_frame.pack(fill="both", expand=True)
+#     else:
+#         statistics_frame.pack_forget()
+        
+#     if frame_name == "users":
+#         app.geometry("856x645")
+#         users_frame.pack(fill="both", expand=True)
+#     else:
+#         app.geometry("856x645")
+#         users_frame.pack_forget()
+        
+#     if frame_name == "settings":
+#         app.geometry("856x645")
+#         settings_frame.pack(fill="both", expand=True)
+#     else:
+#         app.geometry("856x645")
+#         settings_frame.pack_forget()
+        
+#     if frame_name == "account":
+#         app.geometry("856x645")
+#         account_frame.pack(fill="both", expand=True)
+#     else:
+#         app.geometry("856x645")
+#         account_frame.pack_forget()
 
 """  Sidebar  """
 
@@ -292,7 +337,7 @@ def geo01_button_event():
         widget.destroy()
     geo_game_instance = geo01.GeoGame(game_geo01_frame)
     geo_game_instance.pack(fill="both", expand=True)
-
+    
 home_frame_game_geo01_button = CTkButton(master=home_frame_games, text="", fg_color="transparent", image=geo01_img, hover_color="#393939", corner_radius=7, command=geo01_button_event)
 home_frame_game_geo01_button.grid(row=0, column=0, rowspan=2, sticky="w")
 
@@ -301,8 +346,9 @@ def info02_button_event():
     select_frame_by_name("info02")
     for widget in game_info02_frame.winfo_children():
         widget.destroy()
-    info_game_instance = info02.InfoGame(game_info02_frame)
+    info_game_instance = info02.Info02Game(game_info02_frame)
     info_game_instance.pack(fill="both", expand=True)
+    
 home_frame_game_info02_button = CTkButton(master=home_frame_games, text="", fg_color="transparent",image=info02_img, hover_color="#393939", corner_radius=7, command=info02_button_event)
 home_frame_game_info02_button.grid(row=0, column=1, sticky="w", pady=(7, 0))
 
@@ -311,9 +357,8 @@ def info05_button_event():
     select_frame_by_name("info05")
     for widget in game_info05_frame.winfo_children():
         widget.destroy()
-    info_game_instance = info05.InfoGame(game_info05_frame)
-    info_game_instance.pack(fill="both", expand=True)
-    
+    # info_game_instance = info05.InfoGame(game_info05_frame)
+    # info_game_instance.pack(fill="both", expand=True)
     
 home_frame_game_info05_button = CTkButton(master=home_frame_games, text="", fg_color="transparent", image=info05_img, hover_color="#393939", corner_radius=7, command=info05_button_event)
 home_frame_game_info05_button.grid(row=1, column=1, sticky="w", pady=(7, 0))
