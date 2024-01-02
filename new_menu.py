@@ -363,6 +363,17 @@ def info05_button_event():
 home_frame_game_info05_button = CTkButton(master=home_frame_games, text="", fg_color="transparent", image=info05_img, hover_color="#393939", corner_radius=7, command=info05_button_event)
 home_frame_game_info05_button.grid(row=1, column=1, sticky="w", pady=(7, 0))
 
+
+
+def statistics_button_event():
+    select_frame_by_name("statistics")
+    for widget in statistics_frame.winfo_children():
+        widget.destroy()
+    # statistics_instance = view_total(statistics_frame)
+    
+    
+
+
 # View Statistics Button (Button View statistics under the home_frame_games that will take us to the statistics_frame)
 home_view_statistics_button = CTkButton(master=home_frame_games, text="View Statistics", fg_color="#0000ff",font=braingames_regular_font, text_color="#fff", hover_color="#3c46ff", corner_radius=7, command=statistics_button_event)
 home_view_statistics_button.grid(row=3, column=0, columnspan=2, sticky="s", pady=(20, 0), padx=(0,80))
