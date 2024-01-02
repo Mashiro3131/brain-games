@@ -11,7 +11,6 @@ Welcome to Brain Games! This project is designed to provide a collection of fun 
 - [Installation](#installation)
 - [Usage](#usage)
 - [Tools and Resources](#Tools-and-Resources)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Installation
