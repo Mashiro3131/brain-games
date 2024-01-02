@@ -3,7 +3,7 @@ import customtkinter as ctk
 from customtkinter import *
 from CTkTable import CTkTable
 from PIL import Image
-import displayResult
+from display_results import view_total, display_current_page
 from tkinter import font
 import matplotlib.pyplot as plt
 import database
@@ -22,6 +22,7 @@ app.title("Brain Games")
 app.iconbitmap(os.path.join(assets_folder,"braingames_dark_ico.ico"))
 app.geometry("856x645")
 app.resizable(0,0)
+app.configure(fg_color="#00002E")
 
 braingames_title_font = ctk.CTkFont(family="Test Söhne Kräftig", size=40, weight="bold")
 braingames_subtitle_font = ctk.CTkFont(family="Test Söhne", size=40)
@@ -73,7 +74,7 @@ info05_img_light_data = Image.open(os.path.join(img_folder, "info05_button.png")
 info05_img_dark_data = Image.open(os.path.join(img_folder, "info05_button.png"))
 info05_img = CTkImage(dark_image=info05_img_dark_data, light_image=info05_img_light_data,  size=(315, 122))
 
-# Statistics (displayResult) Icon in Sidebar
+# Statistics (display_results) Icon in Sidebar
 statistics_img_light_data = Image.open(os.path.join(assets_folder, "analytics_icon.png"))
 statistics_img_dark_data = Image.open(os.path.join(assets_folder, "analytics_icon.png")) # TODO Changer l'image
 statistics_img = CTkImage(dark_image=statistics_img_light_data, light_image=statistics_img_light_data)
@@ -172,7 +173,7 @@ sidebar_frame_home_button = CTkButton(master=sidebar_frame, image=home_img, text
 sidebar_frame_home_button.pack(anchor="center", ipady=5, pady=(60, 0))
 
 
-# Statistics (displayResult) Button in Sidebar
+# Statistics (display_results) Button in Sidebar
 def statistics_button_event():
     select_frame_by_name("statistics")
 
@@ -221,24 +222,57 @@ sidebar_frame_author_label.pack(anchor="center",  pady=(16, 0))
 home_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
 home_frame.pack_propagate(0)
 
-home_frame_title = CTkLabel(master=home_frame, text="Welcome to Brain Games", font=braingames_title_font, text_color="#d292ff")
-home_frame_title.pack(anchor="w", padx=(65, 0), pady=(29, 0))
+home_frame_title = CTkLabel(master=app, fg_color="transparent", text="Welcome to Brain Games", font=braingames_title_font, text_color="#d292ff")
+home_frame_title.pack(anchor="w", padx=(63, 0), pady=(25, ))
 
-# home_frame_subtitle = CTkLabel(master=home_frame, text="", font=braingames_subtitle_font, text_color="#d292ff", justify="left")
-# home_frame_subtitle.pack(anchor="nw", side="top", padx=(54, 0), pady=(43, 8))
-# # home_frame_subtitle.pack(anchor="nw", side="top", padx=(65, 0), pady=(0, 10))
-# Insert new title label here, where the red line is in the UI
 
+# Time Played Frame
+home_frame_stats_time_played = CTkFrame(master=home_frame, fg_color="#0000ff", width=132, height=70, corner_radius=8)
+home_frame_stats_time_played.pack_propagate(0)
+home_frame_stats_time_played.pack(anchor="w", side="top", padx=(0, 20))
+
+# Time Played Title
+home_frame_stats_time_played_label = CTkLabel(master=home_frame_stats_time_played, text="Time Played", font=(braingames_regular_font, 10), text_color="#fff")
+home_frame_stats_time_played_label.pack(anchor="nw", padx=(14, 0))
+
+# Time Played Value
+home_frame_stats_time_played_value_label = CTkLabel(master=home_frame_stats_time_played, text=(f"70"), justify="left",  font=(braingames_title_font, 25), text_color="#fff")
+home_frame_stats_time_played_value_label.pack(anchor="nw", padx=(14, 0))
+
+
+# Number of Games Played Frame
+# Game Played Frame
+home_frame_stats_game_played = CTkFrame(master=home_frame, fg_color="#0000ff", width=132, height=70, corner_radius=8)
+home_frame_stats_game_played.pack_propagate(0)
+home_frame_stats_game_played.pack(anchor="w", side="top", padx=(0, 20))
+
+# Game Played Title
+home_frame_stats_game_played_label = CTkLabel(master=home_frame_stats_game_played, text="Game Played", font=(braingames_regular_font, 10), text_color="#fff")
+home_frame_stats_time_played_label.pack(anchor="nw", padx=(14, 0))
+
+# Game Played Value #TODO Change the value to the number of games played by the user from the display_results.py view_total() function
+home_frame_stats_game_played_value_label = CTkLabel(master=home_frame_stats_game_played, text=(f"10"), justify="left",  font=(braingames_title_font, 25), text_color="#fff")
+home_frame_stats_game_played_value_label.pack(anchor="nw", padx=(14, 0))
+
+
+
+
+
+
+
+
+
+
+""" Home Games Frame"""
+# Home Frame Subtitle
 home_frame_subtitle = CTkLabel(master=home_frame, text="Choose a game", font=braingames_subtitle_font, text_color="#d292ff")
-home_frame_subtitle.pack(anchor="n", pady=(150, 0), padx=(0, 290))  # Adjust the pady to position the title correctly
+home_frame_subtitle.pack(anchor="n", pady=(25, 0), padx=(0, 290)) 
 
 # Game Menu in Home Frame
 home_frame_games = CTkFrame(master=home_frame, fg_color="transparent")
 home_frame_games.pack(pady=(5,0), padx=(0, 0), anchor="center")
 
-
-
-# Home Frame Games Buttons 
+# Home Frame Games Buttons
 # Geo01 Game
 def geo01_button_event():
     select_frame_by_name("geo01")
@@ -259,7 +293,7 @@ home_frame_game_info05_button.grid(row=1, column=1, sticky="w", pady=(7, 0))
 
 # View Statistics Button (Button View statistics under the home_frame_games that will take us to the statistics_frame)
 home_view_statistics_button = CTkButton(master=home_frame_games, text="View Statistics", fg_color="#0000ff",font=braingames_regular_font, text_color="#fff", hover_color="#3c46ff", corner_radius=7, command=statistics_button_event)
-home_view_statistics_button.grid(row=3, column=0, columnspan=2, sticky="s", pady=(15, 0), padx=(0,80))
+home_view_statistics_button.grid(row=3, column=0, columnspan=2, sticky="s", pady=(20, 0), padx=(0,80))
 
 # Game Frames for Home Frame Game Buttons
 # Create the Geo01 Frame
