@@ -2,13 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import customtkinter as ctk
-import CTkTable
+# import CTkTable
 from CTkMessagebox import CTkMessagebox
 from customtkinter import *
 import database
 from database import fetch_game_statistics, retrieve_exercise_catalog, remove_match_record
-import display_results
-import new_menu
+import matplotlib.pyplot as plt
 
 """
 
@@ -24,7 +23,7 @@ import new_menu
 class Statistics(CTkFrame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.display_statistics()
+        
         self.filtered_data = []  # Data filtered according to applied filters
         self.current_page = 0
         self.rows_per_page = 20
@@ -32,27 +31,12 @@ class Statistics(CTkFrame):
         self.parent = parent
         self.last_filters = {"pseudo": "", "exercise": "", "start_date": "", "end_date": ""}
 
+        self.setup_widgets()
     
-    def display_statistics(self):
+    def setup_widgets(self):
         
-        def treeview_sort_column(self,tv,col,reverse):
-            l = [(tv.set(k,col),k) for k in tv.get_children('')]
-            l.sort(reverse=reverse)
-
-            # rearrange items in sorted positions
-            for index, (val,k) in enumerate(l):
-                tv.move(k,'',index)
-
-            # reverse sort next time
-            tv.heading(col,command=lambda: treeview_sort_column(tv,col,not reverse))
+        """ Statistics Label """
         
-        # Main frame
-        display_results_frame = ctk.CTkFrame(self, corner_radius=15)
-        display_results_frame.pack_propagate(0)
-        display_results_frame.pack(expand=True, fill='both', padx=15, pady=15)        
-            
-            
-            
         # Title Label
         self.title_label = ctk.CTkLabel(self, text="Statistics", font=ctk.CTkFont(size=15, weight="bold"))
         self.title_label.pack(pady=20)
@@ -64,19 +48,38 @@ class Statistics(CTkFrame):
         # Pseudo filter
         self.pseudo_label = ctk.CTkLabel(self.filter_frame, text="Pseudo:")
         self.pseudo_label.grid(row=0, column=0, padx=15, pady=8)
-        self.pseudo_entry = ctk.CTkEntry(self.filter_frame, placeholder_text="PSEUDO01")
+        self.pseudo_entry = ctk.CTkEntry(self.filter_frame, placeholder_text="Your Username")
         self.pseudo_entry.grid(row=0, column=1, padx=5, pady=8)
 
         # Exercise filter
         self.exercise_label = ctk.CTkLabel(self.filter_frame, text="Exercise:")
         self.exercise_label.grid(row=0, column=2, padx=5, pady=8)
-        self.exercise_entry = ctk.CTkEntry(self.filter_frame, placeholder_text="EXE03")
+        self.exercise_entry = ctk.CTkEntry(self.filter_frame, placeholder_text="the exercise")
         self.exercise_entry.grid(row=0, column=3, padx=5, pady=8)
 
-        # Treeview setup
+        # Start date filter
+        self.start_date_label = ctk.CTkLabel(self.filter_frame, text="Start Date:")
+        self.start_date_label.grid(row=1, column=0, padx=5, pady=8)
+        self.start_date_entry = ctk.CTkEntry(self.filter_frame, placeholder_text="YYYY-MM-DD")
+        self.start_date_entry.grid(row=1, column=1, padx=5, pady=8)
+        
+        # End date filter
+        self.end_date_label = ctk.CTkLabel(self.filter_frame, text="End Date:")
+        self.end_date_label.grid(row=1, column=2, padx=5, pady=8)
+        self.end_date_entry = ctk.CTkEntry(self.filter_frame, placeholder_text="YYYY-MM-DD")
+        self.end_date_entry.grid(row=1, column=3, padx=5, pady=8)
+        
+        # Filter button
+        self.filter_button = ctk.CTkButton(self.filter_frame, text="Search", command=self.view_results)
+        self.filter_button.grid(row=0, column=4, rowspan=2, padx=5, pady=8)    
+
+        """ Treeview Frame """
+        
+        # Treeview frame
         self.treeview_frame = ctk.CTkFrame(self, corner_radius=15)
         self.treeview_frame.pack(expand=True, fill='both', padx=15, pady=15)
 
+        # Treeview
         self.tree = ttk.Treeview(self.treeview_frame, columns=("Pseudo", "Date Time", "Time", "Exercise", "NB OK", "NB Trials", "% Success"), show="headings", height=10)
         self.tree.column("#0", width=0, stretch=ctk.NO)
 
@@ -85,19 +88,76 @@ class Statistics(CTkFrame):
             self.tree.column(col, width=150, anchor="center")
             self.tree.heading(col, text=col, anchor="center")
 
+            # Custom Treeview Styling
+            braingrames_custom_treeview_style = ttk.Style(self)
+            braingrames_custom_treeview_style.theme_use("default")
+            braingrames_custom_treeview_style.configure("Treeview", background="#2a2d2e", foreground="white", rowheight=25, fieldbackground="#343638", bordercolor="#343638", borderwidth=0)
+            braingrames_custom_treeview_style.map('Treeview', background=[('selected', '#22559b')])
+            braingrames_custom_treeview_style.configure("Treeview.Heading", background="#565b5e", foreground="white", relief="flat")
+            braingrames_custom_treeview_style.map("Treeview.Heading", background=[('active', '#3484F0')])
+            
         self.tree.pack(expand=True, fill='both', pady=20, padx=20)
 
+        
+        """ Total Statistics """
+        
+        # Total Section
+        self.total_stats_frame = ctk.CTkFrame(self)
+        self.total_stats_frame.pack(padx=20, pady=20)
+        
+        # Total Statistics
+        self.total_stats_title_label = CTkLabel(self.total_stats_frame, text="Total Statistics", font=CTkFont(size=13, weight="bold"))
+        self.total_stats_title_label.pack(pady=5)
+
+        # Total Statistics Labels
+        
+        # Separator
+        self.separator = ttk.Separator(self.total_stats_frame, orient="horizontal", style="Line.TSeparator")
+        self.separator.pack(fill="x", pady=2)
+        
+        
+        total_stats_rows_label = CTkLabel(self.total_stats_frame, text="Rows:")
+        total_stats_rows_label.pack(side='left', padx=10)
+        self.nbrows_label = CTkLabel(self.total_stats_frame, text="")
+        self.nbrows_label.pack(side='left', padx=10)
+        
+        
+        total_stats_duration_label = CTkLabel(self.total_stats_frame, text="Duration:")
+        total_stats_duration_label.pack(side='left', padx=10)
+        self.duration_label = CTkLabel(self.total_stats_frame, text="")
+        self.duration_label.pack(side='left', padx=10)
+        
+        
+        total_stats_nbok_label = CTkLabel(self.total_stats_frame, text="NB OK:")
+        total_stats_nbok_label.pack(side='left', padx=10)
+        self.nbok_label = CTkLabel(self.total_stats_frame, text="")
+        self.nbok_label.pack(side='left', padx=10)
+
+
+        total_stats_nbtotal_label = CTkLabel(self.total_stats_frame, text="NB Total:")
+        total_stats_nbtotal_label.pack(side='left', padx=10)
+        self.nbtotal_label = CTkLabel(self.total_stats_frame, text="")
+        self.nbtotal_label.pack(side='left', padx=10)
+        
+        
+        total_stats_percentage_label = CTkLabel(self.total_stats_frame, text="% Success:")
+        total_stats_percentage_label.pack(side='left', padx=10)
+        self.percentage_label = CTkLabel(self.total_stats_frame, text="")
+        self.percentage_label.pack(side='left', padx=10)
+        
+
         # Pagination frame and buttons
-        self.pagination_frame = ctk.CTkFrame(self)
+        self.pagination_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.pagination_frame.pack(pady=10)
 
         self.prev_page_button = ctk.CTkButton(self.pagination_frame, text="Previous Page", command=self.previous_page)
-        self.prev_page_button.pack(side="left", padx=5, pady=5)
+        self.prev_page_button.pack(side="left", padx=(10, 0), pady=(2, 0))
 
         self.next_page_button = ctk.CTkButton(self.pagination_frame, text="Next Page", command=self.next_page)
-        self.next_page_button.pack(side="left", padx=5, pady=5)
+        self.next_page_button.pack(side="left", padx=(10, 0), pady=(2, 0))
 
-        # Initial call to display results
+
+        # Fetch results from the database
         self.view_results()
    
    
@@ -461,6 +521,7 @@ class Statistics(CTkFrame):
         
 if __name__ == "__main__":
     window = ctk.CTk()  # or ctk.CTk() if you are using customtkinter for the main window
+    window.title("Statistics")
     app = Statistics(window)
     app.pack(expand=True, fill="both")
     window.mainloop()
