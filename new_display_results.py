@@ -183,6 +183,13 @@ class Statistics(CTkFrame):
         create_button = ctk.CTkButton(crud_sidebar_frame, text="Add", command=self.add_results)
         create_button.pack(side="top", padx=10, pady=10)
         
+        # UPDATE Button
+        update_button = ctk.CTkButton(crud_sidebar_frame, text="Modify", command=self.modify_results)
+        update_button.pack(side="top", padx=10, pady=10)
+        
+        # DELETE Button
+        delete_button = ctk.CTkButton(crud_sidebar_frame, text="Delete", command=self.delete_results)
+        delete_button.pack(side="top", padx=10, pady=10)
         
         
 
@@ -349,7 +356,7 @@ class Statistics(CTkFrame):
 
         # Open a new window for updating
         self.update_window = ctk.CTkToplevel()  # Using CustomTkinter
-        self.update_window.title("Modifier un résultat")
+        self.update_window.title("Modify a result")
         self.update_window.geometry("400x200+700+350")
         self.update_window.grab_set()  # Focus on this window
 
@@ -374,9 +381,9 @@ class Statistics(CTkFrame):
         self.nbtrials_entry.pack()
         self.nbtrials_entry.insert(0, current_values[5])  # Default to original value
 
-        # Update button
+        # Update button #TODO: check this
         update_button = ctk.CTkButton(self.update_window, text="Update",
-                                      command=lambda: self.update_result(selected_item, self.duration_entry.get(), self.nbok_entry.get(),
+                                      command=lambda: self.update_results(selected_item, self.duration_entry.get(), self.nbok_entry.get(),
                                                                          self.nbtrials_entry.get()))
         update_button.pack()
         
@@ -389,8 +396,8 @@ class Statistics(CTkFrame):
         nbok = current_values[4]  # pour nbok
         nbtrials = current_values[5]  # pour nbtrials
 
-        # Update the database
-        database.revise_game_outcome(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nbok,
+        # Update the database #TODO: check this
+        database.update_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nbok,
                                      new_nbtrials)
 
         # Update the treeview
@@ -522,8 +529,8 @@ class Statistics(CTkFrame):
             messagebox.showwarning("Erreur", "Format de temps invalide. Veuillez entrer le format HH:MM:SS.")
             return
 
-        # Send data to the database
-        database.save_game_result(pseudo, exercise, temps, nbok, nbtrials)
+        # Send data to the database #TODO check this
+        database.update_game_result(pseudo, exercise, temps, nbok, nbtrials)
         self.refresh_treeview()
 
         # Display a success message
