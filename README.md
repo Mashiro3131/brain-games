@@ -41,9 +41,18 @@ Youtube Tutorials:
 - [Tkinter.com](https://www.youtube.com/@TkinterPython)
 
 
+
+## Design
+
 Logo:
 - [@vaniapietrasanta - Original Brain Design](https://www.br.freelancer.com/contest/Design-a-Brain-Logo-900094-byentry-11410678)
 
+Color Palette:
+![Color Palette](https://i.imgur.com/S6UrjFM.png)
 
-LICENSE:
+Font:
+- [Soehne Font](https://klim.co.nz/collections/soehne/)
+
+## License
+
 - [MIT License](https://opensource.org/licenses/MIT)
