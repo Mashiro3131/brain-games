@@ -1,6 +1,6 @@
 import os
 import sys
-import menu
+import new_menu as menu
 # Get the absolute path of the current script
 current_path = os.path.dirname(os.path.abspath(__file__))
 
