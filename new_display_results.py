@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 - [ ] Ajouter le tableau des résultats dans la frame statistiques
 - [ ] Changer le treeview à CTkTable, faire en sorte que les colonnes se redimensionnent automatiquement et qu'on puisse faire la meme chose que avec le treeview
 - [ ] Ajouter la fonctionnaliter de filtrer en asc et desc en cliquant sur les entêtes des colonnes
-- [ ] Ajouter un autre sideframe sur la droite pour les filtres
-- [ ] Ajouter l'option faire un bouton crud
+- [ ] Ajouter un autre sidebar sur la droite pour le CRUD
+- [ ] Ajouter l'option faire un crud sur les résultats depuis la sidebar
 
 
 """
@@ -24,11 +24,14 @@ class Statistics(CTkFrame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         
+        
         self.filtered_data = []  # Data filtered according to applied filters
         self.current_page = 0
         self.rows_per_page = 20
         self.loaded_data = False  # To track if data has been loaded
         self.parent = parent
+        # self.parent.geometry("1200x650")
+        # self.parent.title("Statistics")
         self.last_filters = {"pseudo": "", "exercise": "", "start_date": "", "end_date": ""}
 
         self.setup_widgets()
@@ -157,7 +160,35 @@ class Statistics(CTkFrame):
         self.next_page_button.pack(side="left", padx=(10, 0), pady=(2, 0))
 
 
-        # Fetch results from the database
+
+        """ CRUD Sidebar Frame """
+
+        crud_sidebar_frame = ctk.CTkFrame(self, fg_color="#2A8C55",  width=176, height=650, corner_radius=0)
+        crud_sidebar_frame.pack_propagate(0)
+        crud_sidebar_frame.pack(side="right", anchor="w", fill="y")
+        
+        
+        # CRUD Buttons 
+        
+        # CREATE Button
+        
+        """ CRUD sur les résultats 
+        Maintenant qu’on a l’affichage (Read), on aimerait qu’un enseignant (pour l’instant pas de login donc tout le monde) puisse détruire (Delete), modifier (update), ajouter (Create). 
+        Ajouter des boutons dans l’affichage précédent et les fonctions (et écran) qui permettent : 
+        De détruire un résultat (clic sur un bouton) 
+        De modifier un résultat (seulement le temps, le nombre d’essais réussi et le nombre total) 
+        De créer un résultat à partir de rien 
+        """
+        
+        create_button = ctk.CTkButton(crud_sidebar_frame, text="Add", command=self.add_results)
+        create_button.pack(side="top", padx=10, pady=10)
+        
+        
+        
+
+
+
+        # Displays the results instantly
         self.view_results()
    
    
