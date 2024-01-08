@@ -99,11 +99,19 @@ class Login(CTkFrame):
         CTkLabel(self.login_frame, text="  Username:", text_color="#d292ff", anchor="w", justify="left", font=CTkFont(family="Test Söhne", size=14), image=account_icon, compound="left").pack(anchor="w", pady=(38, 0), padx=(25, 0))
         CTkEntry(self.login_frame, width=225, fg_color="#EEEEEE", border_color="#d292ff", border_width=1, text_color="#000000").pack(anchor="w", padx=(25, 0))
 
-        # Password label and entry
+        """Password"""
+        # Image
         password_icon = CTkImage(dark_image=self.password_icon_data, light_image=self.password_icon_data, size=(17,17))
-        CTkLabel(self.login_frame, text="  Password:", text_color="#d292ff", anchor="w", justify="left", font=CTkFont(family="Test Söhne", size=14), image=password_icon, compound="left").pack(anchor="w", pady=(21, 0), padx=(25, 0))
-        CTkEntry(self.login_frame, width=225, fg_color="#EEEEEE", border_color="#d292ff", border_width=1, text_color="#000000", show="*").pack(anchor="w", padx=(25, 0))
-
+        
+        # Password label
+        self.password_label = CTkLabel(self.login_frame, text="  Password:", text_color="#d292ff", anchor="w", justify="left", font=CTkFont(family="Test Söhne", size=14), image=password_icon, compound="left")
+        self.password_label.pack(anchor="w", pady=(21, 0), padx=(25, 0))
+        
+        # Password entry
+        self.password_entry = CTkEntry(self.login_frame, width=225, fg_color="#EEEEEE", border_color="#d292ff", border_width=1, text_color="#000000", show="*")
+        self.password_entry.pack(anchor="w", padx=(25, 0))
+       
+       
         # Login button
         self.login_as_user_button = CTkButton(self.login_frame, text="Login", fg_color="#3c46ff", hover_color="#0000ff", font=CTkFont(family="Test Söhne", size=12), text_color="#ffffff", width=225, command=self.login_as_user)
         self.login_as_user_button.pack(anchor="w", pady=(40, 0), padx=(25, 0))
@@ -189,14 +197,23 @@ class Login(CTkFrame):
 
     def login_as_guest(self):
         pass
-
-
+        
+        
 
     def show_password(self):
-        pass
+        self.password_entry.config(show="")
+        self.eye_icon_label.pack()
     
     def hide_password(self):
-        pass
+        self.password_entry.config(show="*")
+        self.eye_icon_label.pack_forget()
+    
+    
+    def show_or_hide_password(self):
+        if self.eye_icon_label.winfo_ismapped():
+            self.hide_password()
+        else:
+            self.show_password()
 
 
 
