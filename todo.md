@@ -50,3 +50,4 @@
 
 ## Personnalisation
 
+- Faire une page de login qui propose de se loguer ou de créer un compte et en transparent un label avec un bouton pour continuer en tant qu'invité
