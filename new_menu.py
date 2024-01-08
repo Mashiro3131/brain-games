@@ -10,14 +10,9 @@ import geo01, info02, info05
 from new_display_results import Statistics
 
 
-
-script_directory = os.path.dirname(os.path.abspath(__file__))
-
 assets_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 img_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "img")
 
-
-os.chdir(script_directory)
 
 app = CTk()
 app.title("Brain Games")
