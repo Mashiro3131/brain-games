@@ -7,11 +7,11 @@ colorama.init(autoreset=True)
 # it's a small fun script to scale the images for the game buttons or other images if you want to use it
 # don't foget to play with padding and size to get the best result
 
-original_dimensions_1 = (175, 210) 
+original_dimensions_1 = (327, 225) 
 original_dimensions_2 = (234, 91) 
 
 # Calculate new dimensions (0.35 = 35% increase) 
-new_dimensions_1 = tuple([int(dim * 1.35) for dim in original_dimensions_1]) 
+new_dimensions_1 = tuple([int(dim * 0.5) for dim in original_dimensions_1]) 
 new_dimensions_2 = tuple([int(dim * 1.35) for dim in original_dimensions_2]) 
 
 
