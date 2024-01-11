@@ -76,13 +76,13 @@ class Login(CTkFrame):
 
 
 
-# The user will land on this first page
-    def create_login_page(self):
-        self.login_page.pack_propagate(0)
-        self.login_page.pack(expand=True, side="right")
+# # The user will land on this first page
+#     def create_login_page(self):
+#         self.login_page.pack_propagate(0)
+#         self.login_page.pack(expand=True, side="right")
 
-        # Getting Started title
-        getting_started_title_label = CTkLabel(self.login_page, text="Getting Started", text_color="#d292ff", anchor="w", justify="left", font=(self.login_title_font, 24))
+#         # Getting Started title
+#         getting_started_title_label = CTkLabel(self.login_page, text="Getting Started", text_color="#d292ff", anchor="w", justify="left", font=(self.login_title_font, 24))
 
 
     def create_login_frame(self):
@@ -91,12 +91,12 @@ class Login(CTkFrame):
 
 
         # Login title
-        login_title_label = CTkLabel(self.login_frame, text="Welcome back !", text_color="#d292ff", anchor="w", justify="left", font=CTkFont(family="Test Söhne Kräftig", size=24, weight="bold"))
-        login_title_label.pack(anchor="w", pady=(40, 0), padx=(25, 0))
+        login_title_label = CTkLabel(self.login_frame, text="Welcome back !", text_color="#d292ff", anchor="w", justify="left", font=CTkFont(family="Test Söhne Kräftig", size=26, weight="bold"))
+        login_title_label.pack(anchor="w", pady=(55, 25), padx=(25, 0))
         
         # Username label and entry
         account_icon = CTkImage(dark_image=self.account_icon_data, light_image=self.account_icon_data, size=(20,20))
-        CTkLabel(self.login_frame, text="  Username:", text_color="#d292ff", anchor="w", justify="left", font=CTkFont(family="Test Söhne", size=14), image=account_icon, compound="left").pack(anchor="w", pady=(38, 0), padx=(25, 0))
+        CTkLabel(self.login_frame, text="  Username:", text_color="#FFF", anchor="w", justify="left", font=CTkFont(family="Test Söhne", size=14), image=account_icon, compound="left").pack(anchor="w", pady=(38, 0), padx=(25, 0))
         CTkEntry(self.login_frame, width=225, fg_color="#EEEEEE", border_color="#d292ff", border_width=1, text_color="#000000").pack(anchor="w", padx=(25, 0))
 
         """Password"""
@@ -104,29 +104,29 @@ class Login(CTkFrame):
         password_icon = CTkImage(dark_image=self.password_icon_data, light_image=self.password_icon_data, size=(17,17))
         
         # Password label
-        self.password_label = CTkLabel(self.login_frame, text="  Password:", text_color="#d292ff", anchor="w", justify="left", font=CTkFont(family="Test Söhne", size=14), image=password_icon, compound="left")
+        self.password_label = CTkLabel(self.login_frame, text="  Password:", text_color="#FFF", anchor="w", justify="left", font=CTkFont(family="Test Söhne", size=14), image=password_icon, compound="left")
         self.password_label.pack(anchor="w", pady=(21, 0), padx=(25, 0))
         
         # Password entry
         self.password_entry = CTkEntry(self.login_frame, width=225, fg_color="#EEEEEE", border_color="#d292ff", border_width=1, text_color="#000000", show="*")
         self.password_entry.pack(anchor="w", padx=(25, 0))
        
-       
-        # Login button
-        self.login_as_user_button = CTkButton(self.login_frame, text="Login", fg_color="#3c46ff", hover_color="#0000ff", font=CTkFont(family="Test Söhne", size=12), text_color="#ffffff", width=225, command=self.login_as_user)
-        self.login_as_user_button.pack(anchor="w", pady=(40, 0), padx=(25, 0))
-        
         # Register and Guest buttons frame
         self.button_frame = CTkFrame(self.login_frame, fg_color="transparent")
         self.button_frame.pack(anchor="w", pady=(20, 0), padx=(25, 0))
+          
+        # Login button
+        self.login_as_user_button = CTkButton(self.button_frame, text="Login", fg_color="#3c46ff", hover_color="#0000ff", font=CTkFont(family="Test Söhne", size=12), text_color="#ffffff", width=110, command=self.login_as_user)
+        self.login_as_user_button.pack(side="left", padx=(0, 5))
+        
         
         # Register button
         self.register_new_user_button = CTkButton(self.button_frame, text="Register", fg_color="#3c46ff", hover_color="#0000ff", font=CTkFont(family="Test Söhne", size=12), text_color="#ffffff", width=110, command=self.register_frame)
-        self.register_new_user_button.pack(side="left", padx=(0, 5))
+        self.register_new_user_button.pack(side="right", padx=(0, 5))
         
         # Continue as guest button
-        self.guest_login_button = CTkButton(self.button_frame, text="Guest", fg_color="#3c46ff", hover_color="#0000ff", font=CTkFont(family="Test Söhne", size=12), text_color="#ffffff", width=110, command=self.login_as_guest)
-        self.guest_login_button.pack(side="right", padx=(0, 0))
+        self.guest_login_button = CTkButton(self.login_frame, text="Continue as guest", fg_color="transparent", hover_color="#000000", font=CTkFont(family="Test Söhne", size=12), text_color="#d292ff", width=110, command=self.login_as_guest)
+        self.guest_login_button.pack(anchor="w", pady=(7,0), padx=(140, 0))
         
         # Quit button
         # quit_app_button = CTkButton(self.login_frame, text="Quit", fg_color="#3c46ff", hover_color="#0000ff", font=CTkFont(family="Test Söhne", size=12), text_color="#ffffff", width=225, command=self.exit_application_messagebox)
@@ -138,7 +138,7 @@ class Login(CTkFrame):
         # login_with_google_button.pack(anchor="w", pady=(20, 0), padx=(25, 0))
 
         
-            
+    
     def register_frame(self):
         self.register_frame = CTkFrame(self, bg_color="#00002E")
         self.register_frame.place(relx=0.5, rely=0.5, anchor="center")
@@ -157,9 +157,8 @@ class Login(CTkFrame):
         
         # Eye icon to show password
         self.eye_icon = CTkImage(dark_image=self.password_icon_data, light_image=self.password_icon_data, size=(17,17))
-        self.eye_icon_label = CTkLabel(self.register_frame, image=self.eye_icon)
-        
-        
+        self.eye_show_icon_label = CTkLabel(self.register_frame, image=self.eye_icon)
+
         
         
         # Register button
@@ -214,7 +213,7 @@ class Login(CTkFrame):
             self.hide_password()
         else:
             self.show_password()
-
+            
 
 
 
