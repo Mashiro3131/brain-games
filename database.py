@@ -197,7 +197,7 @@ db_connection = DatabaseConnection('127.0.0.1', '3306', 'root', 'root', 'brain_g
 
 
 # (CREATE) Insert results
-def record_match_outcome(pseudo, exercise, duration, nbtrials, nbok):
+def save_game_results(pseudo, exercise, duration, nbtrials, nbok):
     try:
         with db_connection.connect() as cursor:
             
@@ -381,10 +381,46 @@ def update_game_result(pseudo, exercise, date_hour, duration, nbok, nbtrials, ne
     except mysql.connector.Error as error:
         print(Fore.RED + f"Échec de la mise à jour du résultat du jeu : {error}")
 
+    @with_connection
+    def update_game_result_by_id(self, cursor, result_id, new_duration, new_nbok, new_nbtrials):
+        try:
+            update_query = """
+            UPDATE results 
+            SET duration = %s, nbok = %s, nbtrials = %s 
+            WHERE id = %s
+            """
+            update_values = (new_duration, new_nbok, new_nbtrials, result_id)
+            cursor.execute(update_query, update_values)
 
+            if cursor.rowcount == 0:
+                print(Fore.YELLOW + "Aucun enregistrement correspondant trouvé pour mise à jour.")
+            else:
+                print(Fore.GREEN + f"{cursor.rowcount} ligne(s) mise(s) à jour.")
+
+        except mysql.connector.Error as error:
+            print(Fore.RED + f"Échec de la mise à jour du résultat du jeu : {error}")
+    
+    @with_connection
+    def update_game_result_by_id(self, cursor, result_id, new_duration, new_nbok, new_nbtrials):
+        try:
+            update_query = """
+            UPDATE results 
+            SET duration = %s, nbok = %s, nbtrials = %s 
+            WHERE id = %s
+            """
+            update_values = (new_duration, new_nbok, new_nbtrials, result_id)
+            cursor.execute(update_query, update_values)
+
+            if cursor.rowcount == 0:
+                print(Fore.YELLOW + "Aucun enregistrement correspondant trouvé pour mise à jour.")
+            else:
+                print(Fore.GREEN + f"{cursor.rowcount} ligne(s) mise(s) à jour.")
+
+        except mysql.connector.Error as error:
+            print(Fore.RED + f"Échec de la mise à jour du résultat du jeu : {error}")
 
 # (DELETE) Delete results
-def remove_match_record(pseudo, exercise, date_hour, duration, nbok, nbtrials):
+def delete_game_results(pseudo, exercise, date_hour, duration, nbok, nbtrials):
     try:
         with db_connection.connect() as cursor:
             # First, retrieve the user_id for the given pseudo
@@ -416,7 +452,7 @@ def remove_match_record(pseudo, exercise, date_hour, duration, nbok, nbtrials):
         
 
 # Get all exercise names
-def retrieve_exercise_catalog():
+def get_exercices():
     try:
         with db_connection.connect() as cursor:
             query = "SELECT DISTINCT exercise FROM results"
