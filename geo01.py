@@ -126,7 +126,7 @@ class GeoGame(CTkFrame):
         duration = (end_time - self.start_date).total_seconds()
         pseudo = self.pseudo_entry.get()
 
-        database.record_match_outcome(pseudo, self.exercise, duration, self.nbtrials, self.nbok)
+        database.save_game_results(pseudo, self.exercise, duration, self.nbtrials, self.nbok)
         self.destroy()
 
     def display_timer(self):
