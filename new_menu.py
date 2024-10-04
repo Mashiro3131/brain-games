@@ -101,7 +101,8 @@ def select_frame_by_name(frame_name):
         "geo01": (game_geo01_frame, "1200x645"),
         "info02": (game_info02_frame, "1200x645"),
         "info05": (game_info05_frame, "1200x645"),
-        "statistics": (statistics_frame, "856x645"),
+        "statistics": (statistics_frame, "1200x645"),
+        #"statistics": (statistics_frame, "856x645"),
         "users": (users_frame, "856x645"),
         "settings": (settings_frame, "856x645"),
         "account": (account_frame, "856x645")
@@ -116,71 +117,6 @@ def select_frame_by_name(frame_name):
             frame.configure(fg_color="transparent")
             frame.pack_forget()
 
-
-
-# def select_frame_by_name (frame_name):
-#     home_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "home" else "transparent")
-#     game_geo01_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "geo01" else "transparent")
-#     game_info02_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "info02" else "transparent")
-#     game_info05_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "info05" else "transparent")
-#     statistics_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "statistics" else "transparent")
-#     users_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "users" else "transparent")
-#     settings_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "settings" else "transparent")
-#     account_frame.configure(fg_color=("gray75", "#00002E") if frame_name == "account" else "transparent")
-    
-#     if frame_name == "home":
-#         app.geometry("856x645")
-#         home_frame.pack(fill="both", expand=True)
-#     else:
-#         app.geometry("856x645")
-#         home_frame.pack_forget()
-
-#     if frame_name == "geo01":
-#         app.geometry("1200x645")
-#         game_geo01_frame.pack(fill="both", expand=True)
-#     else:
-#         app.geometry("856x645")
-#         game_geo01_frame.pack_forget()
-        
-#     if frame_name == "info02":
-#         app.geometry("1200x645")
-#         game_info02_frame.pack(fill="both", expand=True)
-#     else:
-#         app.geometry("856x645")
-#         game_info02_frame.pack_forget()
-        
-#     if frame_name == "info05":
-#         game_info05_frame.pack(fill="both", expand=True)
-#     else:
-#         app.geometry("856x645")
-#         game_info05_frame.pack_forget()
-        
-#     if frame_name == "statistics":
-#         app.geometry("856x645")
-#         statistics_frame.pack(fill="both", expand=True)
-#     else:
-#         statistics_frame.pack_forget()
-        
-#     if frame_name == "users":
-#         app.geometry("856x645")
-#         users_frame.pack(fill="both", expand=True)
-#     else:
-#         app.geometry("856x645")
-#         users_frame.pack_forget()
-        
-#     if frame_name == "settings":
-#         app.geometry("856x645")
-#         settings_frame.pack(fill="both", expand=True)
-#     else:
-#         app.geometry("856x645")
-#         settings_frame.pack_forget()
-        
-#     if frame_name == "account":
-#         app.geometry("856x645")
-#         account_frame.pack(fill="both", expand=True)
-#     else:
-#         app.geometry("856x645")
-#         account_frame.pack_forget()
 
 """  Sidebar  """
 
@@ -381,10 +317,6 @@ game_info02_frame.pack_propagate(0)
 game_info05_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
 game_info05_frame.pack_propagate(0)
 
-
-
-
-
 # Create the Users Frame
 
 users_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
@@ -397,6 +329,23 @@ settings_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=
 
 account_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=650, corner_radius=0)
 
+
+
+# Check if the user is a teacher or admin, if yes, display the users and settings buttons in the sidebar
+
+
+# Check if user is logged in, if not, display the login page
+
+# def user_logged_in():
+#     return True
+
+# if user_logged_in():
+#     sidebar_frame_users_button.pack(anchor="center", ipady=5, pady=(16, 0))
+#     sidebar_frame_settings_button.pack(anchor="center", ipady=5, pady=(16, 0))
+#     sidebar_frame_account_button.pack(anchor="center", ipady=5, pady=(16, 0))
+# else:
+#     # TODO Display the login page
+#     pass
 
 """ Select Home Frame by default """
 select_frame_by_name("home")
