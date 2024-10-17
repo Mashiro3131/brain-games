@@ -72,23 +72,23 @@ info05_img_dark_data = Image.open(os.path.join(img_folder, "info05_button.png"))
 info05_img = CTkImage(dark_image=info05_img_dark_data, light_image=info05_img_light_data,  size=(315, 122))
 
 # Statistics (display_results) Icon in Sidebar
-statistics_img_light_data = Image.open(os.path.join(assets_folder, "analytics_icon.png"))
+statistics_img_light_data = Image.open(os.path.join(assets_folder, "analytics_icon.png")) # Light Mode
 statistics_img_dark_data = Image.open(os.path.join(assets_folder, "analytics_icon.png")) # TODO Changer l'image
 statistics_img = CTkImage(dark_image=statistics_img_light_data, light_image=statistics_img_light_data)
 
 # Orders (user_list_icon) Icon in Sidebar (it will only be visible for the admin and the teachers that have a role number "2", from there we can CRUD the users (students)))
-users_img_light_data = Image.open(os.path.join(assets_folder, "user_list_icon.png"))
+users_img_light_data = Image.open(os.path.join(assets_folder, "user_list_icon.png")) # Light Mode
 users_img_dark_data = Image.open(os.path.join(assets_folder, "user_list_icon.png")) # TODO Changer l'image
 users_img = CTkImage(dark_image=users_img_light_data, light_image=users_img_light_data)
 
 # Settings Icon in Sidebar (the user can then change his password, his username, his name, his profile picture, etc...)
-settings_img_light_data = Image.open(os.path.join(assets_folder, "settings_icon.png"))
-settings_img_dark_data = Image.open(os.path.join(assets_folder, "settings_icon.png")) # TODO Changer l'image
+settings_img_light_data = Image.open(os.path.join(assets_folder, "settings_icon.png")) # Light Mode
+settings_img_dark_data = Image.open(os.path.join(assets_folder, "settings_icon.png")) # TODO Changer l'image pour dark mode
 settings_img = CTkImage(dark_image=settings_img_light_data, light_image=settings_img_light_data)
 
 # Account Icon in Sidebar (the user can then visualize his profile, his username, his profile picture, and his average score that he got in the games)
-person_img_light_data = Image.open(os.path.join(assets_folder, "account_icon.png"))
-person_img_dark_data = Image.open(os.path.join(assets_folder, "account_icon.png")) # TODO Changer l'image
+person_img_light_data = Image.open(os.path.join(assets_folder, "account_icon.png")) # Light Mode
+person_img_dark_data = Image.open(os.path.join(assets_folder, "account_icon.png")) # TODO Changer l'image pour dark mode
 person_img = CTkImage(dark_image=person_img_light_data, light_image=person_img_light_data)
 
 
@@ -346,6 +346,10 @@ account_frame = CTkFrame(master=app, fg_color="transparent", width=680, height=6
 # else:
 #     # TODO Display the login page
 #     pass
+
+# Display the loggin page
+
+
 
 """ Select Home Frame by default """
 select_frame_by_name("home")
