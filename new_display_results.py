@@ -6,7 +6,7 @@ import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
 from customtkinter import *
 import database
-from database import fetch_game_statistics, retrieve_exercise_catalog, remove_match_record
+from database import *
 import matplotlib.pyplot as plt
 
 """
@@ -163,9 +163,10 @@ class Statistics(CTkFrame):
 
         """ CRUD Sidebar Frame """
 
-        crud_sidebar_frame = ctk.CTkFrame(self, fg_color="#2A8C55",  width=176, height=650, corner_radius=0)
-        crud_sidebar_frame.pack_propagate(0)
-        crud_sidebar_frame.pack(side="right", anchor="w", fill="y")
+        # CRUD Sidebar Frame
+        self.crud_sidebar_frame = CTkFrame(self, fg_color="#2A8C55",  width=176, height=650, corner_radius=0)
+        self.crud_sidebar_frame.pack_propagate(0)
+        self.crud_sidebar_frame.pack(side="right", anchor="w", fill="y")
         
         
         # CRUD Buttons 
@@ -180,20 +181,16 @@ class Statistics(CTkFrame):
         De créer un résultat à partir de rien 
         """
         
-        create_button = ctk.CTkButton(crud_sidebar_frame, text="Add", command=self.add_results)
-        create_button.pack(side="top", padx=10, pady=10)
+        self.create_button = ctk.CTkButton(self.crud_sidebar_frame, text="Add", command=self.add_results)
+        self.create_button.pack(side="top", padx=10, pady=10)
         
         # UPDATE Button
-        update_button = ctk.CTkButton(crud_sidebar_frame, text="Modify", command=self.modify_results)
-        update_button.pack(side="top", padx=10, pady=10)
+        self.update_button = ctk.CTkButton(self.crud_sidebar_frame, text="Modify", command=self.modify_results)
+        self.update_button.pack(side="top", padx=10, pady=10)
         
         # DELETE Button
-        delete_button = ctk.CTkButton(crud_sidebar_frame, text="Delete", command=self.delete_results)
-        delete_button.pack(side="top", padx=10, pady=10)
-        
-        
-
-
+        self.delete_button = ctk.CTkButton(self.crud_sidebar_frame, text="Delete", command=self.delete_results)
+        self.delete_button.pack(side="top", padx=10, pady=10)
 
         # Displays the results instantly
         self.view_results()
@@ -519,7 +516,7 @@ class Statistics(CTkFrame):
 
         # Verify if the exercise exists
         if not self.check_exercise_exists(exercise):
-            existing_exercises = retrieve_exercise_catalog()
+            existing_exercises = database.get_exercices()
             messagebox.showwarning("Erreur",
                                    f"Cet exercise n'existe pas. Les exercices disponibles dans la BD sont: {', '.join(existing_exercises)}")
             return
