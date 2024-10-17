@@ -1,12 +1,14 @@
-import contextlib
-import string
 import mysql.connector
-import colorama
-import datetime
-from colorama import Fore
-import bcrypt
+import contextlib
 import functools
+import bcrypt
+import random
+import string
+import colorama
+from colorama import Fore
 colorama.init(autoreset=True)
+import datetime
+import hashlib
 
 
 
@@ -173,7 +175,7 @@ class Database:
             print(Fore.RED + f"Error inserting results: {error}")
             
     @with_connection
-    def record_match_outcome(self, cursor, pseudo, exercise, duration, nbtrials, nbok):
+    def save_game_results(self, cursor, pseudo, exercise, duration, nbtrials, nbok):
         try:
             
             user_check_query = """
@@ -238,62 +240,119 @@ class Database:
         except mysql.connector.Error as error:
             print(Fore.RED + f"Error registering user: {error}")
     
+    
+    
+    
     @with_connection
     def fetch_game_statistics(self, cursor, pseudo=None, exercise=None, start_date=None, end_date=None, page=1, page_size=20):
-        results = []
-        total = None
         try:
-            # Fetch Results
-            fetch_results_query = ("""
-                SELECT `pseudo`, `exercise`, `date_hour`, `duration`, `nbtrials`, `nbok`
-                FROM `results` 
-                JOIN `users` ON `users`.`id` = `results`.`user_id`
-                WHERE 1=1
-            """)
-
+            # Building the WHERE clause
+            where_clauses = []
             params = []
             if pseudo:
-                fetch_results_query += " AND `pseudo` = %s"
+                where_clauses.append("users.pseudo = %s")
                 params.append(pseudo)
             if exercise:
-                fetch_results_query += " AND `exercise` = %s"
+                where_clauses.append("results.exercise = %s")
                 params.append(exercise)
             if start_date:
-                fetch_results_query += " AND `date_hour` >= %s"
+                where_clauses.append("results.date_hour >= %s")
                 params.append(start_date)
             if end_date:
-                fetch_results_query += " AND `date_hour` <= %s"
+                where_clauses.append("results.date_hour <= %s")
                 params.append(end_date)
-                
-            fetch_results_query += " ORDER BY `date_hour` DESC"
-            
-            # Pagination 
+
+            where_statement = " AND ".join(where_clauses) if where_clauses else "1=1"
+
+            # Pagination setup
             offset = (page - 1) * page_size
-            fetch_results_query += " LIMIT %s OFFSET %s"
-            params.append(page_size, offset)
-            
-            cursor.execute(fetch_results_query, params)
+            limit_statement = "LIMIT %s OFFSET %s"
+            params.extend([page_size, offset])
+
+            # Construct and execute the main query
+            main_query = f"""
+                SELECT users.pseudo, results.exercise, results.date_hour, results.duration, results.nbtrials, results.nbok
+                FROM results
+                JOIN users ON users.id = results.user_id
+                WHERE {where_statement}
+                ORDER BY results.date_hour DESC
+                {limit_statement}
+            """
+            cursor.execute(main_query, params)
             results = cursor.fetchall()
-            
-            # Fetch Total
-            fetch_total_query = ("""
+
+            # Construct and execute the count query
+            count_query = f"""
                 SELECT COUNT(*)
-                    FROM results r
-                    INNER JOIN users u ON r.user_id = u.id
-                    WHERE 1 = 1
-            """)
-            
-            if pseudo or exercise or start_date or end_date:
-                fetch_total_query += fetch_results_query.split("WHERE")[1].replace("LIMIT %s OFFSET %s", "")
-                cursor.execute(fetch_total_query, tuple(params[:-2]))  # Exclure les paramètres de pagination
-                total = cursor.fetchone()[0]
-        
-            print(Fore.GREEN + f"Results fetched successfully")
-            
+                FROM results
+                JOIN users ON users.id = results.user_id
+                WHERE {where_statement}
+            """
+            cursor.execute(count_query, params[:-2])  # Exclude pagination parameters
+            total = cursor.fetchone()[0]
+
+            return results, total
+
         except mysql.connector.Error as error:
             print(Fore.RED + f"Error fetching results: {error}")
+            return [], 0
+
+    # @with_connection
+    # def fetch_game_statistics(self, cursor, pseudo=None, exercise=None, start_date=None, end_date=None, page=1, page_size=20):
+    #     results = []
+    #     total = None
+    #     try:
+    #         # Fetch Results
+    #         fetch_results_query = ("""
+    #             SELECT `pseudo`, `exercise`, `date_hour`, `duration`, `nbtrials`, `nbok`
+    #             FROM `results` 
+    #             JOIN `users` ON `users`.`id` = `results`.`user_id`
+    #             WHERE 1=1
+    #         """)
+
+    #         params = []
+    #         if pseudo:
+    #             fetch_results_query += " AND `pseudo` = %s"
+    #             params.append(pseudo)
+    #         if exercise:
+    #             fetch_results_query += " AND `exercise` = %s"
+    #             params.append(exercise)
+    #         if start_date:
+    #             fetch_results_query += " AND `date_hour` >= %s"
+    #             params.append(start_date)
+    #         if end_date:
+    #             fetch_results_query += " AND `date_hour` <= %s"
+    #             params.append(end_date)
+                
+    #         fetch_results_query += " ORDER BY `date_hour` DESC"
             
-        return results, total
+    #         # Pagination 
+    #         offset = (page - 1) * page_size
+    #         fetch_results_query += " LIMIT %s OFFSET %s"
+    #         params.append(page_size, offset)
+            
+    #         cursor.execute(fetch_results_query, params)
+    #         results = cursor.fetchall()
+            
+    #         # Fetch Total
+    #         fetch_total_query = ("""
+    #             SELECT COUNT(*)
+    #                 FROM results r
+    #                 INNER JOIN users u ON r.user_id = u.id
+    #                 WHERE 1 = 1
+    #         """)
+            
+    #         if pseudo or exercise or start_date or end_date:
+    #             fetch_total_query += fetch_results_query.split("WHERE")[1].replace("LIMIT %s OFFSET %s", "")
+    #             cursor.execute(fetch_total_query, tuple(params[:-2]))  # Exclure les paramètres de pagination
+    #             total = cursor.fetchone()[0]
+        
+    #         print(Fore.GREEN + f"Results fetched successfully")
+            
+    #     except mysql.connector.Error as error:
+    #         print(Fore.RED + f"Error fetching results: {error}")
+            
+    #     return results, total
 
           
     @with_connection
@@ -322,9 +381,8 @@ class Database:
         except mysql.connector.Error as error:
             print(Fore.RED + f"Error checking user: {error}")
             
-            
     @with_connection
-    def update_game_results(self, cursor, pseudo, exercise, date_hour, duration, nbtrials, nbok, new_duration, new_nbok, new_nbtrials):
+    def update_game_result(self, cursor, pseudo, exercise, date_hour, duration, nbok, nbtrials, new_duration, new_nbok, new_nbtrials):
         try:
             # Retrieve the user_id for the given pseudo
             user_id_query = "SELECT id FROM users WHERE pseudo = %s"
@@ -336,62 +394,86 @@ class Database:
                 return
             user_id = user_id_result[0]
 
-            # Check if the specific game result exists
-            check_query = """
-            SELECT COUNT(*) 
-            FROM results 
-            WHERE user_id = %s AND exercise = %s AND date_hour = %s AND duration = %s AND nbok = %s AND nbtrials = %s
+            # Attempt to update the specific game result
+            update_query = """
+            UPDATE results 
+            SET duration = %s, nbok = %s, nbtrials = %s 
+            WHERE user_id = %s AND exercise = %s AND date_hour = %s
             """
-            cursor.execute(check_query, (user_id, exercise, date_hour, duration, nbok, nbtrials))
-            (match_count,) = cursor.fetchone()
+            update_values = (new_duration, new_nbok, new_nbtrials, user_id, exercise, date_hour)
 
-            # If the row exists, update it
-            if match_count > 0:
-                update_query = """
-                UPDATE results 
-                SET duration = %s, nbok = %s, nbtrials = %s 
-                WHERE user_id = %s AND exercise = %s AND date_hour = %s
-                """
-                update_values = (new_duration, new_nbok, new_nbtrials, user_id, exercise, date_hour)
-
-                cursor.execute(update_query, update_values)
-                if cursor.rowcount == 0:
-                    print(Fore.YELLOW + "No matching record found for update.")
-                else:
-                    print(Fore.GREEN + f"{cursor.rowcount} line(s) updated.")
+            cursor.execute(update_query, update_values)
+            if cursor.rowcount == 0:
+                print(Fore.YELLOW + "Aucun enregistrement correspondant trouvé pour mise à jour.")
             else:
-                print(Fore.YELLOW + "No matching line found for update.")
+                print(Fore.GREEN + f"{cursor.rowcount} ligne(s) mise(s) à jour.")
 
         except mysql.connector.Error as error:
-            print(Fore.RED + f"Failed to update game result: {error}")
-
-
+            print(Fore.RED + f"Échec de la mise à jour du résultat du jeu : {error}")
+ 
     @with_connection
-    def login_user(self, cursor, pseudo, password):
+    def update_game_result_by_id(self, cursor, result_id, new_duration, new_nbok, new_nbtrials):
         try:
-            # Check User
-            check_user_query = ("""
-                SELECT `password` FROM `users` WHERE `pseudo` = %s;
-            """)
-            
-            cursor.execute(check_user_query, (pseudo,))
-            
-            user = cursor.fetchone()
-            
-            if user:
-                hashed = user[0].encode('utf-8')
-                if bcrypt.checkpw(password.encode('utf-8'), hashed):
-                    print(Fore.GREEN + f"User {pseudo} logged in successfully")
-                    return True
-                else:
-                    print(Fore.RED + f"User {pseudo} failed to log in")
-                    return False
+            update_query = """
+            UPDATE results 
+            SET duration = %s, nbok = %s, nbtrials = %s 
+            WHERE id = %s
+            """
+            update_values = (new_duration, new_nbok, new_nbtrials, result_id)
+            cursor.execute(update_query, update_values)
+
+            if cursor.rowcount == 0:
+                print(Fore.YELLOW + "Aucun enregistrement correspondant trouvé pour mise à jour.")
             else:
-                print(Fore.RED + f"User {pseudo} failed to log in")
-                return False
+                print(Fore.GREEN + f"{cursor.rowcount} ligne(s) mise(s) à jour.")
+
         except mysql.connector.Error as error:
-            print(Fore.RED + f"Error checking user: {error}")
-     
+            print(Fore.RED + f"Échec de la mise à jour du résultat du jeu : {error}") 
+ 
+                        
+    # @with_connection
+    # def update_game_results(self, cursor, pseudo, exercise, date_hour, duration, nbtrials, nbok, new_duration, new_nbok, new_nbtrials):
+    #     try:
+    #         # Retrieve the user_id for the given pseudo
+    #         user_id_query = "SELECT id FROM users WHERE pseudo = %s"
+    #         cursor.execute(user_id_query, (pseudo,))
+    #         user_id_result = cursor.fetchone()
+
+    #         if not user_id_result:
+    #             print(Fore.YELLOW + "Aucun utilisateur trouvé avec ce pseudo.")
+    #             return
+    #         user_id = user_id_result[0]
+
+    #         # Check if the specific game result exists
+    #         check_query = """
+    #         SELECT COUNT(*) 
+    #         FROM results 
+    #         WHERE user_id = %s AND exercise = %s AND date_hour = %s AND duration = %s AND nbok = %s AND nbtrials = %s
+    #         """
+    #         cursor.execute(check_query, (user_id, exercise, date_hour, duration, nbok, nbtrials))
+    #         (match_count,) = cursor.fetchone()
+
+    #         # If the row exists, update it
+    #         if match_count > 0:
+    #             update_query = """
+    #             UPDATE results 
+    #             SET duration = %s, nbok = %s, nbtrials = %s 
+    #             WHERE user_id = %s AND exercise = %s AND date_hour = %s
+    #             """
+    #             update_values = (new_duration, new_nbok, new_nbtrials, user_id, exercise, date_hour)
+
+    #             cursor.execute(update_query, update_values)
+    #             if cursor.rowcount == 0:
+    #                 print(Fore.YELLOW + "No matching record found for update.")
+    #             else:
+    #                 print(Fore.GREEN + f"{cursor.rowcount} line(s) updated.")
+    #         else:
+    #             print(Fore.YELLOW + "No matching line found for update.")
+
+    #     except mysql.connector.Error as error:
+    #         print(Fore.RED + f"Failed to update game result: {error}")
+
+
     @with_connection
     def logout_user(self, cursor, pseudo):
         try:
@@ -483,3 +565,94 @@ class Database:
                 return False
         except mysql.connector.Error as error:
             print(Fore.RED + f"Error checking user: {error}")
+            
+            
+            
+            
+            
+            
+    """ LOGIN / REGISTER / GUEST / LOGOUT """
+    
+    def login_user(self, cursor, pseudo, password):
+        try:
+            # Query to find user by pseudo
+            user_query = "SELECT id, password FROM users WHERE pseudo = %s"
+            cursor.execute(user_query, (pseudo,))
+            user = cursor.fetchone()
+
+            # Check if user exists
+            if user:
+                user_id, hashed_password = user
+                # Verify the password
+                if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+                    print(Fore.GREEN + "Login successful.")
+                    
+                    # Return the user id
+                    return user_id
+                else:
+                    # Incorrect password
+                    print(Fore.RED + "Incorrect password.")
+                    return None
+            else:
+                # User not found
+                print(Fore.RED + "User not found.")
+                return None
+
+        except mysql.connector.Error as error:
+            print(Fore.RED + f"Error during login: {error}")
+            return None    
+
+
+    @with_connection
+    def register_user(self, cursor, pseudo, password, role_id):
+        try:
+            # Checks if the user already exists
+            if self.is_user_exist(cursor, pseudo):
+                print(Fore.RED + "Username already taken.")
+                return False
+
+            # Hash the password
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+            # Insert new user (Database insertion)
+            insert_user_query = """
+                INSERT INTO users (pseudo, password, role_id) VALUES (%s, %s, %s)
+            """
+            cursor.execute(insert_user_query, (pseudo, hashed_password, role_id))
+
+            print(Fore.GREEN + "User registered successfully.")
+            return True
+
+        except mysql.connector.Error as error:
+            print(Fore.RED + f"Error registering user: {error}")
+            return False
+    
+    @with_connection
+    def is_user_exist(self, cursor, pseudo):
+        """Check if a user already exists in the database."""
+        check_user_query = "SELECT 1 FROM users WHERE pseudo = %s"
+        cursor.execute(check_user_query, (pseudo,))
+        return cursor.fetchone() is not None
+    
+    
+    @with_connection
+    def continue_as_guest(self, cursor):
+        try:
+            # Generate a unique guest username with a hash-like style
+            random_str = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+            guest_username = f"guest{hashlib.md5(random_str.encode()).hexdigest()[:10]}"
+
+            # Generate a random password
+            guest_password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+
+            # Create guest account with a default guest role (assuming role_id for guest is 3)
+            if self.register_user(cursor, guest_username, guest_password, role_id=3):
+                print(Fore.GREEN + f"Guest account created. Username: {guest_username}, Password: {guest_password}")
+                return guest_username, guest_password
+            else:
+                print(Fore.RED + "Failed to create guest account.")
+                return None, None
+
+        except mysql.connector.Error as error:
+            print(Fore.RED + f"Error in guest account creation: {error}")
+            return None, None
