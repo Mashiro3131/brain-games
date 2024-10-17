@@ -15,7 +15,7 @@ import time
 import database
 import datetime
 from customtkinter import *
-import new_login # This will will replace the pseudo if the user is logged in and if he's not, it will be asked to log in, create a account or continue as guest
+# import new_login # This will will replace the pseudo if the user is logged in and if he's not, it will be asked to log in, create a account or continue as guest
 
 
 class GeoGame(CTkFrame):
